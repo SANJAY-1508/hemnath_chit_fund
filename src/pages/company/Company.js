@@ -8,7 +8,6 @@ import LoadingOverlay from "../../components/LoadingOverlay";
 import { MaterialReactTable } from "material-react-table";
 import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
-import { MdOutlineDelete } from "react-icons/md";
 import { useLanguage } from "../../components/LanguageContext";
 
 const Company = () => {
@@ -20,8 +19,6 @@ const Company = () => {
 
   // 1. Handlers for Edit Actions
   const handleCompanyEditClick = (rowData) => {
-    console.log("Edit Group3344443:", rowData);
-    console.log("Edit Group:", rowData);
     navigate("/console/company/create", {
       state: {
         type: "edit",

@@ -238,80 +238,7 @@ const Customer = () => {
         enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1,
       },
-     
-
-{
-  accessorKey: "proof",
-  size: 140, // <-- Set a small size (e.g., 50px).
-  header: t("Customer Image"),
-  
-  // This helps center the header text itself
-  muiTableHeadCellProps: {
-    sx: {
-      justifyContent: "center",
-      textAlign: "center",
-      // Optionally, add maxWidth to the header cell itself
-      maxWidth: '140%',
-      backgroundColor:"black",
-      color:"white",
-    },
-  },
-  
-  // Use a SINGLE definition for the body cell props
-  muiTableBodyCellProps: {
-    sx: {
-      textAlign: "center",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "80%",
-      // Ensure the cell itself has a narrow max width
-      maxWidth: '140%', 
-    },
-  },
-        Cell: ({ cell }) => {
-          const proofArray = cell.getValue();
-          const imageUrl =
-            proofArray && proofArray.length > 0 ? proofArray[0] : null;
-
-          return (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-                width: "50%",
-              }}
-            >
-              {imageUrl ? (
-                <img
-                  src={imageUrl}
-                  alt={t("image.customerProofAlt")}
-                  className="customer-listing-img"
-                  style={{
-                    width: "70px",
-                    height: "70px",
-                    borderRadius: "50%",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => handlePreviewOpen(imageUrl)}
-                />
-              ) : (
-                // Center the placeholder text as well
-                <span
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    height: "100%",
-                  }}
-                >
-                  -
-                </span>
-              )}
-            </Box>
-          );
-        },
-      },
+    
       {
         accessorKey: "customer_no",
         header: t("Customer No"),
@@ -319,7 +246,7 @@ const Customer = () => {
       },
       {
         accessorKey: "name",
-        header: t("customer Name"),
+        header: t("Customer Name"),
         size: 70,
       },
       {
@@ -330,11 +257,6 @@ const Customer = () => {
       {
         accessorKey: "customer_details",
         header: t("Address"),
-        size: 70,
-      },
-      {
-        accessorKey: "place",
-        header: t(" Place"),
         size: 70,
       },
      {
