@@ -22,29 +22,29 @@ const ChitType = () => {
 
   // 1. Handlers for Edit and Delete Actions
   const handleEditClick = (rowData) => {
-    navigate("/console/user/create", {
+    navigate("/console/master/chittype/create", {
       state: {
         type: "edit",
         rowData: rowData,
       },
     });
   };
-  const handleDeleteClick = async (userId) => {
-    console.log("Delete Group ID:", userId);
+  const handleDeleteClick = async (chitId) => {
+    console.log("Delete Group ID:", chitId);
     setLoading(true);
     try {
-      const response = await fetch(`${API_DOMAIN}/users.php`, {
+      const response = await fetch(`${API_DOMAIN}/chittype.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          delete_user_id: userId,
+          delete_chit_type_id: chitId,
         }),
       });
       const responseData = await response.json();
       if (responseData.head.code === 200) {
-        navigate("/console/user");
+        navigate("/console/master/chittype");
         window.location.reload();
         //setLoading(false);
       } else {
@@ -141,7 +141,7 @@ const ChitType = () => {
             <Tooltip title={t("Delete")}>
               <IconButton
                 onClick={() =>
-                  handleDeleteClick(row.original.user_id)
+                  handleDeleteClick(row.original.chit_type_id)
                 }
                 sx={{ color: "#dc3545", padding: 0 }}
               >

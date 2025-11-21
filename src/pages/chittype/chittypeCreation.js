@@ -20,39 +20,19 @@ const ChitTypeCreation = () => {
     type === "edit"
       ? { ...rowData }
       : {
-          Name: "",
-          RoleSelection: "",
-          Mobile_Number: "",
-          User_Name: "",
-          Password: "",
-          nickname: "",
+         chit_type:"",
         };
   const [formData, setFormData] = useState(initialState);
+  console.log(formData);
    const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
    const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(false);
    const navigate = useNavigate();
 
-  //Role dropdrown
-  const DropList = [
-    {
-      value: "Admin",
-      label: t("Admin"), 
-    },
-    {
-      value: "Super admin",
-      label: t("Super admin"), 
-    },
-    {
-      value: "Employee",
-      label: t("Employee"), 
-    },
-  ];
-
+ 
   const redirectModal = () => {
-    navigate("/console/user");
+    navigate("/console/master/chittype");
   };
 
   const handleChange = (e, fieldName) => {
@@ -72,39 +52,11 @@ const ChitTypeCreation = () => {
       : ` ${t("Creation")}`;
  
   const handleSubmit = async () => {
-    for (const key in formData) {
-      if (formData[key] === "") {
-        toast.error(`${key} cannot be empty!`, {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-        return; // Exit the function early if any field is empty
-      }
-    }
+    console.log("6754776");
     try {
       setLoading(true);
-      const mobileNumber = formData.Mobile_Number;
-      if (!/^\d{10}$/.test(mobileNumber)) {
-        toast.error("Mobile number must be a 10-digit number!", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-        return;
-        setLoading(false);
-      }
-      const response = await fetch(`${API_DOMAIN}/users.php`, {
+      
+      const response = await fetch(`${API_DOMAIN}/chittype.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -128,7 +80,7 @@ const ChitTypeCreation = () => {
           theme: "colored",
         });
         setTimeout(() => {
-          navigate("/console/user");
+          navigate("/console/master/chittype");
         }, 2000);
       } else {
         toast.error(responseData.head.msg, {
@@ -153,20 +105,14 @@ const ChitTypeCreation = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_DOMAIN}/users.php`, {
+      const response = await fetch(`${API_DOMAIN}/chittype.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          edit_user_id: rowData.user_id, // Include the company ID in the request
-          Name: formData.Name,
-          Mobile_Number: formData.Mobile_Number,
-          RoleSelection: formData.RoleSelection,
-          FireWorksName: formData.FireWorksName,
-          User_Name: formData.User_Name,
-          Password: formData.Password,
-          nickname: formData.nickname,
+          edit_chit_type_id: rowData.chit_type_id,
+          chit_type: formData.chit_type,
         }),
       });
 
@@ -184,7 +130,7 @@ const ChitTypeCreation = () => {
           theme: "colored",
         });
         setTimeout(() => {
-          navigate("/console/user");
+          navigate("/console/master/chittype");
         }, 2000);
         setLoading(false);
       } else {
@@ -213,146 +159,30 @@ const ChitTypeCreation = () => {
           <Col lg="12" md="12" xs="12" className="py-3">
         {/* 3. Apply translation to the PageNav title */}
         <PageNav
-          pagetitle={`${t("User")}${userTitleSegment}`}
+          pagetitle={`${t("Chit Type")}${userTitleSegment}`}
         ></PageNav>
       </Col>
 
           <Col lg="4" md="6" xs="12" className="py-3">
         {type === "edit" ? (
           <TextInputForm
-            placeholder={t("Name")} 
-            labelname={t("Name")} 
-            name="Name"
-            value={formData.Name}
-            onChange={(e) => handleChange(e, "Name")}
+            placeholder={t("Chit Type Name")} 
+            labelname={t("Chit Type Name")} 
+            name="chit_type"
+            value={formData.chit_type}
+            onChange={(e) => handleChange(e, "chit_type")}
           ></TextInputForm>
         ) : (
           <TextInputForm
-            placeholder={t("Name")} 
-            labelname={t("Name")} 
-            name="Name"
-            value={type === "view" ? rowData.Name : formData.Name}
-            onChange={(e) => handleChange(e, "Name")}
+            placeholder={t("Chit Type Name")} 
+            labelname={t("Chit Type Name")} 
+            name="chit_type"
+            value={type === "view" ? rowData.chit_type : formData.chit_type}
+            onChange={(e) => handleChange(e, "chit_type")}
           ></TextInputForm>
         )}
       </Col>
-          <Col lg="4" md="6" xs="12" className="py-3">
-        {type === "edit" ? (
-          <DropDownUI
-            optionlist={DropList}
-            placeholder={t("Role Selection")} 
-            labelname={t("Role Selection")} 
-            name="RoleSelection"
-            value={formData.RoleSelection}
-            onChange={(updatedFormData) =>
-              setFormData({
-                ...formData,
-                RoleSelection: updatedFormData.RoleSelection,
-              })
-            }
-          />
-        ) : (
-          <DropDownUI
-            optionlist={DropList}
-            placeholder={t("Role Selection")} 
-            labelname={t("Role Selection")} 
-            name="RoleSelection"
-            value={
-              type === "view"
-                ? rowData.RoleSelection
-                : formData.RoleSelection
-            }
-            onChange={(updatedFormData) =>
-              setFormData({
-                ...formData,
-                RoleSelection: updatedFormData.RoleSelection,
-              })
-            }
-          />
-        )}
-      </Col>
-         <Col lg="4" md="12" xs="12" className="py-3">
-        {type === "edit" ? (
-          <TextInputForm
-            placeholder={t("Mobile Number")} 
-            type={"number"}
-            labelname={t("Mobile Number")} 
-            name="Mobile_Number"
-            value={formData.Mobile_Number}
-            onChange={(e) => handleChange(e, "Mobile_Number")}
-          ></TextInputForm>
-        ) : (
-          <TextInputForm
-            placeholder={t("Mobile Number")} 
-            type={"number"}
-            labelname={t("Mobile Number")} 
-            name="Mobile_Number"
-            value={
-              type === "view"
-                ? rowData.Mobile_Number
-                : formData.Mobile_Number
-            }
-            onChange={(e) => handleChange(e, "Mobile_Number")}
-          ></TextInputForm>
-        )}
-      </Col>
-          <Col lg="3" md="6" xs="12" className="py-3">
-        {type === "edit" ? (
-          <TextInputForm
-            placeholder={t("User Name")} 
-            labelname={t("User Name")} 
-            name="User_Name"
-            value={formData.User_Name}
-            onChange={(e) => handleChange(e, "User_Name")}
-          ></TextInputForm>
-        ) : (
-          <TextInputForm
-            placeholder={t("User Name")} 
-            labelname={t("User Name")}
-            name="User_Name"
-            value={type === "view" ? rowData.User_Name : formData.User_Name}
-            onChange={(e) => handleChange(e, "User_Name")}
-          ></TextInputForm>
-        )}
-      </Col>
-          <Col lg="3" md="6" xs="12" className="py-3">
-        {type === "edit" ? (
-          <TextInputForm
-            placeholder={t("Nick Name")} 
-            labelname={t("Nick Name")}
-            name="nickname"
-            value={formData.nickname}
-            onChange={(e) => handleChange(e, "nickname")}
-          ></TextInputForm>
-        ) : (
-          <TextInputForm
-            placeholder={t("Nick Name")} 
-            labelname={t("Nick Name")} 
-            name="nickname"
-            value={type === "view" ? rowData.nickname : formData.nickname}
-            onChange={(e) => handleChange(e, "nickname")}
-          ></TextInputForm>
-        )}
-      </Col>
-         <Col lg="3" md="6" xs="12" className="py-3">
-        {type === "view" ? null : (
-          <TextInputForm
-            placeholder={t("Password")} 
-            suffix_icon={
-              showPassword ? (
-                <VscEye onClick={() => setShowPassword(false)} />
-              ) : (
-                <VscEyeClosed onClick={() => setShowPassword(true)} />
-              )
-            }
-            labelname={t("Password")} 
-            type={showPassword ? "text" : "password"}
-            name="Password"
-            value={formData.Password}
-            onChange={(e) => handleChange(e, "Password")}
-          ></TextInputForm>
-        )}
-      </Col>
+     
 
          <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
         <div style={{ textAlign: "right", paddingRight: "5px" }}>
@@ -387,7 +217,7 @@ const ChitTypeCreation = () => {
                   <span className="mx-2">
                     <Delete
                       label={<>{t("Cancel")}</>} // 4. Apply t()
-                      onClick={() => navigate("/console/user")}
+                      onClick={() => navigate("/console/master/chittype")}
                     ></Delete>
                   </span>
                 </>
@@ -403,7 +233,7 @@ const ChitTypeCreation = () => {
                   <span className="mx-2">
                     <Delete
                       label={t("Cancel")} // 4. Apply t()
-                      onClick={() => navigate("/console/user")}
+                      onClick={() => navigate("/console/master/chittype")}
                     ></Delete>
                   </span>
                 </>
@@ -412,6 +242,7 @@ const ChitTypeCreation = () => {
           )}
         </div>
       </Col>
+    
         </Row>
         {error && (
           <Alert variant="danger" className="error-alert">

@@ -1,15 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
 import { Container, Col, Row } from "react-bootstrap";
-import { TextInputForm } from "../../components/Forms";
-import { FaMagnifyingGlass } from "react-icons/fa6";
 import { ClickButton, Delete } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
-import { useMediaQuery } from "react-responsive";
 import LoadingOverlay from "../../components/LoadingOverlay";
-import jsPDF from "jspdf";
 import "jspdf-autotable";
-import * as XLSX from "xlsx";
 import { useLanguage } from "../../components/LanguageContext";
 
 // 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
@@ -53,19 +48,21 @@ const Customer = () => {
 
   // 1. Handlers for View  Edit and Delete Actions
 
-  const handleJewelcustomerViewClick = (rowData) => {
+  const handlecustomerViewClick = (rowData) => {
     navigate("/console/master/customerdetails", {
       state: { type: "view", rowData: rowData },
     });
   };
-  const handleJewelcustomerEditClick = (rowData) => {
+  const handlecustomerEditClick = (rowData) => {
     navigate("/console/master/customer/create", {
       state: { type: "edit", rowData: rowData },
     });
   };
-  const handleJewelcustomerDeleteClick = async (id) => {
+  const handlecustomerDeleteClick = async (id) => {
+    console.log("Delete Group ID:", id);
     setLoading(true);
     try {
+      console.log("44554");
       const response = await fetch(`${API_DOMAIN}/customer.php`, {
         method: "POST",
         headers: {
@@ -73,14 +70,14 @@ const Customer = () => {
         },
         body: JSON.stringify({
           delete_customer_id: id,
-          login_id: user.id,
-          user_name: user.user_name,
+          current_user_id: user.user_id,
+          current_user_name: user.name,
         }),
       });
       const responseData = await response.json();
       if (responseData.head.code === 200) {
         navigate("/console/master/customer");
-        // window.location.reload();
+        window.location.reload();
       } else {
         console.log(responseData.head.msg);
         setLoading(false);
@@ -91,7 +88,7 @@ const Customer = () => {
     }
   };
   // 2. Data Fetching Logic (Unchanged)
-  const fetchDatajewelpawncustomer = async () => {
+  const fetchDataCustomer = async () => {
     setLoading(true);
     try {
       const response = await fetch(`${API_DOMAIN}/customer.php`, {
@@ -119,115 +116,12 @@ const Customer = () => {
     }
   };
   useEffect(() => {
-    fetchDatajewelpawncustomer();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchDataCustomer();
   }, [searchText]);
 
   ///for pdf and excel download
-  const handleDownloadPDF = () => {
-    const doc = new jsPDF({
-      orientation: "landscape", // landscape mode
-      unit: "mm",
-      format: "a4",
-    });
 
-    doc.setFontSize(16);
-    doc.text("Customer List", 14, 15); // title at top
-
-    doc.autoTable({
-      startY: 25, // start table below title
-      head: [
-        [
-          "NO",
-          "CUSTOMER NO",
-          "NAME",
-          "ADDRESS",
-          "PLACE",
-          "PINCODE",
-          "PHONE NO",
-          "ADDITIONAL NO",
-          "REFERENCE",
-          "PROOF TYPE",
-          "PROOF NO",
-        ],
-      ],
-      body: customerData.map((item, index) => [
-        index + 1,
-        item.customer_no,
-        item.name,
-        item.customer_details,
-        item.place,
-        item.pincode,
-        item.mobile_number,
-        item.addtionsonal_mobile_number,
-        item.reference,
-        item.upload_type,
-        item.proof_number,
-      ]),
-      styles: {
-        fontSize: 10, // reduce font to fit more columns
-        cellPadding: 2,
-      },
-      headStyles: {
-        fillColor: [22, 160, 133], // optional: header color
-        textColor: 255,
-        fontStyle: "bold",
-      },
-      columnStyles: {
-        3: { cellWidth: 40 }, // ADDRESS column wider
-        4: { cellWidth: 25 }, // PLACE column
-        8: { cellWidth: 30 }, // REFERENCE column
-      },
-      theme: "grid",
-      didDrawPage: (data) => {
-        // optional: page numbers
-        const pageCount = doc.getNumberOfPages();
-        doc.setFontSize(10);
-        doc.text(
-          `Page ${pageCount}`,
-          doc.internal.pageSize.getWidth() - 20,
-          doc.internal.pageSize.getHeight() - 10
-        );
-      },
-    });
-
-    doc.save("Customer_List.pdf");
-  };
-
-  const handleDownloadExcel = () => {
-    const wb = XLSX.utils.book_new();
-    const wsData = [
-      [
-        "NO",
-        "CUSTOMER NO",
-        "NAME",
-        "ADDRESS",
-        "PLACE",
-        "PINCODE",
-        "PHONE NO",
-        "ADDITIONAL NO",
-        "REFERENCE",
-        "PROOF TYPE",
-        "PROOF NO",
-      ],
-      ...customerData.map((item, index) => [
-        index + 1,
-        item.customer_no,
-        item.name,
-        item.customer_details,
-        item.place,
-        item.pincode,
-        item.mobile_number,
-        item.addtionsonal_mobile_number,
-        item.reference,
-        item.upload_type,
-        item.proof_number,
-      ]),
-    ];
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    XLSX.utils.book_append_sheet(wb, ws, "Customers");
-    XLSX.writeFile(wb, "Customer_List.xlsx");
-  };
+ 
   // 3. Define Material React Table Columns
   const columns = useMemo(
     () => [
@@ -262,17 +156,14 @@ const Customer = () => {
      {
   id: "action",
   header: t("Action"),
-  size: 50, // Set size smaller since the content is now just one icon
+  size: 50, 
   enableColumnFilter: false,
   enableColumnOrdering: false,
   enableSorting: false,
 
   Cell: ({ row }) => {
-    // 1. State for managing the menu anchor element (where the menu pops up from)
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-
-    // 2. Handlers for opening and closing the menu
     const handleMenuClick = (event) => {
       setAnchorEl(event.currentTarget);
     };
@@ -280,23 +171,19 @@ const Customer = () => {
     const handleMenuClose = () => {
       setAnchorEl(null);
     };
-    
-    // 3. Wrapper function for action clicks that also closes the menu
     const handleActionClick = (actionHandler) => {
         actionHandler();
-        handleMenuClose(); // Close the menu after clicking an action
+        handleMenuClose(); 
     };
 
 
     return (
-      // The Box now only needs to center the single menu icon
       <Box
         sx={{
           display: "flex",
-          justifyContent: "center", // Center the single icon
+          justifyContent: "center", 
         }}
       >
-        {/* 4. The main IconButton to open the menu */}
         <Tooltip title={t("Actions")}>
           <IconButton
             aria-label="more actions"
@@ -309,14 +196,11 @@ const Customer = () => {
             <MoreVertIcon />
           </IconButton>
         </Tooltip>
-
-        {/* 5. The Menu Component */}
         <Menu
           id="action-menu"
           anchorEl={anchorEl}
           open={open}
           onClose={handleMenuClose}
-          // The anchorOrigin helps position the menu correctly relative to the icon
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: 'right',
@@ -328,7 +212,7 @@ const Customer = () => {
         >
           {/* View Action */}
           <MenuItem 
-            onClick={() => handleActionClick(() => handleJewelcustomerViewClick(row.original))}
+            onClick={() => handleActionClick(() => handlecustomerViewClick(row.original))}
           >
             <VisibilityIcon sx={{ mr: 1, color: "grey" }} />
             {t("view")}
@@ -336,7 +220,7 @@ const Customer = () => {
 
           {/* Edit Action */}
           <MenuItem 
-            onClick={() => handleActionClick(() => handleJewelcustomerEditClick(row.original))}
+            onClick={() => handleActionClick(() => handlecustomerEditClick(row.original))}
           >
             <DriveFileRenameOutlineIcon sx={{ size:8, mr: 1, color: "rgb(22 59 140)" }} />
             {t("Edit")}
@@ -344,9 +228,8 @@ const Customer = () => {
 
           {/* Delete Action */}
           <MenuItem 
-            onClick={() => handleActionClick(() => handleJewelcustomerDeleteClick(row.original.customer_id))}
+            onClick={() => handleActionClick(() => handlecustomerDeleteClick(row.original.customer_id))}
           >
-            {/* USE THE OFFICIAL MUI ICON NAME */}
             <DeleteOutlineIcon sx={{ mr: 1, color: "#991212" }} /> 
             {t("Delete")}
           </MenuItem>
