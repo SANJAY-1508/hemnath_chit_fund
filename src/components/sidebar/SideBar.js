@@ -72,11 +72,12 @@ const SideBar = ({ onLogout}) => {
         <div className="list-group regular">
           <ul>
             <li>
-              <div className="user-logo mx-auto py-3">
+              <div className="user-logo mx-auto  py-3">
                 <img
-                  src={require("./images/pngegg.png")}
+                  src={require("./images/logo1.png")}
                   className="img-fluid logo"
                   alt="Sri Krishna Finance"
+                  style={{ marginLeft: "-10px" }}
                 />
               </div>
             </li>
