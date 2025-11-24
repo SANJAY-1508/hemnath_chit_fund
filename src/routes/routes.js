@@ -13,6 +13,7 @@ import ChitTypeCreation from "../pages/chittype/chittypeCreation";
 import Chit from "../pages/chit/chit";
 import ChitCreation from "../pages/chit/chitCreation";
 import CustomerBankDetails from "../pages/customer/CustomerBankDetails";
+import CustomerHistory from "../pages/CustomerHistory";
 
 const routes = [
   { path: "/console/dashboard", element: <DashBoard /> },
@@ -27,10 +28,14 @@ const routes = [
   { path: "/console/master/chittype/create", element: <ChitTypeCreation /> },
   { path: "/console/master/chit", element: <Chit /> },
   { path: "/console/master/chit/create", element: <ChitCreation /> },
-  
+
   {
     path: "/console/customer/customerbankdetails",
     element: <CustomerBankDetails />,
+  },
+  {
+    path: "/console/report/customerhistory",
+    element: <CustomerHistory />,
   },
 ];
 
