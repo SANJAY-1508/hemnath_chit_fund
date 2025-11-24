@@ -43,11 +43,10 @@ const sidebarConfig = [
   },
 
   
-  {
-    path: "/console/master/customer",
-    icon: <PiUsersThreeBold />,
-    text: "Customer",
-
+ {
+    path: "/console/master/chit",
+    text: "Chit",
+    icon: <MdCategory />,
   },
 
   {
