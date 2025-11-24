@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import API_DOMAIN from "../../config/config";
 import Select from "react-select";
 import { useLanguage } from "../../components/LanguageContext";
-import { FaUser, FaPhone, FaMapMarkerAlt, FaHome } from "react-icons/fa";
+
 
 const ChitCreation = () => {
   const { t } = useLanguage();
@@ -21,7 +21,6 @@ const ChitCreation = () => {
     type === "edit"
       ? {
           ...otherRowData,
-          // Use the ID fields from rowData for pre-selection lookup
           chit_type: rowData?.chit_type_id || "",
           customer_id: rowData?.customer_id || "",
         }
@@ -36,15 +35,10 @@ const ChitCreation = () => {
   const [formData, setFormData] = useState(initialState);
   const [customerOptions, setCustomerOptions] = useState([]);
   const [chitTypeOptions, setChitTypeOptions] = useState([]);
-
-  // Selected Objects State (for pre-selection and customer card details)
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedCustomerOption, setSelectedCustomerOption] = useState(null);
   const [selectedChitTypeObject, setSelectedChitTypeObject] = useState(null);
-
-  // ⭐ 2. NEW STATE for the table data (single due record)
   const [dueRecords, setDueRecords] = useState([]);
-
   const [error, setError] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -176,8 +170,8 @@ const ChitCreation = () => {
             (opt) => opt.value === rowData.customer_id
           );
           if (preSelected) {
-            setSelectedCustomer(preSelected.fullData); // For Customer Card
-            setSelectedCustomerOption(preSelected); // For Select Component
+            setSelectedCustomer(preSelected.fullData); 
+            setSelectedCustomerOption(preSelected); 
           }
         }
       }
@@ -365,7 +359,7 @@ const ChitCreation = () => {
                 isSearchable={true}
                 options={chitTypeOptions}
                 onChange={handleChitTypeChange}
-                value={selectedChitTypeObject} // ⭐ Use the dedicated option state
+                value={selectedChitTypeObject} 
               />
             </div>
             {selectedCustomer && (
@@ -467,11 +461,9 @@ const ChitCreation = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {/* Map the single due record */}
                         {dueRecords.map((record, index) => (
                           <tr key={index}>
                             <td>
-                              {/* Format date for cleaner display */}
                               {record.due_date
                                 ? new Date(record.due_date).toLocaleDateString()
                                 : "N/A"}
@@ -507,15 +499,13 @@ const ChitCreation = () => {
               </Card>
             </Col>
           )}
-          {/* --- END DUE PAYMENT TABLE --- */}
-
-          {/* SUBMIT/CANCEL BUTTONS */}
+          
           
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div style={{ textAlign: "right", paddingRight: "5px" }}>
               {type === "view" ? (
                 <ClickButton
-                  label={<>{t("Back")}</>} // 4. Apply t() (Capitalized for key consistency)
+                  label={<>{t("Back")}</>} 
                   onClick={() => navigate("/console/master/chit")}
                 ></ClickButton>
               ) : (
