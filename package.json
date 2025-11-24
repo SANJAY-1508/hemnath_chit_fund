@@ -50,7 +50,7 @@
     "react-toastify": "^10.0.5",
     "react-tooltip": "^5.26.4",
     "react-webcam": "^7.2.0",
-    "recharts": "^3.4.1",
+    "recharts": "^3.5.0",
     "sql.js": "^1.12.0",
     "transliteration": "^2.3.5",
     "web-vitals": "^2.1.4",
