@@ -276,16 +276,18 @@ const CustomerCreations = () => {
               }
             />
           </Col>
-          <Col lg="3" md="4" xs="12" className="py-3">
-            <TextInputForm
-              placeholder={t("Customer No")}
-              labelname={t("Customer No")}
-              name="customer_no"
-              value={formData.customer_no}
-              onChange={(e) => handleChange(e, "customer_no")}
-              disabled
-            />
-          </Col>
+          {(type === "edit" || type === "view") && (
+            <Col lg="3" md="4" xs="12" className="py-3">
+              <TextInputForm
+                placeholder={t("Customer No")}
+                labelname={t("Customer No")}
+                name="customer_no"
+                value={formData.customer_no}
+                onChange={(e) => handleChange(e, "customer_no")}
+                disabled
+              />
+            </Col>
+          )}
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
               placeholder={t("Name")}
