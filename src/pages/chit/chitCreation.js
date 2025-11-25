@@ -9,7 +9,6 @@ import API_DOMAIN from "../../config/config";
 import Select from "react-select";
 import { useLanguage } from "../../components/LanguageContext";
 
-
 const ChitCreation = () => {
   const { t } = useLanguage();
   const location = useLocation();
@@ -27,12 +26,13 @@ const ChitCreation = () => {
       : {
           chit_type_id: "",
           customer_id: "",
-          chit_no: "",
-          chit_due_amount: "",
-          emi_method: "",
+          chit_no: "CN002",
+          chit_due_amount: "1000",
+          emi_method: "Weekly",
         };
 
   const [formData, setFormData] = useState(initialState);
+  console.log(formData);
   const [customerOptions, setCustomerOptions] = useState([]);
   const [chitTypeOptions, setChitTypeOptions] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -170,8 +170,8 @@ const ChitCreation = () => {
             (opt) => opt.value === rowData.customer_id
           );
           if (preSelected) {
-            setSelectedCustomer(preSelected.fullData); 
-            setSelectedCustomerOption(preSelected); 
+            setSelectedCustomer(preSelected.fullData);
+            setSelectedCustomerOption(preSelected);
           }
         }
       }
@@ -246,11 +246,7 @@ const ChitCreation = () => {
       <Container>
         <Row className="regular">
           <Col lg="12" md="12" xs="12" className="py-3">
-           <PageNav 
-        pagetitle={'Chit Management'}
-        
-      />
-        
+            <PageNav pagetitle={"Chit Management"} />
           </Col>
 
           {/* COLUMN 1: CUSTOMER DROPDOWN */}
@@ -359,7 +355,7 @@ const ChitCreation = () => {
                 isSearchable={true}
                 options={chitTypeOptions}
                 onChange={handleChitTypeChange}
-                value={selectedChitTypeObject} 
+                value={selectedChitTypeObject}
               />
             </div>
             {selectedCustomer && (
@@ -499,13 +495,12 @@ const ChitCreation = () => {
               </Card>
             </Col>
           )}
-          
-          
+
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div style={{ textAlign: "right", paddingRight: "5px" }}>
               {type === "view" ? (
                 <ClickButton
-                  label={<>{t("Back")}</>} 
+                  label={<>{t("Back")}</>}
                   onClick={() => navigate("/console/master/chit")}
                 ></ClickButton>
               ) : (
