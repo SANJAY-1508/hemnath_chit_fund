@@ -19,11 +19,11 @@ import {
   Menu, // <-- New component
   MenuItem,
 } from "@mui/material";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
-import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 const Customer = () => {
   const navigate = useNavigate();
@@ -121,7 +121,6 @@ const Customer = () => {
 
   ///for pdf and excel download
 
- 
   // 3. Define Material React Table Columns
   const columns = useMemo(
     () => [
@@ -132,7 +131,7 @@ const Customer = () => {
         enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1,
       },
-    
+
       {
         accessorKey: "customer_no",
         header: t("Customer No"),
@@ -153,91 +152,100 @@ const Customer = () => {
         header: t("Address"),
         size: 70,
       },
-     {
-  id: "action",
-  header: t("Action"),
-  size: 50, 
-  enableColumnFilter: false,
-  enableColumnOrdering: false,
-  enableSorting: false,
+      {
+        id: "action",
+        header: t("Action"),
+        size: 50,
+        enableColumnFilter: false,
+        enableColumnOrdering: false,
+        enableSorting: false,
 
-  Cell: ({ row }) => {
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
-    const handleMenuClick = (event) => {
-      setAnchorEl(event.currentTarget);
-    };
+        Cell: ({ row }) => {
+          const [anchorEl, setAnchorEl] = useState(null);
+          const open = Boolean(anchorEl);
+          const handleMenuClick = (event) => {
+            setAnchorEl(event.currentTarget);
+          };
 
-    const handleMenuClose = () => {
-      setAnchorEl(null);
-    };
-    const handleActionClick = (actionHandler) => {
-        actionHandler();
-        handleMenuClose(); 
-    };
+          const handleMenuClose = () => {
+            setAnchorEl(null);
+          };
+          const handleActionClick = (actionHandler) => {
+            actionHandler();
+            handleMenuClose();
+          };
 
-
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center", 
-        }}
-      >
-        <Tooltip title={t("Actions")}>
-          <IconButton
-            aria-label="more actions"
-            aria-controls={open ? 'action-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            onClick={handleMenuClick}
-            sx={{ padding: 0 }}
-          >
-            <MoreVertIcon />
-          </IconButton>
-        </Tooltip>
-        <Menu
-          id="action-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleMenuClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-        >
-          {/* View Action */}
-          <MenuItem 
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <Tooltip title={t("Actions")}>
+                <IconButton
+                  aria-label="more actions"
+                  aria-controls={open ? "action-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? "true" : undefined}
+                  onClick={handleMenuClick}
+                  sx={{ padding: 0 }}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                id="action-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleMenuClose}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+              >
+                {/* View Action */}
+                {/* <MenuItem 
             onClick={() => handleActionClick(() => handlecustomerViewClick(row.original))}
           >
             <VisibilityIcon sx={{ mr: 1, color: "grey" }} />
             {t("view")}
-          </MenuItem>
+          </MenuItem> */}
 
-          {/* Edit Action */}
-          <MenuItem 
-            onClick={() => handleActionClick(() => handlecustomerEditClick(row.original))}
-          >
-            <DriveFileRenameOutlineIcon sx={{ size:8, mr: 1, color: "rgb(22 59 140)" }} />
-            {t("Edit")}
-          </MenuItem>
+                {/* Edit Action */}
+                <MenuItem
+                  onClick={() =>
+                    handleActionClick(() =>
+                      handlecustomerEditClick(row.original)
+                    )
+                  }
+                >
+                  <DriveFileRenameOutlineIcon
+                    sx={{ size: 8, mr: 1, color: "rgb(22 59 140)" }}
+                  />
+                  {t("Edit")}
+                </MenuItem>
 
-          {/* Delete Action */}
-          <MenuItem 
-            onClick={() => handleActionClick(() => handlecustomerDeleteClick(row.original.customer_id))}
-          >
-            <DeleteOutlineIcon sx={{ mr: 1, color: "#991212" }} /> 
-            {t("Delete")}
-          </MenuItem>
-        </Menu>
-      </Box>
-    );
-  },
-}
+                {/* Delete Action */}
+                <MenuItem
+                  onClick={() =>
+                    handleActionClick(() =>
+                      handlecustomerDeleteClick(row.original.customer_id)
+                    )
+                  }
+                >
+                  <DeleteOutlineIcon sx={{ mr: 1, color: "#991212" }} />
+                  {t("Delete")}
+                </MenuItem>
+              </Menu>
+            </Box>
+          );
+        },
+      },
     ],
     [t, cacheVersion]
   );
@@ -304,8 +312,8 @@ const Customer = () => {
                       sx: {
                         fontWeight: "bold",
                         backgroundColor: "black",
-                        color:"white", 
-                        alignItems: "center",// Light gray header background
+                        color: "white",
+                        alignItems: "center", // Light gray header background
                       },
                     }}
                   />
