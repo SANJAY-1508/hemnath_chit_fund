@@ -554,16 +554,14 @@ input:focus {
     transform: scale(0.9);
   }
 }
-/* Target the danger button specifically within the modal footer */
+
 .modal-footer .btn-danger {
-    /* !important is generally discouraged but is the fastest way to resolve a stubborn conflict */
     color: #fff !important; 
     background-color: #dc3545 !important; /* Default red for 'danger' */
     border-color: #dc3545 !important;
 }
 .modal-footer .btn-primary {
-    /* !important is generally discouraged but is the fastest way to resolve a stubborn conflict */
     color: #fff !important; 
-    background-color: #4771c0 !important; /* Default red for 'danger' */
+    background-color: #4771c0 !important; 
     border-color: #3b44c5 !important;
 }

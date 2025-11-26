@@ -251,7 +251,6 @@ const ChitCreation = () => {
 
         setCustomerOptions(options);
 
-        // Pre-select logic
         if (type === "edit" && rowData?.customer_id) {
           const preSelected = options.find(
             (opt) => opt.value === rowData.customer_id
@@ -320,7 +319,7 @@ const ChitCreation = () => {
       setDueRecords([]);
     }
   };
-  // In chitCreation.js (around L362)
+ 
 
   const fetchNextChitNo = async (customerId, chitTypeId) => {
     console.log("Customer ID:", customerId);
@@ -386,8 +385,8 @@ const ChitCreation = () => {
       }));
     }
   };
-  // --- useEffect Hooks ---
-
+ 
+  //USEEFECT FUNCTION
   useEffect(() => {
     fetchDataCustomer();
     fetchChitType();
@@ -421,7 +420,7 @@ const ChitCreation = () => {
             <PageNav pagetitle={"Chit Management"} />
           </Col>
 
-          {/* COLUMN 1: CUSTOMER DROPDOWN */}
+
           <Col lg="4" md="12" xs="12" className="py-3">
             <div className="mb-4">
               <label htmlFor="customer-select" className="mb-2">
@@ -516,7 +515,6 @@ const ChitCreation = () => {
             )}
           </Col>
 
-          {/* COLUMN 2: CHIT TYPE DROPDOWN */}
           <Col lg="4" md="12" xs="12" className="py-3">
             <div className="mb-4">
               <label htmlFor="chittype-select" className="mb-2">
@@ -532,7 +530,6 @@ const ChitCreation = () => {
                 isDisabled={type === "edit"}
               />
             </div>
-            {/* Removed duplicate customer card; add chit type info if needed */}
           </Col>
 
           {/* ⭐ 4. DUE PAYMENT TABLE (Only visible in edit mode with data) */}
