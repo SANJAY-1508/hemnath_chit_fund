@@ -14,6 +14,7 @@ import Chit from "../pages/chit/chit";
 import ChitCreation from "../pages/chit/chitCreation";
 import CustomerBankDetails from "../pages/customer/CustomerBankDetails";
 import CustomerHistory from "../pages/CustomerHistory";
+import CollectionReport from "../pages/CollectionReport";
 
 const routes = [
   { path: "/console/dashboard", element: <DashBoard /> },
@@ -36,6 +37,10 @@ const routes = [
   {
     path: "/console/report/customerhistory",
     element: <CustomerHistory />,
+  },
+  {
+    path: "/console/report/collectionreport",
+    element: <CollectionReport />,
   },
 ];
 

@@ -1,12 +1,15 @@
 import { MdSpaceDashboard } from "react-icons/md";
 import { FiUsers } from "react-icons/fi";
-import { BsBuildings, BsBarChartFill, BsBank } from "react-icons/bs";
+
+
+
+
+import { BsBuildings, BsBarChartFill } from "react-icons/bs";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { PiUsersThreeBold } from "react-icons/pi";
-import { TbArrowsShuffle } from "react-icons/tb";
 import { MdCategory } from "react-icons/md";
-import { FaCogs, FaBoxes, FaHandshake } from "react-icons/fa";
-import { MdOutlineDashboard } from "react-icons/md";
+import { FaCogs,FaMoneyCheck} from "react-icons/fa";
+import { BiCollection } from "react-icons/bi";
 
 const sidebarConfig = [
   {
@@ -46,7 +49,7 @@ const sidebarConfig = [
  {
     path: "/console/master/chit",
     text: "Chit",
-    icon: <MdCategory />,
+    icon: <FaMoneyCheck />,
   },
 
   {
@@ -60,8 +63,13 @@ const sidebarConfig = [
     subMenu: [
       {
         path: "/console/report/customerhistory",
-        text: "CustomerHistory",
+        text: "Customer History",
         icon: <FaMoneyBillTrendUp />,
+      },
+      {
+        path: "/console/report/collectionreport",
+        text: "Collection Report",
+        icon: <BiCollection />,
       },
     ],
   },

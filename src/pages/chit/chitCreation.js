@@ -346,13 +346,14 @@ const ChitCreation = () => {
       }
       const existingChits = responseData?.data?.all;
       const chitsArray = Array.isArray(existingChits) ? existingChits : [];
-      const chitsOfCurrentCustomer = chitsArray.filter(
-        (chit) => String(chit.customer_id) === String(customerId)
-      );
+      const allChits = chitsArray;
+      // const chitsOfCurrentCustomer = chitsArray.filter(
+      //   (chit) => String(chit.customer_id) === String(customerId)
+      // );
       let maxNumber = 0;
       const regex = /^CH(\d+)$/;
 
-      chitsOfCurrentCustomer.forEach((chit) => {
+      allChits.forEach((chit) => {
         if (chit.chit_no) {
           const match = String(chit.chit_no).match(regex);
           if (match) {

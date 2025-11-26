@@ -80,14 +80,7 @@ const PIE_CHART_COLORS = [
   "#FF0054", // Red
 ];
 
-const PROGRESS_COLORS = [
-  "#2196F3", 
-  "#4CAF50", 
-  "#FF9800", 
-  "#E91E63", 
-  "#00BCD4", 
-];
-
+const PROGRESS_COLORS = ["#2196F3", "#4CAF50", "#FF9800", "#E91E63", "#00BCD4"];
 
 // --- 3. COMPONENTS ---
 const StatWidget = ({ item }) => (
@@ -226,7 +219,6 @@ const DashBoard = () => {
     }
   };
 
- 
   const fetchDailyData = async (monthKey, monthName) => {
     setBarGraphLoading(true);
     setChartTitle(`Daily Paid/UnPaid for ${monthName} ${selectedYear}`);
@@ -259,7 +251,6 @@ const DashBoard = () => {
     }
   };
 
- 
   const fetchPieChartData = async () => {
     setPieChartLoading(true);
     try {
@@ -337,12 +328,10 @@ const DashBoard = () => {
   const fetchMonthlyTargets = async () => {
     setLoadingTargets(true);
     try {
-     
       const response = await fetch(`${API_DOMAIN}/chit.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-         
         },
         body: JSON.stringify({
           get_chit_payment_report: "",
@@ -355,7 +344,7 @@ const DashBoard = () => {
           const percentageValue = parseFloat(item.percentage_paid || 0);
 
           return {
-            label: item.chit_type.toUpperCase(), 
+            label: item.chit_type.toUpperCase(),
             value: Math.min(100, Math.max(0, percentageValue)),
             color: PROGRESS_COLORS[index % PROGRESS_COLORS.length],
           };
@@ -363,7 +352,7 @@ const DashBoard = () => {
         setTargetData(mappedData);
       } else {
         console.error("Failed to fetch monthly targets:", result.head.msg);
-        setTargetData([]); 
+        setTargetData([]);
       }
     } catch (error) {
       console.error("Error fetching monthly targets:", error);
@@ -709,10 +698,9 @@ const DashBoard = () => {
           </Grid>
         </Grid>
 
-        
         <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
-           <Card sx={{ height: "100%", boxShadow: 3, borderRadius: 1 }}>
+            <Card sx={{ height: "100%", boxShadow: 3, borderRadius: 1 }}>
               <CardHeader
                 title="Recent Transactions"
                 subheader="Latest payments received"
@@ -757,7 +745,13 @@ const DashBoard = () => {
                             {row.customer}
                           </TableCell>
                           <TableCell>{row.plan}</TableCell>
-                          <TableCell>{row.date}</TableCell>
+                          <TableCell>
+                            {new Date(row.date).toLocaleDateString("en-US", {
+                              day: "2-digit", 
+                              month: "short", 
+                              year: "numeric", 
+                            })}
+                          </TableCell>
                           <TableCell
                             sx={{ color: "green", fontWeight: "bold" }}
                           >
@@ -783,7 +777,7 @@ const DashBoard = () => {
           <Grid item xs={12} md={4}>
             <Card sx={{ height: "100%", boxShadow: 3, borderRadius: 1 }}>
               <CardHeader
-                title="Monthly Targets"
+                title="Monthly Collection"
                 subheader="Collection progress"
                 sx={{ borderBottom: "1px solid #eee" }}
               />
