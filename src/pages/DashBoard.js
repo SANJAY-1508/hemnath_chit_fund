@@ -16,6 +16,7 @@ import {
   TableRow,
   Chip,
   Button,
+  CircularProgress,
 } from "@mui/material";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import EmailIcon from "@mui/icons-material/Email";
@@ -70,94 +71,23 @@ const dashboardCountData = [
   },
 ];
 
-//STATIC DATA
-const monthlyData = [
-  { name: "Jul", Collected: 4000, Paid: 2400 },
-  { name: "Aug", Collected: 3000, Paid: 1398 },
-  { name: "Sep", Collected: 2000, Paid: 5800 },
-  { name: "Oct", Collected: 2780, Paid: 3908 },
-  { name: "Nov", Collected: 5890, Paid: 4800 },
-  { name: "Dec", Collected: 6390, Paid: 3800 },
+const PIE_CHART_COLORS = [
+  "#0088FE", // Blue
+  "#00C49F", // Green
+  "#FFBB28", // Yellow
+  "#FF8042", // Orange
+  "#AF19FF", // Purple
+  "#FF0054", // Red
 ];
 
-const pieChartData = [
-  { name: "Savings", value: 400 },
-  { name: "Diwali", value: 300 },
-  { name: "Furniture", value: 300 },
-  { name: "Kulukkal", value: 200 },
-];
-const PIE_COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
-
-const transactionData = [
-  {
-    id: 1,
-    customer: "Madhu",
-    plan: "Savings Chit",
-    date: "20-Nov-2025",
-    amount: "₹5,000",
-    status: "Paid",
-    color: "success",
-  },
-  {
-    id: 2,
-    customer: "Thanu",
-    plan: "Diwali Chit",
-    date: "21-Nov-2025",
-    amount: "₹2,500",
-    status: "Pending",
-    color: "warning",
-  },
-  {
-    id: 3,
-    customer: "Mariya",
-    plan: "Furniture Chit",
-    date: "21-Nov-2025",
-    amount: "₹10,000",
-    status: "Paid",
-    color: "success",
-  },
-  {
-    id: 4,
-    customer: "Siva",
-    plan: "Kulukkal Chit",
-    date: "19-Nov-2025",
-    amount: "₹1,000",
-    status: "Overdue",
-    color: "error",
-  },
-  {
-    id: 5,
-    customer: "Rajesh",
-    plan: "Savings Chit",
-    date: "18-Nov-2025",
-    amount: "₹5,000",
-    status: "Paid",
-    color: "success",
-  },
+const PROGRESS_COLORS = [
+  "#2196F3", 
+  "#4CAF50", 
+  "#FF9800", 
+  "#E91E63", 
+  "#00BCD4", 
 ];
 
-const targetData = [
-  { label: "Savings Chit Goal", value: 85, color: "#00BCD4" },
-  { label: "Diwali Collection", value: 45, color: "#E91E63" },
-  { label: "Furniture Plan", value: 62, color: "#8BC34A" },
-  { label: "Pending Clearance", value: 28, color: "#FF9800" },
-];
-
-// --- 2. HELPER TO GENERATE DAILY DATA ---
-const generateDailyData = (month) => {
-  const days = [];
-  // Generate 31 days of random "jaggery" data to look like the reference image
-  for (let i = 1; i <= 31; i++) {
-    days.push({
-      name: `2025-${month === "Jul" ? "07" : month === "Aug" ? "08" : "12"}-${
-        i < 10 ? "0" + i : i
-      }`, // Format YYYY-MM-DD
-      Collected: Math.floor(Math.random() * 3000) + 1000,
-      Paid: Math.floor(Math.random() * 2000) + 500,
-    });
-  }
-  return days;
-};
 
 // --- 3. COMPONENTS ---
 const StatWidget = ({ item }) => (
@@ -216,9 +146,18 @@ const DashBoard = () => {
   const [selectedMonthKey, setSelectedMonthKey] = useState("");
   const [selectedYear, setSelectedYear] = useState(currentFullYear);
   const [chartTitle, setChartTitle] = useState("Monthly Payment Summary");
-  const user = JSON.parse(localStorage.getItem("user")) || {};
+  const [pieChartData, setPieChartData] = useState([]);
+  const [pieChartLoading, setPieChartLoading] = useState(false);
+  const coloredPieChartData = pieChartData.map((dataItem, index) => ({
+    ...dataItem,
+    color: PIE_CHART_COLORS[index % PIE_CHART_COLORS.length],
+  }));
+  const [transactionData, setTransactionData] = useState([]);
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
+  const [targetData, setTargetData] = useState([]);
+  const [loadingTargets, setLoadingTargets] = useState(false);
 
-  //FETCH COUNT
+  //FFunction calling
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
@@ -287,7 +226,7 @@ const DashBoard = () => {
     }
   };
 
-  // Function to fetch daily data for a specific month
+ 
   const fetchDailyData = async (monthKey, monthName) => {
     setBarGraphLoading(true);
     setChartTitle(`Daily Paid/UnPaid for ${monthName} ${selectedYear}`);
@@ -320,12 +259,129 @@ const DashBoard = () => {
     }
   };
 
+ 
+  const fetchPieChartData = async () => {
+    setPieChartLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/chit.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // ⭐ The required payload
+        body: JSON.stringify({
+          get_chit_distribution: "",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch chit distribution data");
+      }
+
+      const result = await response.json();
+
+      if (result.head.code === 200) {
+        const filteredData = result.data.filter((item) => item.count > 0);
+        setPieChartData(filteredData);
+      } else {
+        console.error("API Error (Chit Distribution):", result.head.msg);
+        setPieChartData([]);
+      }
+    } catch (error) {
+      console.error("Error fetching chit distribution data:", error);
+      setPieChartData([]);
+    } finally {
+      setPieChartLoading(false);
+    }
+  };
+  const fetchRecentTransactions = async () => {
+    setLoadingTransactions(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/chit.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          get_recent_paid: "",
+        }),
+      });
+      const result = await response.json();
+
+      if (result.head.code === 200 && result.data) {
+        const mappedData = result.data.map((item, index) => {
+          const datePart = item.paid_at ? item.paid_at.split(" ")[0] : "N/A";
+
+          return {
+            id: item.chit_service_id,
+            row_no: index + 1, // Use index + 1 for the '#' column
+            customer: item.name,
+            plan: item.chit_type,
+            date: datePart,
+            amount: `₹${item.paid_amt.toLocaleString("en-IN")}`,
+            status: item.payment_status.toUpperCase(), // Display status in CAPS
+            color: item.payment_status === "paid" ? "success" : "default",
+          };
+        });
+        setTransactionData(mappedData);
+      } else {
+        console.error("Failed to fetch recent transactions:", result.head.msg);
+      }
+    } catch (error) {
+      console.error("Error fetching recent transactions:", error);
+    } finally {
+      setLoadingTransactions(false);
+    }
+  };
+
+  const fetchMonthlyTargets = async () => {
+    setLoadingTargets(true);
+    try {
+     
+      const response = await fetch(`${API_DOMAIN}/chit.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+         
+        },
+        body: JSON.stringify({
+          get_chit_payment_report: "",
+        }),
+      });
+      const result = await response.json();
+
+      if (result.head.code === 200 && result.data) {
+        const mappedData = result.data.map((item, index) => {
+          const percentageValue = parseFloat(item.percentage_paid || 0);
+
+          return {
+            label: item.chit_type.toUpperCase(), 
+            value: Math.min(100, Math.max(0, percentageValue)),
+            color: PROGRESS_COLORS[index % PROGRESS_COLORS.length],
+          };
+        });
+        setTargetData(mappedData);
+      } else {
+        console.error("Failed to fetch monthly targets:", result.head.msg);
+        setTargetData([]); 
+      }
+    } catch (error) {
+      console.error("Error fetching monthly targets:", error);
+      setTargetData([]);
+    } finally {
+      setLoadingTargets(false);
+    }
+  };
+
   useEffect(() => {
     fetchBarGraphData(selectedYear);
   }, [selectedYear]); //
 
   useEffect(() => {
     fetchDashboardData();
+    fetchPieChartData();
+    fetchRecentTransactions();
+    fetchMonthlyTargets();
   }, []);
 
   // Handle click on Bar
@@ -340,6 +396,46 @@ const DashBoard = () => {
     setView("monthly");
     setChartTitle("Monthly Payment Summary");
     await fetchBarGraphData(selectedYear);
+  };
+
+  // ⭐ CUSTOM TOOLTIP RENDER FUNCTION
+  const renderPieCustomTooltip = ({ active, payload }) => {
+    console.log(payload);
+    if (active && payload && payload.length) {
+      const sliceColor = payload[0].color;
+      const data = payload[0].payload;
+
+      return (
+        <Box
+          sx={{
+            padding: "8px 12px",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            boxShadow: "0 3px 6px rgba(0,0,0,0.1)",
+          }}
+        >
+          <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+            {data.chit_type}
+          </Typography>
+
+          <Typography variant="body2" sx={{ color: sliceColor }}>
+            Count:{" "}
+            <Box component="span" sx={{ fontWeight: "bold" }}>
+              {data.count}
+            </Box>
+          </Typography>
+
+          <Typography variant="body2" sx={{ color: sliceColor }}>
+            Percentage:{" "}
+            <Box component="span" sx={{ fontWeight: "bold" }}>
+              {data.percentage}%
+            </Box>
+          </Typography>
+        </Box>
+      );
+    }
+    return null;
   };
 
   return (
@@ -366,7 +462,6 @@ const DashBoard = () => {
         </Grid>
 
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          {/* LEFT CHART: SWITCHES BETWEEN BAR (Monthly) AND AREA (Daily) */}
           <Grid item xs={12} md={8}>
             <Card sx={{ height: 400, boxShadow: 3, borderRadius: 1, p: 2 }}>
               <Box
@@ -547,43 +642,77 @@ const DashBoard = () => {
               )}
             </Card>
           </Grid>
+
           <Grid item xs={12} md={4}>
             <Card sx={{ height: 400, boxShadow: 3, borderRadius: 1, p: 2 }}>
               <CardHeader
-                title="Chit Distribution"
-                subheader="Active Customers by Plan"
+                title="Chit Type Distribution"
+                subheader="Total chits by type"
+                sx={{ borderBottom: "1px solid #eee" }}
               />
-              <ResponsiveContainer width="100%" height="85%">
-                <PieChart>
-                  <Pie
-                    data={pieChartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    fill="#8884d8"
-                    paddingAngle={5}
-                    dataKey="value"
+              <CardContent
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: 300,
+                }}
+              >
+                {pieChartLoading ? (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: "100%",
+                    }}
                   >
-                    {pieChartData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={PIE_COLORS[index % PIE_COLORS.length]}
+                    <CircularProgress />
+                    <Typography variant="caption" sx={{ mt: 2 }}>
+                      Loading Distribution...
+                    </Typography>
+                  </Box>
+                ) : pieChartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={coloredPieChartData}
+                        dataKey="count"
+                        nameKey="chit_type"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        labelLine={false}
+                      >
+                        {coloredPieChartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip content={renderPieCustomTooltip} />
+                      <Legend
+                        layout="horizontal"
+                        verticalAlign="bottom"
+                        align="center"
+                        wrapperStyle={{ paddingTop: "10px" }}
                       />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend verticalAlign="bottom" height={36} />
-                </PieChart>
-              </ResponsiveContainer>
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  // ⭐ SHOW EMPTY STATE
+                  <Typography variant="body1" color="text.secondary">
+                    No chit distribution data available.
+                  </Typography>
+                )}
+              </CardContent>
             </Card>
           </Grid>
         </Grid>
 
-        {/* BOTTOM SECTION (Table & Progress) - Kept same as before */}
+        
         <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
-            <Card sx={{ boxShadow: 3, borderRadius: 1 }}>
+           <Card sx={{ height: "100%", boxShadow: 3, borderRadius: 1 }}>
               <CardHeader
                 title="Recent Transactions"
                 subheader="Latest payments received"
@@ -602,31 +731,55 @@ const DashBoard = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {transactionData.map((row) => (
-                      <TableRow key={row.id} hover>
-                        <TableCell>{row.id}</TableCell>
-                        <TableCell sx={{ fontWeight: "bold" }}>
-                          {row.customer}
-                        </TableCell>
-                        <TableCell>{row.plan}</TableCell>
-                        <TableCell>{row.date}</TableCell>
-                        <TableCell sx={{ color: "green" }}>
-                          {row.amount}
-                        </TableCell>
-                        <TableCell>
-                          <Chip
-                            label={row.status}
-                            color={row.color}
-                            size="small"
-                          />
+                    {loadingTransactions ? (
+                      <TableRow>
+                        <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
+                          <CircularProgress size={20} />
+                          <Typography variant="body2" sx={{ ml: 2 }}>
+                            Loading transactions...
+                          </Typography>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    ) : transactionData.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
+                          <Typography variant="body2" color="textSecondary">
+                            No recent transactions found.
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      // ⭐ Map the dynamic transactionData
+                      transactionData.map((row) => (
+                        <TableRow key={row.id} hover>
+                          <TableCell>{row.row_no}</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            {row.customer}
+                          </TableCell>
+                          <TableCell>{row.plan}</TableCell>
+                          <TableCell>{row.date}</TableCell>
+                          <TableCell
+                            sx={{ color: "green", fontWeight: "bold" }}
+                          >
+                            {row.amount}
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              label={row.status}
+                              // ⭐ The color is now dynamic based on 'payment_status'
+                              color={row.color}
+                              size="small"
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
             </Card>
           </Grid>
+
           <Grid item xs={12} md={4}>
             <Card sx={{ height: "100%", boxShadow: 3, borderRadius: 1 }}>
               <CardHeader
@@ -635,34 +788,73 @@ const DashBoard = () => {
                 sx={{ borderBottom: "1px solid #eee" }}
               />
               <CardContent>
-                {targetData.map((item, index) => (
-                  <Box key={index} sx={{ mb: 4 }}>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        mb: 1,
-                      }}
-                    >
-                      <Typography variant="body2">{item.label}</Typography>
-                      <Typography variant="body2" color={item.color}>
-                        {item.value}%
-                      </Typography>
-                    </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={item.value}
-                      sx={{
-                        height: 10,
-                        borderRadius: 5,
-                        bgcolor: "#f0f0f0",
-                        "& .MuiLinearProgress-bar": {
-                          backgroundColor: item.color,
-                        },
-                      }}
-                    />
+                {loadingTargets ? (
+                  // ⭐ Loading State
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: 200,
+                    }}
+                  >
+                    <CircularProgress size={24} />
+                    <Typography variant="body2" sx={{ ml: 2 }}>
+                      Loading targets...
+                    </Typography>
                   </Box>
-                ))}
+                ) : targetData.length === 0 ? (
+                  // ⭐ Empty State
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: 200,
+                    }}
+                  >
+                    <Typography variant="body2" color="textSecondary">
+                      No targets data available for the month.
+                    </Typography>
+                  </Box>
+                ) : (
+                  // ⭐ Dynamic Content Mapping
+                  targetData.map((item, index) => (
+                    <Box key={index} sx={{ mb: 4 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                          {item.label}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: item.color, fontWeight: "bold" }}
+                        >
+                          {item.value}%
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate"
+                        // ⭐ Use the dynamic value
+                        value={item.value}
+                        sx={{
+                          height: 10,
+                          borderRadius: 5,
+                          bgcolor: "#f0f0f0",
+                          "& .MuiLinearProgress-bar": {
+                            // ⭐ Use the dynamic color
+                            backgroundColor: item.color,
+                          },
+                        }}
+                      />
+                    </Box>
+                  ))
+                )}
               </CardContent>
             </Card>
           </Grid>
