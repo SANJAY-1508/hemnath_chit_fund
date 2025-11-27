@@ -35,7 +35,6 @@ const ChitCreation = () => {
       : {
           chit_type_id: "",
           customer_id: "",
-          chit_no: "",
           chit_due_amount: "1000",
           emi_method: "Weekly",
         };
@@ -188,7 +187,6 @@ const ChitCreation = () => {
       customer_id: formData.customer_id,
       chit_type_id: formData.chit_type,
       chit_type: chitTypeName,
-      chit_no: formData.chit_no,
       chit_due_amount: formData.chit_due_amount,
       emi_method: formData.emi_method,
       current_user_id: user.user_id,
@@ -319,69 +317,6 @@ const ChitCreation = () => {
     }
   };
 
-  const fetchNextChitNo = async (customerId, chitTypeId) => {
-    console.log("Customer ID:", customerId);
-    console.log("Chit Type ID:", chitTypeId);
-    if (!customerId || !chitTypeId) {
-      setFormData((prevData) => ({ ...prevData, chit_no: "" }));
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_DOMAIN}/chit.php`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ search_text: "" }),
-      });
-
-      const responseData = await response.json();
-      console.log("Fetch Response Data for COUNT:", responseData);
-      if (responseData.head.code !== 200 && responseData.head.code !== 404) {
-        console.error(
-          "Critical API error fetching chits:",
-          responseData.head.msg
-        );
-        setFormData((prevData) => ({ ...prevData, chit_no: "Fetch Error" }));
-        return;
-      }
-      const existingChits = responseData?.data?.all;
-      const chitsArray = Array.isArray(existingChits) ? existingChits : [];
-      const allChits = chitsArray;
-      // const chitsOfCurrentCustomer = chitsArray.filter(
-      //   (chit) => String(chit.customer_id) === String(customerId)
-      // );
-      let maxNumber = 0;
-      const regex = /^CH(\d+)$/;
-
-      allChits.forEach((chit) => {
-        if (chit.chit_no) {
-          const match = String(chit.chit_no).match(regex);
-          if (match) {
-            const number = parseInt(match[1], 10);
-            if (number > maxNumber) {
-              maxNumber = number;
-            }
-          }
-        }
-      });
-
-      const nextNumber = maxNumber + 1;
-
-      const formattedNumber = String(nextNumber).padStart(3, "0");
-      const nextChitNo = `CH${formattedNumber}`;
-      setFormData((prevData) => ({
-        ...prevData,
-        chit_no: nextChitNo,
-      }));
-    } catch (error) {
-      console.error("Client-side Chit No. generation failed:", error.message);
-      setFormData((prevData) => ({
-        ...prevData,
-        chit_no: "Local Error",
-      }));
-    }
-  };
-
   //USEEFECT FUNCTION
   useEffect(() => {
     fetchDataCustomer();
@@ -395,18 +330,6 @@ const ChitCreation = () => {
       setDueRecords([]);
     }
   }, [type, rowData]);
-
-  useEffect(() => {
-    if (
-      type !== "edit" &&
-      formData.customer_id !== "" &&
-      formData.chit_type !== ""
-    ) {
-      fetchNextChitNo(formData.customer_id, formData.chit_type);
-    } else {
-      setFormData((prevData) => ({ ...prevData, chit_no: "" }));
-    }
-  }, [formData.customer_id, formData.chit_type, type]);
 
   useEffect(() => {
     console.log("Type:", type);
