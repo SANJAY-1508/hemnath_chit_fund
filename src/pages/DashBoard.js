@@ -188,12 +188,11 @@ const DashBoard = () => {
     setBarGraphLoading(true);
 
     try {
-      const response = await fetch(`${API_DOMAIN}/chit.php`, {
+      const response = await fetch(`${API_DOMAIN}/groupdata.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        // ⭐ CORRECT PAYLOAD with dynamic year
         body: JSON.stringify({
           get_monthly_data: true,
           year: year,
@@ -207,7 +206,6 @@ const DashBoard = () => {
       const result = await response.json();
 
       if (result.head.code === 200) {
-        // Data from the API is now dynamic and covers the selected year
         setChartData(result.data);
       } else {
         console.error("API Error:", result.head.msg);
@@ -227,7 +225,7 @@ const DashBoard = () => {
     setView("daily");
 
     try {
-      const response = await fetch(`${API_DOMAIN}/chit.php`, {
+      const response = await fetch(`${API_DOMAIN}/groupdata.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -256,7 +254,7 @@ const DashBoard = () => {
   const fetchPieChartData = async () => {
     setPieChartLoading(true);
     try {
-      const response = await fetch(`${API_DOMAIN}/chit.php`, {
+      const response = await fetch(`${API_DOMAIN}/groupdata.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -330,7 +328,7 @@ const DashBoard = () => {
   const fetchMonthlyTargets = async () => {
     setLoadingTargets(true);
     try {
-      const response = await fetch(`${API_DOMAIN}/chit.php`, {
+      const response = await fetch(`${API_DOMAIN}/groupdata.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
