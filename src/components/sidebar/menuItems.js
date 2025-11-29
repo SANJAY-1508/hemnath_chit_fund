@@ -29,8 +29,8 @@ const sidebarConfig = [
     icon: <FaCogs />,
     subMenu: [
       {
-        path: "/console/master/chittype",
-        text: "Chit Plan Type",
+        path: "/console/master/scheme",
+        text: "Scheme",
         icon: <MdCategory />,
       },
       {

@@ -12,9 +12,9 @@ import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdOutlineDelete } from "react-icons/md";
 
-const ChitType = () => {
-  const { t,cacheVersion} = useLanguage();
-  
+const Scheme = () => {
+  const { t, cacheVersion } = useLanguage();
+
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const [chitData, setChitData] = useState([]);
@@ -22,29 +22,31 @@ const ChitType = () => {
 
   // 1. Handlers for Edit and Delete Actions
   const handleEditClick = (rowData) => {
-    navigate("/console/master/chittype/create", {
+    console.log("Edit Group ID:", rowData.id);
+    navigate("/console/master/scheme/create", {
       state: {
         type: "edit",
         rowData: rowData,
       },
     });
   };
-  const handleDeleteClick = async (chitId) => {
-    console.log("Delete Group ID:", chitId);
+  const handleDeleteClick = async (schemeId) => {
+    console.log("Delete Group ID:", schemeId);
     setLoading(true);
     try {
-      const response = await fetch(`${API_DOMAIN}/chittype.php`, {
+      const response = await fetch(`${API_DOMAIN}/scheme_api.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          delete_chit_type_id: chitId,
+          action: "delete",
+          id: schemeId,
         }),
       });
       const responseData = await response.json();
       if (responseData.head.code === 200) {
-        navigate("/console/master/chittype");
+        navigate("/console/master/scheme");
         window.location.reload();
         //setLoading(false);
       } else {
@@ -62,46 +64,46 @@ const ChitType = () => {
 
   // 2. Data Fetching Logic (Unchanged)
   useEffect(() => {
-     const fetchData = async () => {
-       console.log("Fetching data with search text:", searchText);
-       setLoading(true);
-       try {
-         const response = await fetch(`${API_DOMAIN}/chittype.php`, {
-           method: "POST",
-           headers: {
-             "Content-Type": "application/json",
-           },
-           body: JSON.stringify({
-             search_text: searchText,
-           }),
-         });
-      console.log(response);
-         const responseData = await response.json();
-         console.log(responseData);
- 
-         if (responseData.head.code === 200) {
-           setChitData(
-             Array.isArray(responseData.body.chit_type)
-               ? responseData.body.chit_type
-               : [responseData.body.chit_type]
-           );
-           setLoading(false);
-         } else {
-           throw new Error(responseData.head.msg);
-         }
-       } catch (error) {
-         setLoading(false);
-         console.error("Error fetching data:", error.message);
-       }
-     };
- 
-     fetchData();
-   }, [searchText]);
-  
+    const fetchData = async () => {
+      console.log("Fetching data with search text:", searchText);
+      setLoading(true);
+      try {
+        const response = await fetch(`${API_DOMAIN}/scheme_api.php`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "list",
+          }),
+        });
+        console.log(response);
+        const responseData = await response.json();
+        console.log(responseData);
+
+        if (responseData.head.code === 200) {
+          setChitData(
+            Array.isArray(responseData.body.schemes)
+              ? responseData.body.schemes
+              : [responseData.body.schemes]
+          );
+          setLoading(false);
+        } else {
+          throw new Error(responseData.head.msg);
+        }
+      } catch (error) {
+        setLoading(false);
+        console.error("Error fetching data:", error.message);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   // 3. Define Material React Table Columns (Using t() for headers and tooltips)
   const columns = useMemo(
     () => [
-     {
+      {
         accessorKey: "s_no_key", // Add a unique, stable accessorKey
         header: t("S.No"),
         size: 50,
@@ -109,11 +111,36 @@ const ChitType = () => {
         Cell: ({ row }) => row.index + 1,
       },
       {
-        accessorKey: "chit_type",
-        header: t("Chit Type"),
+        accessorKey: "scheme_name",
+        header: t("Scheme Name"),
         size: 50,
       },
-      
+      {
+        accessorKey: "duration",
+        header: t("Duration"),
+        size: 50,
+      },
+      {
+        accessorKey: "duration_unit",
+        header: t("Duration Unit"),
+        size: 50,
+      },
+      {
+        accessorKey: "schemet_due_amount",
+        header: t("Due Amount"),
+        size: 50,
+      },
+      {
+        accessorKey: "scheme_bonus",
+        header: t("Bonus Amount"),
+        size: 50,
+      },
+      {
+        accessorKey: "scheme_maturtiy_amount",
+        header: t("Maturity Amount"),
+        size: 50,
+      },
+
       {
         id: "action",
         header: t("Action"),
@@ -137,12 +164,9 @@ const ChitType = () => {
               </IconButton>
             </Tooltip>
 
-         
             <Tooltip title={t("Delete")}>
               <IconButton
-                onClick={() =>
-                  handleDeleteClick(row.original.chit_type_id)
-                }
+                onClick={() => handleDeleteClick(row.original.id)}
                 sx={{ color: "#dc3545", padding: 0 }}
               >
                 <MdOutlineDelete />
@@ -152,7 +176,7 @@ const ChitType = () => {
         ),
       },
     ],
-    [t,cacheVersion] 
+    [t, cacheVersion]
   );
 
   // 4. Update JSX to render MaterialReactTable (Using t() for display strings)
@@ -162,19 +186,16 @@ const ChitType = () => {
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">{t("Chit Type")}</span>
+              <span class="nav-list">{t("Scheme")}</span>
             </div>
           </Col>
           <Col lg="5" md="6" xs="6" className="align-self-center text-end">
-            {isAdmin &&(
-            <ClickButton
-              label={<>{t("Add Chit Type")}</>}
-              onClick={() => navigate("/console/master/chittype/create")}
-            >
-              
-            </ClickButton>
-              )}
-            
+            {isAdmin && (
+              <ClickButton
+                label={<>{t("Add Scheme")}</>}
+                onClick={() => navigate("/console/master/scheme/create")}
+              ></ClickButton>
+            )}
           </Col>
           {/* ... (Search Bar remains the same) ... */}
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
@@ -221,4 +242,4 @@ const ChitType = () => {
   );
 };
 
-export default ChitType;
+export default Scheme;

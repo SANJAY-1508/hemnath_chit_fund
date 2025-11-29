@@ -8,8 +8,8 @@ import Company from "../pages/company/Company";
 import Customer from "../pages/customer/Customer";
 import CustomerCreations from "../pages/customer/CustomerCreations";
 import CustomerDetails from "../pages/customer/CustomerDetails";
-import ChitType from "../pages/chittype/chittype";
-import ChitTypeCreation from "../pages/chittype/chittypeCreation";
+import ChitType from "../pages/scheme/scheme";
+import ChitTypeCreation from "../pages/scheme/schemeCreation";
 import Chit from "../pages/chit/chit";
 import ChitCreation from "../pages/chit/chitCreation";
 import CustomerBankDetails from "../pages/customer/CustomerBankDetails";
@@ -28,8 +28,8 @@ const routes = [
   { path: "/console/master/customer/create", element: <CustomerCreations /> },
   { path: "/console/master/customer", element: <Customer /> },
   { path: "/console/master/customerdetails", element: <CustomerDetails /> },
-  { path: "/console/master/chittype", element: <ChitType /> },
-  { path: "/console/master/chittype/create", element: <ChitTypeCreation /> },
+  { path: "/console/master/scheme", element: <ChitType /> },
+  { path: "/console/master/scheme/create", element: <ChitTypeCreation /> },
   { path: "/console/master/chit", element: <Chit /> },
   { path: "/console/master/chit/create", element: <ChitCreation /> },
 

@@ -91,7 +91,7 @@ const Customer = () => {
   const fetchDataCustomer = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_DOMAIN}/customer.php`, {
+      const response = await fetch(`${API_DOMAIN}/customer_login.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -24,66 +24,70 @@ const CustomerCreations = () => {
           ...rowData,
         }
       : {
-          name: "",
-          phone: "",
-          address: "",
-          place: "",
-          img: "",
-          proof_img: "",
+          customer_name: "",
+          mobile_number: "",
+          email_id: "",
+          password: "",
+          // name: "",
+          // phone: "",
+          // address: "",
+          // place: "",
+          // img: "",
+          // proof_img: "",
         };
 
   const [formData, setFormData] = useState(initialState);
   console.log("data", formData);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (type !== "edit" && type !== "view") {
-      const fetchCustomers = async () => {
-        try {
-          const response = await fetch(`${API_DOMAIN}/customer.php`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ search_text: "" }),
-          });
-          const responseData = await response.json();
-          if (responseData.head.code === 200) {
-            const customers = responseData.body.customer || [];
-            const maxCustomerNo =
-              customers
-                .map((customer) => {
-                  const numericPart = customer.customer_no.startsWith("C")
-                    ? customer.customer_no.slice(1)
-                    : customer.customer_no;
-                  return parseInt(numericPart, 10);
-                })
-                .filter((num) => !isNaN(num))
-                .sort((a, b) => b - a)[0] || 0;
-            const nextCustomerNo =
-              "C" + (maxCustomerNo + 1).toString().padStart(4, "0");
-            setFormData((prev) => ({
-              ...prev,
-              customer_no: nextCustomerNo,
-            }));
-          } else {
-            console.error("Failed to fetch customers:", responseData.head.msg);
-            setFormData((prev) => ({
-              ...prev,
-              customer_no: "C0001",
-            }));
-          }
-        } catch (error) {
-          console.error("Error fetching customers:", error);
-          setFormData((prev) => ({
-            ...prev,
-            customer_no: "C0001",
-          }));
-        }
-      };
-      fetchCustomers();
-    }
-  }, [type]);
+  // useEffect(() => {
+  //   if (type !== "edit" && type !== "view") {
+  //     const fetchCustomers = async () => {
+  //       try {
+  //         const response = await fetch(`${API_DOMAIN}/customer_.php`, {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({ search_text: "" }),
+  //         });
+  //         const responseData = await response.json();
+  //         if (responseData.head.code === 200) {
+  //           const customers = responseData.body.customer || [];
+  //           const maxCustomerNo =
+  //             customers
+  //               .map((customer) => {
+  //                 const numericPart = customer.customer_no.startsWith("C")
+  //                   ? customer.customer_no.slice(1)
+  //                   : customer.customer_no;
+  //                 return parseInt(numericPart, 10);
+  //               })
+  //               .filter((num) => !isNaN(num))
+  //               .sort((a, b) => b - a)[0] || 0;
+  //           const nextCustomerNo =
+  //             "C" + (maxCustomerNo + 1).toString().padStart(4, "0");
+  //           setFormData((prev) => ({
+  //             ...prev,
+  //             customer_no: nextCustomerNo,
+  //           }));
+  //         } else {
+  //           console.error("Failed to fetch customers:", responseData.head.msg);
+  //           setFormData((prev) => ({
+  //             ...prev,
+  //             customer_no: "C0001",
+  //           }));
+  //         }
+  //       } catch (error) {
+  //         console.error("Error fetching customers:", error);
+  //         setFormData((prev) => ({
+  //           ...prev,
+  //           customer_no: "C0001",
+  //         }));
+  //       }
+  //     };
+  //     fetchCustomers();
+  //   }
+  // }, [type]);
 
   const handleChange = (e, fieldName) => {
     const value = e.target ? e.target.value : e.value;
@@ -130,14 +134,14 @@ const CustomerCreations = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch(`${API_DOMAIN}/customer.php`, {
+      const response = await fetch(`${API_DOMAIN}/customer_signup.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           ...formData,
-          current_user_id: user.user_id,
+          action: "signup",
         }),
       });
       console.log("formdata", formData);
@@ -198,7 +202,7 @@ const CustomerCreations = () => {
 
     try {
       console.log("123");
-      const response = await fetch(`${API_DOMAIN}/customer.php`, {
+      const response = await fetch(`${API_DOMAIN}/customer_signup.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -292,29 +296,38 @@ const CustomerCreations = () => {
             <TextInputForm
               placeholder={t("Name")}
               labelname={t("Customer Name")}
-              name="name"
-              value={formData.name}
-              onChange={(e) => handleChange(e, "name")}
+              name="customer_name"
+              value={formData.customer_name}
+              onChange={(e) => handleChange(e, "customer_name")}
             />
           </Col>
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
               placeholder={t("Mobile Number")}
               labelname={t("Mobile Number")}
-              name="phone"
-              value={formData.phone}
-              onChange={(e) => handleChange(e, "phone")}
+              name="mobile_number"
+              value={formData.mobile_number}
+              onChange={(e) => handleChange(e, "mobile_number")}
             />
           </Col>
 
           <Col lg="3" md="4" xs="12" className="py-3">
             <TextInputForm
-              placeholder={t("Place")}
-              labelname={t("Place")}
-              name="place"
-              value={formData.place}
-              onChange={(e) => handleChange(e, "place")}
-              onBlur={handlePlaceBlur}
+              placeholder={t("Password")}
+              labelname={t("Password")}
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={(e) => handleChange(e, "password")}
+            />
+          </Col>
+          <Col lg="3" md="4" xs="12" className="py-3">
+            <TextInputForm
+              placeholder={t("Email ID")}
+              labelname={t("Email ID")}
+              name="email_id"
+              value={formData.email_id}
+              onChange={(e) => handleChange(e, "email_id")}
             />
           </Col>
           {/* <Col lg="4" md="12" xs="12" className="py-3">
@@ -332,17 +345,7 @@ const CustomerCreations = () => {
               }}
             />
           </Col> */}
-          <Col lg="3" md="4" xs="12" className="py-4">
-            <label htmlFor="address">{t("Address")}</label>
-            <textarea
-              id="address"
-              className="form-cntrl-bt w-100"
-              placeholder={t("Address")}
-              name="address"
-              value={formData.address}
-              onChange={(e) => handleChange(e, "address")}
-            />
-          </Col>
+
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div className="text-center">
               {type === "view" ? (
