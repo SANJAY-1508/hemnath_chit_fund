@@ -258,16 +258,16 @@ const CompanyCreation = () => {
           <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
-                placeholder={t("License number")} // ✅
-                labelname={t("License number")} // ✅
+                placeholder={t("GST")} // ✅
+                labelname={t("GST")} // ✅
                 name="gst"
                 value={formData.gst}
                 onChange={(e) => handleChange(e, "gst")}
               ></TextInputForm>
             ) : (
               <TextInputForm
-                placeholder={t("License number")} // ✅
-                labelname={t("License number")} // ✅
+                placeholder={t("GST")} // ✅
+                labelname={t("GST")} // ✅
                 name="gst"
                 value={type === "view" ? rowData.gst : formData.gst}
                 onChange={(e) => handleChange(e, "gst")}
@@ -315,38 +315,7 @@ const CompanyCreation = () => {
             )}
           </Col>
 
-          <Col lg="12" className="py-3">
-            <h5>{t("Jewel Price Details")}</h5> {/* ✅ */}
-          </Col>
-
-          {priceFields.map((field) => (
-            <Col lg="3" md="6" xs="12" key={field.key} className="py-3">
-              {type === "view" ? (
-                <TextInputForm
-                  placeholder={t(field.placeholder)} // ✅
-                  labelname={t(field.label)} // ✅
-                  name={field.key}
-                  type="text"
-                  value={getParsedValue(field.key)}
-                  disabled={true}
-                />
-              ) : (
-                <TextInputForm
-                  placeholder={t(field.placeholder)} // ✅
-                  labelname={t(field.label)} // ✅
-                  name={field.key}
-                  type="text"
-                  value={formData[field.key]}
-                  onChange={
-                    field.key === "jewel_price"
-                      ? (e) => handleChange(e, field.key)
-                      : undefined
-                  }
-                  disabled={field.key !== "jewel_price"}
-                />
-              )}
-            </Col>
-          ))}
+        
 
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div className="text-center">
