@@ -22,6 +22,7 @@ const ChitCreation = () => {
   const { t } = useLanguage();
   const location = useLocation();
   const { type, rowData } = location.state || {};
+  console.log("type", type);
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const { chit_id, ...otherRowData } = rowData || {};
 
@@ -29,22 +30,25 @@ const ChitCreation = () => {
     type === "edit" || type === "view"
       ? {
           ...otherRowData,
-          chit_type: rowData?.chit_type_id || "",
-          customer_id: rowData?.customer_id || "",
+          // scheme_id: rowData.scheme_id,
+          // customer_id: rowData.customer_id,
+          // start_date: rowData.start_date,
         }
       : {
-          chit_type_id: "",
+          scheme_id: "",
           customer_id: "",
-          chit_due_amount: "1000",
-          emi_method: "Weekly",
+          start_date: "",
         };
 
   const [formData, setFormData] = useState(initialState);
+  console.log("formdata values", formData);
+  const [fromDate, setFromDate] = useState("");
   const [customerOptions, setCustomerOptions] = useState([]);
-  const [chitTypeOptions, setChitTypeOptions] = useState([]);
+  const [schemeOptions, setSchemeOptions] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedCustomerOption, setSelectedCustomerOption] = useState(null);
-  const [selectedChitTypeObject, setSelectedChitTypeObject] = useState(null);
+  const [selectedScheme, setSelectedScheme] = useState(null);
+  const [selectedSchemeOption, setSelectedSchemeOption] = useState(null);
   const [dueRecords, setDueRecords] = useState([]);
   const [error, setError] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -82,13 +86,16 @@ const ChitCreation = () => {
     }
   };
 
-  const handleChitTypeChange = (selectedOption) => {
+  const handleSchemeChange = (selectedOption) => {
     if (selectedOption) {
-      setFormData({ ...formData, chit_type: selectedOption.value });
-      setSelectedChitTypeObject(selectedOption);
+      console.log("selectedOption", selectedOption);
+      setFormData({ ...formData, scheme_id: selectedOption.value });
+      setSelectedScheme(selectedOption.fullData);
+      setSelectedSchemeOption(selectedOption);
     } else {
-      setFormData({ ...formData, chit_type: "" });
-      setSelectedChitTypeObject(null);
+      setFormData({ ...formData, scheme_id: "" });
+      setSelectedScheme(null);
+      setSelectedSchemeOption(null);
     }
   };
 
@@ -173,23 +180,12 @@ const ChitCreation = () => {
     }
   };
   const handleSubmit = async () => {
-    const selectedChitTypeOption = chitTypeOptions.find(
-      (opt) => opt.value === formData.chit_type
-    );
-    const chitTypeName = selectedChitTypeOption
-      ? selectedChitTypeOption.label
-      : "";
-
-    const customerDetailsString = `${selectedCustomer?.customer_no} - ${selectedCustomer?.name}`;
-
-    const payload = {
-      customer_details: customerDetailsString,
+  
+  const payload = {
+      action: "create_chit",
       customer_id: formData.customer_id,
-      chit_type_id: formData.chit_type,
-      chit_type: chitTypeName,
-      chit_due_amount: formData.chit_due_amount,
-      emi_method: formData.emi_method,
-      current_user_id: user.user_id,
+      scheme_id: formData.scheme_id,
+      start_date: fromDate,
     };
     try {
       setLoading(true);
@@ -236,18 +232,15 @@ const ChitCreation = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ search_text: "" }),
       });
-
       const responseData = await response.json();
-
+      console.log(responseData);
       if (responseData.head.code === 200) {
         const options = responseData.body.customer.map((cust) => ({
           value: cust.customer_id,
-          label: cust.name,
+          label: cust.customer_name,
           fullData: cust,
         }));
-
         setCustomerOptions(options);
-
         if (type === "edit" || (type === "view" && rowData?.customer_id)) {
           const preSelected = options.find(
             (opt) => opt.value === rowData.customer_id
@@ -263,31 +256,33 @@ const ChitCreation = () => {
     }
   };
 
-  const fetchChitType = async () => {
+  const fetchScheme = async () => {
     try {
-      const response = await fetch(`${API_DOMAIN}/chittype.php`, {
+      const response = await fetch(`${API_DOMAIN}/scheme_api.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ search_text: "" }),
+        body: JSON.stringify({ action: "list" }),
       });
 
       const responseData = await response.json();
 
       if (responseData.head.code === 200) {
-        const options = responseData.body.chit_type.map((item) => ({
-          value: item.chit_type_id,
-          label: item.chit_type,
+        const options = responseData.body.schemes.map((item) => ({
+          value: item.scheme_id,
+          label: item.scheme_name,
+           fullData: item,
         }));
 
-        setChitTypeOptions(options);
+        setSchemeOptions(options);
 
         // Pre-select logic
-        if (type === "edit" || (type === "view" && rowData?.chit_type_id)) {
+        if (type === "edit" || (type === "view" && rowData?.scheme_id)) {
           const preSelectedChitType = options.find(
-            (opt) => opt.value === rowData.chit_type_id
+            (opt) => opt.value === rowData.scheme_id
           );
           if (preSelectedChitType) {
-            setSelectedChitTypeObject(preSelectedChitType);
+             setSelectedScheme(preSelectedChitType.fullData);
+           setSelectedSchemeOption(preSelectedChitType);
           }
         }
       }
@@ -320,7 +315,7 @@ const ChitCreation = () => {
   //USEEFECT FUNCTION
   useEffect(() => {
     fetchDataCustomer();
-    fetchChitType();
+    fetchScheme();
   }, []);
 
   useEffect(() => {
@@ -356,6 +351,16 @@ const ChitCreation = () => {
             <PageNav pagetitle={`${t("Chit")}${userTitleSegment}`} />
           </Col>
 
+          <Col md="2" className="py-2">
+            <Form.Group controlId="fromDate">
+              <Form.Label className="mb-3">Start Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+              />
+            </Form.Group>
+          </Col>
           <Col lg="4" md="12" xs="12" className="py-3">
             <div className="mb-4">
               <label htmlFor="customer-select" className="mb-2">
@@ -403,7 +408,7 @@ const ChitCreation = () => {
                       Name:
                     </span>
                     <span style={{ fontSize: "0.9rem" }}>
-                      {selectedCustomer.name}
+                      {selectedCustomer.customer_name}
                     </span>
                   </div>
                   <div className="d-flex justify-content-between mb-3">
@@ -411,7 +416,7 @@ const ChitCreation = () => {
                       className="text-muted fw-bold"
                       style={{ fontSize: "0.9rem" }}
                     >
-                      Address:
+                      Email ID:
                     </span>
                     <span
                       style={{
@@ -420,21 +425,11 @@ const ChitCreation = () => {
                         maxWidth: "60%",
                       }}
                     >
-                      {selectedCustomer.address}
+                      {selectedCustomer.email_id}
                     </span>
                   </div>
+                 
                   <div className="d-flex justify-content-between mb-3">
-                    <span
-                      className="text-muted fw-bold"
-                      style={{ fontSize: "0.9rem" }}
-                    >
-                      Place:
-                    </span>
-                    <span style={{ fontSize: "0.9rem" }}>
-                      {selectedCustomer.place}
-                    </span>
-                  </div>
-                  <div className="d-flex justify-content-between">
                     <span
                       className="text-muted fw-bold"
                       style={{ fontSize: "0.9rem" }}
@@ -442,9 +437,20 @@ const ChitCreation = () => {
                       Mobile Number:
                     </span>
                     <span style={{ fontSize: "0.9rem" }}>
-                      {selectedCustomer.phone}
+                      {selectedCustomer.mobile_number}
                     </span>
                   </div>
+                   {/* <div className="d-flex justify-content-between mb-3">
+                    <span
+                      className="text-muted fw-bold"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                     Place:
+                    </span>
+                    <span style={{ fontSize: "0.9rem" }}>
+                      {selectedCustomer.place || "-"}
+                    </span>
+                  </div> */}
                 </Card.Body>
               </Card>
             )}
@@ -453,18 +459,114 @@ const ChitCreation = () => {
           <Col lg="4" md="12" xs="12" className="py-3">
             <div className="mb-4">
               <label htmlFor="chittype-select" className="mb-2">
-                {t("Chit Type")}
+                {t("Scheme Type")}
               </label>
               <Select
                 id="chittype-select"
-                placeholder={t("Select Chit Type")}
+                placeholder={t("Select Scheme Type")}
                 isSearchable={true}
-                options={chitTypeOptions}
-                onChange={handleChitTypeChange}
-                value={selectedChitTypeObject}
+                options={schemeOptions}
+                onChange={handleSchemeChange}
+                value={selectedSchemeOption}
                 isDisabled={type === "edit" || type === "view"}
               />
             </div>
+            {selectedScheme && (
+              <Card
+                className="shadow border-0"
+                style={{ borderRadius: "10px" }}
+              >
+                <Card.Body className="p-4">
+                  <h6
+                    className="text-center mb-4"
+                    style={{ fontWeight: "bold", color: "#333" }}
+                  >
+                    Scheme Information
+                  </h6>
+
+                  <div className="d-flex justify-content-between mb-3">
+                    <span
+                      className="text-muted fw-bold"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                      Scheme ID:
+                    </span>
+                    <span style={{ fontSize: "0.9rem" }}>
+                      {selectedScheme.scheme_id || "-"}
+                    </span>
+                  </div>
+                  <div className="d-flex justify-content-between mb-3">
+                    <span
+                      className="text-muted fw-bold"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                     Scheme Name:
+                    </span>
+                    <span style={{ fontSize: "0.9rem" }}>
+                      {selectedScheme.scheme_name}
+                    </span>
+                  </div>
+                  <div className="d-flex justify-content-between mb-3">
+                    <span
+                      className="text-muted fw-bold"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                     Duration:
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "0.9rem",
+                        textAlign: "right",
+                        maxWidth: "60%",
+                      }}
+                    >
+                      {selectedScheme.duration}
+                    </span>
+                  </div>
+                  <div className="d-flex justify-content-between mb-3">
+                    <span
+                      className="text-muted fw-bold"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                     Due Amount:
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "0.9rem",
+                        textAlign: "right",
+                        maxWidth: "60%",
+                      }}
+                    >
+                      {selectedScheme.schemet_due_amount}
+                    </span>
+                  </div>
+                 
+                  <div className="d-flex justify-content-between">
+                    <span
+                      className="text-muted fw-bold"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                     Bonus Amount:
+                    </span>
+                    <span style={{ fontSize: "0.9rem" }}>
+                      {selectedScheme.scheme_bonus}
+                    </span>
+                  </div>
+{/* 
+                   <div className="d-flex justify-content-between">
+                    <span
+                      className="text-muted fw-bold"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                      Maturity Amount:
+                    </span>
+                    <span style={{ fontSize: "0.9rem" }}>
+                      {selectedScheme.scheme_maturtiy_amount}
+                    </span>
+                  </div> */}
+                </Card.Body>
+              </Card>
+            )}
           </Col>
 
           {/* ⭐ 4. DUE PAYMENT TABLE (Only visible in edit mode with data) */}

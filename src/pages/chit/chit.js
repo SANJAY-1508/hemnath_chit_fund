@@ -9,8 +9,8 @@ import { ToastContainer, toast } from "react-toastify";
 import { MaterialReactTable } from "material-react-table";
 import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
-import { FiX } from 'react-icons/fi';
-import { FaEye } from 'react-icons/fa';
+import { FiX } from "react-icons/fi";
+import { FaEye } from "react-icons/fa";
 
 const Chit = () => {
   const { t, cacheVersion } = useLanguage();
@@ -38,7 +38,7 @@ const Chit = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          search_text: searchText,
+          action: "list_chits",
         }),
       });
 
@@ -47,7 +47,7 @@ const Chit = () => {
 
       if (responseData.head.code === 200) {
         setChitData(
-          Array.isArray(responseData.data.all) ? responseData.data.all : []
+          Array.isArray(responseData.body.chits) ? responseData.body.chits : []
         );
       } else {
         setChitData([]);
@@ -61,10 +61,9 @@ const Chit = () => {
 
   useEffect(() => {
     fetchData();
-  }, [searchText]);
+  }, []);
 
   const handleEditClick = async (rowData) => {
-  
     const chitId = rowData.chit_id;
     setLoading(true);
 
@@ -72,7 +71,7 @@ const Chit = () => {
       const response = await fetch(`${API_DOMAIN}/chit.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chit_id: chitId }),
+        body: JSON.stringify({ chit_id: chitId, action: "get_chit_details" }),
       });
 
       const responseData = await response.json();
@@ -80,10 +79,10 @@ const Chit = () => {
 
       if (
         responseData.head.code === 200 &&
-        responseData.data.chit &&
-        responseData.data.chit.length > 0
+        responseData.body.chit &&
+        responseData.body.chit.length > 0
       ) {
-        const detailedRowData = responseData.data.chit[0];
+        const detailedRowData = responseData.data.body[0];
 
         navigate("/console/master/chit/create", {
           state: {
@@ -119,11 +118,11 @@ const Chit = () => {
         responseData.data.chit.length > 0
       ) {
         const detailedRowData = responseData.data.chit[0];
-          console.log("Detailed Row Data:", detailedRowData);
+        console.log("Detailed Row Data:", detailedRowData);
         navigate("/console/master/chit/create", {
           state: {
             // ⭐ Navigate to 'view' type
-            type: "view", 
+            type: "view",
             rowData: detailedRowData,
           },
         });
@@ -143,11 +142,7 @@ const Chit = () => {
   };
 
   const handleSubmitClose = async () => {
-    if (!closeReason.trim()) {
-      toast.error(t("Please enter close reason"));
-      return;
-    }
-
+    console.log("Closing chit with ID:", selectedChitId);
     setLoading(true);
 
     try {
@@ -155,8 +150,8 @@ const Chit = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          chit_close_id: selectedChitId,
-          close_reason: closeReason,
+          action: "foreclose_chit",
+          chit_id: selectedChitId,
         }),
       });
 
@@ -167,6 +162,8 @@ const Chit = () => {
         setShowCloseModal(false);
         fetchData(); // REFRESH TABLE
       } else {
+        console.log("Showing Error Toast with message:", responseData.head.msg);
+        setShowCloseModal(false);
         toast.error(responseData.head.msg || t("Failed to close chit"));
       }
     } catch (error) {
@@ -184,18 +181,28 @@ const Chit = () => {
         size: 50,
       },
       {
-        accessorKey: "customer_no",
-        header: t("Customer No"),
+        accessorKey: "chit_id",
+        header: t("Chit ID"),
         size: 100,
       },
       {
-        accessorKey: "name",
-        header: t("Customer Name"),
+        accessorKey: "scheme_name",
+        header: t("Scheme Name"),
         size: 150,
       },
       {
-        accessorKey: "chit_type",
-        header: t("Chit Type"),
+        accessorKey: "schemet_due_amount",
+        header: t("Scheme Due Amount"),
+        size: 150,
+      },
+      {
+        accessorKey: "scheme_maturtiy_amount",
+        header: t("Scheme Maturity Amount"),
+        size: 150,
+      },
+      {
+        accessorKey: "total_paid_amount",
+        header: t("Total Paid Amount"),
         size: 150,
       },
       {
@@ -205,17 +212,18 @@ const Chit = () => {
         enableSorting: false,
         enableColumnFilter: false,
         Cell: ({ row }) => {
-         const isClosed = row.original.freeze_at === 1 || row.original.freeze_at === '1';
+          const isClosed =
+            row.original.freeze_at === 1 || row.original.freeze_at === "1";
 
           return (
             <Box sx={{ display: "flex", gap: "10px" }}>
               {isClosed ? (
                 <Tooltip title={t("View")}>
                   <IconButton
-                    onClick={() => handleViewClick(row.original)} 
+                    onClick={() => handleViewClick(row.original)}
                     sx={{ color: "#0d6efd", padding: 0 }}
                   >
-                    <FaEye /> 
+                    <FaEye />
                   </IconButton>
                 </Tooltip>
               ) : (
@@ -234,7 +242,7 @@ const Chit = () => {
                       onClick={() => handleCloseClick(row.original.chit_id)}
                       sx={{ color: "#dc3545", padding: 0 }}
                     >
-                      <FiX/>
+                      <FiX />
                     </IconButton>
                   </Tooltip>
                 </>

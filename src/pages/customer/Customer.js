@@ -91,7 +91,7 @@ const Customer = () => {
   const fetchDataCustomer = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_DOMAIN}/customer_login.php`, {
+      const response = await fetch(`${API_DOMAIN}/customer.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -138,18 +138,18 @@ const Customer = () => {
         size: 70,
       },
       {
-        accessorKey: "name",
+        accessorKey: "customer_name",
         header: t("Customer Name"),
         size: 70,
       },
       {
-        accessorKey: "phone",
+        accessorKey: "mobile_number",
         header: t("Mobile No"),
         size: 70,
       },
       {
-        accessorKey: "address",
-        header: t("Address"),
+        accessorKey: "email_id",
+        header: t("Email Id"),
         size: 70,
       },
       {
