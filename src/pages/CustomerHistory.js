@@ -34,7 +34,7 @@ const CustomerHistory = () => {
   const fetchCustomerhistory = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_DOMAIN}/groupdata.php`, {
+      const response = await fetch(`${API_DOMAIN}/customer_history.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ list_history: "" }),
