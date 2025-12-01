@@ -15,11 +15,9 @@ import { FaEye } from "react-icons/fa";
 const Chit = () => {
   const { t, cacheVersion } = useLanguage();
   const navigate = useNavigate();
-
   const [searchText, setSearchText] = useState("");
   const [chitData, setChitData] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [selectedChitId, setSelectedChitId] = useState(null);
   const [closeReason, setCloseReason] = useState("");
@@ -63,42 +61,48 @@ const Chit = () => {
     fetchData();
   }, []);
 
- const handleEditClick = async (rowData) => {
+  const handleEditClick = async (rowData) => {
+    console.log("Editing chit with ID:", rowData.chit_id);
     const chitId = rowData.chit_id;
     setLoading(true);
 
     try {
-        const response = await fetch(`${API_DOMAIN}/chit.php`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ chit_id: chitId, action: "get_chit_details" }),
+      const response = await fetch(`${API_DOMAIN}/chit.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chit_id: chitId, action: "get_chit_details" }),
+      });
+
+      const responseData = await response.json();
+      console.log("Response Data:", responseData);
+      setLoading(false);
+
+      if (
+        responseData.head.code === 200 &&
+        responseData.body &&
+        responseData.body.chit
+      ) {
+        const detailedRowData = responseData.body.chit;
+        const duesArray = responseData.body.dues || [];
+
+        console.log("Detailed Row Data (chit):", detailedRowData);
+        console.log("Dues Data:", duesArray);
+
+        navigate("/console/master/chit/create", {
+          state: {
+            type: "edit",
+            rowData: detailedRowData,
+            duesData: duesArray,
+          },
         });
-
-        const responseData = await response.json();
-        console.log("Response Data:", responseData);
-        setLoading(false);
-        if (
-            responseData.head.code === 200 &&
-            responseData.body &&
-            responseData.body.chit 
-        ) {
-            const detailedRowData = responseData.body.chit; 
-            console.log("Detailed Row Data:", detailedRowData);
-
-            navigate("/console/master/chit/create", {
-                state: {
-                    type: "edit",
-                    rowData: detailedRowData,
-                },
-            });
-        } else {
-            console.error("Failed to fetch chit details:", responseData.head.msg);
-        }
+      } else {
+        console.error("Failed to fetch chit details:", responseData.head.msg);
+      }
     } catch (error) {
-        setLoading(false);
-        console.error("Error editing chit:", error);
+      setLoading(false);
+      console.error("Error editing chit:", error);
     }
-};
+  };
   const handleViewClick = async (rowData) => {
     const chitId = rowData.chit_id;
     setLoading(true);
@@ -157,15 +161,24 @@ const Chit = () => {
       });
 
       const responseData = await response.json();
-
+      console.log("Response Data:", responseData);
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg || t("Chit closed successfully"));
         setShowCloseModal(false);
         fetchData(); // REFRESH TABLE
       } else {
+        toast.error(responseData.head.msg, {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
         console.log("Showing Error Toast with message:", responseData.head.msg);
         setShowCloseModal(false);
-        toast.error(responseData.head.msg || t("Failed to close chit"));
       }
     } catch (error) {
       toast.error(t("An error occurred while closing the chit"));
@@ -184,6 +197,11 @@ const Chit = () => {
       {
         accessorKey: "chit_id",
         header: t("Chit ID"),
+        size: 100,
+      },
+       {
+        accessorKey: "customer_name",
+        header: t("Customer Name"),
         size: 100,
       },
       {

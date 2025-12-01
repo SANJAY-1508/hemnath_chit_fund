@@ -21,10 +21,12 @@ import { useLanguage } from "../../components/LanguageContext";
 const ChitCreation = () => {
   const { t } = useLanguage();
   const location = useLocation();
-  const { type, rowData } = location.state || {};
+  const { type, rowData, duesData: passedDuesData } = location.state || {};
   console.log("type", type);
-  const user = JSON.parse(localStorage.getItem("user")) || {};
+  console.log("rowData", rowData);
+  console.log("passedDuesData", passedDuesData);
   const { chit_id, ...otherRowData } = rowData || {};
+  const [duesData, setDuesData] = useState(passedDuesData || []);
 
   const initialState =
     type === "edit" || type === "view"
@@ -49,25 +51,16 @@ const ChitCreation = () => {
   const [selectedCustomerOption, setSelectedCustomerOption] = useState(null);
   const [selectedScheme, setSelectedScheme] = useState(null);
   const [selectedSchemeOption, setSelectedSchemeOption] = useState(null);
-  const [dueRecords, setDueRecords] = useState([]);
   const [error, setError] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedDueRecord, setSelectedDueRecord] = useState(null);
-  const [paymentFormData, setPaymentFormData] = useState({
-    payment_method: "",
-    paid_amount: "",
-    payment_date: "",
-  });
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [dueToPay, setDueToPay] = useState(null); 
+  // ...
   const navigate = useNavigate();
+  const chitNumber = rowData?.chit_no || "";
 
-  const paymentMethods = [
-    { value: "Cash", label: "Cash" },
-    // { value: "Bank Transfer", label: "Bank Transfer" },
-    // { value: "UPI", label: "UPI" },
-    // Add more options as needed
-  ];
+  
 
   // --- Handlers ---
   const redirectModal = () => {
@@ -99,45 +92,22 @@ const ChitCreation = () => {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const handlePaymentChange = (e) => {
-    const { name, value } = e.target;
-    setPaymentFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   const handleOpenPayment = (record) => {
-    setSelectedDueRecord(record);
-    setPaymentFormData({
-      payment_method: "Cash",
-      paid_amount: record.due_amt.toString(),
-      payment_date: new Date().toISOString().split("T")[0],
-    });
-    setShowPaymentModal(true);
+    setDueToPay(record);
+    setShowConfirmationModal(true);
   };
-  // --- Fetch Data Functions ---
 
-  const handlePaymentSubmit = async () => {
-    if (
-      !selectedDueRecord ||
-      !paymentFormData.payment_method ||
-      !paymentFormData.paid_amount ||
-      !paymentFormData.payment_date
-    ) {
-      toast.error("Please fill all fields");
-      return;
-    }
+ const handlePaymentSubmit = async () => {
     const payload = {
-      chit_id: selectedDueRecord.chit_id,
-      due_no: selectedDueRecord.due_no,
-      payment_method: paymentFormData.payment_method,
-      current_user_id: user.user_id,
-      paid_amount: parseFloat(paymentFormData.paid_amount),
-      payment_date: paymentFormData.payment_date,
+      action: "pay_due", 
+      due_id: dueToPay.id, 
+      amount: parseFloat(dueToPay.due_amount), 
     };
+    
+    console.log("Payment Payload:", payload);
+    console.log("Due to Pay:", dueToPay);
+
     try {
       setLoading(true);
       const response = await fetch(`${API_DOMAIN}/chit.php`, {
@@ -156,7 +126,6 @@ const ChitCreation = () => {
       let resData;
       try {
         let cleanText = text.trim();
-        // Hack to fix malformed response with trailing empty array
         if (cleanText.endsWith("[]")) {
           cleanText = cleanText.slice(0, -2).trim();
         }
@@ -165,23 +134,40 @@ const ChitCreation = () => {
         console.error("Invalid JSON response:", text);
         throw new Error("Invalid response format from server");
       }
-      if (resData.status === "success") {
-        toast.success(resData.message || "Payment successful");
-        setShowPaymentModal(false);
-        fetchDueRecords(selectedDueRecord.chit_id);
+
+      setLoading(false);
+      if (resData.head && resData.head.code === 200) {
+        toast.success(resData.head.msg || "Payment successful");
+        setShowConfirmationModal(false); 
+
+        setDuesData(prevDuesData => {
+            return prevDuesData.map(due => {
+                if (due.id === dueToPay.id) {
+                    return {
+                        ...due,
+                        status: 'paid', 
+                        paid_amount: dueToPay.due_amount, 
+                    };
+                }
+                return due; 
+            });
+        });
+        setDueToPay(null); 
+
       } else {
-        toast.error(resData.message || "Payment failed");
+        toast.error(resData.head?.msg || "Payment failed");
       }
+
     } catch (error) {
       console.error("Error:", error);
       toast.error(error.message || "An error occurred during payment.");
     } finally {
       setLoading(false);
     }
-  };
-  const handleSubmit = async () => {
+};
   
-  const payload = {
+  const handleSubmit = async () => {
+    const payload = {
       action: "create_chit",
       customer_id: formData.customer_id,
       scheme_id: formData.scheme_id,
@@ -236,7 +222,7 @@ const ChitCreation = () => {
       console.log(responseData);
       if (responseData.head.code === 200) {
         const options = responseData.body.customer.map((cust) => ({
-         value: cust.customer_id.toString(),
+          value: cust.customer_id.toString(),
           label: cust.customer_name,
           fullData: cust,
         }));
@@ -259,9 +245,9 @@ const ChitCreation = () => {
 
       if (responseData.head.code === 200) {
         const options = responseData.body.schemes.map((item) => ({
-         value: item.scheme_id.toString(),
+          value: item.scheme_id.toString(),
           label: item.scheme_name,
-           fullData: item,
+          fullData: item,
         }));
 
         setSchemeOptions(options);
@@ -271,88 +257,45 @@ const ChitCreation = () => {
     }
   };
 
-  const fetchDueRecords = async (chitId) => {
-    try {
-      const response = await fetch(`${API_DOMAIN}/chit.php`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chit_id: chitId }),
-      });
-
-      const responseData = await response.json();
-
-      if (responseData.head.code === 200) {
-        setDueRecords(responseData.data.chit || []);
-      } else {
-        setDueRecords([]);
-      }
-    } catch (error) {
-      console.error("Error fetching due records:", error.message);
-      setDueRecords([]);
-    }
-  };
-
   //USEEFECT FUNCTION
   useEffect(() => {
     fetchDataCustomer();
     fetchScheme();
   }, []);
 
- 
-useEffect(() => {
+  useEffect(() => {
     console.log("Type:", type, "Row Data:", rowData);
     if ((type === "edit" || type === "view") && rowData) {
-        if (customerOptions.length > 0 && rowData.customer_id) {           
-            console.log("Target Customer ID:", rowData.customer_id);            
-            const targetId = Number(rowData.customer_id);           
-            const preSelectedCust = customerOptions.find(
-                (opt) => Number(opt.fullData.id) === targetId
-            );          
-            console.log("Customer Options:", customerOptions);
-            console.log("Pre-selected Customer:", preSelectedCust);            
-            if (preSelectedCust) {
-                setSelectedCustomer(preSelectedCust.fullData);
-                setSelectedCustomerOption(preSelectedCust);
-            }
-        }        
-        if (schemeOptions.length > 0 && rowData.scheme_id) {
-              const targetSchemeId = Number(rowData.scheme_id); 
-            
-            const preSelectedScheme = schemeOptions.find(
-                (opt) => Number(opt.fullData.id) === targetSchemeId
-            );
-            
-            if (preSelectedScheme) {
-                setSelectedScheme(preSelectedScheme.fullData);
-                setSelectedSchemeOption(preSelectedScheme);
-            }
+      if (customerOptions.length > 0 && rowData.customer_id) {
+        console.log("Target Customer ID:", rowData.customer_id);
+        const targetId = Number(rowData.customer_id);
+        const preSelectedCust = customerOptions.find(
+          (opt) => Number(opt.fullData.id) === targetId
+        );
+        console.log("Customer Options:", customerOptions);
+        console.log("Pre-selected Customer:", preSelectedCust);
+        if (preSelectedCust) {
+          setSelectedCustomer(preSelectedCust.fullData);
+          setSelectedCustomerOption(preSelectedCust);
         }
-        if (rowData.start_date) {
-            setFromDate(rowData.start_date);
+      }
+      if (schemeOptions.length > 0 && rowData.scheme_id) {
+        const targetSchemeId = Number(rowData.scheme_id);
+
+        const preSelectedScheme = schemeOptions.find(
+          (opt) => Number(opt.fullData.id) === targetSchemeId
+        );
+
+        if (preSelectedScheme) {
+          setSelectedScheme(preSelectedScheme.fullData);
+          setSelectedSchemeOption(preSelectedScheme);
         }
+      }
+      if (rowData.start_date) {
+        setFromDate(rowData.start_date);
+      }
     }
-}, [type, rowData, customerOptions, schemeOptions]);
-
-// ... rest of the component
-
-  useEffect(() => {
-    if (type === "edit" || (type === "view" && rowData?.chit_id)) {
-      fetchDueRecords(rowData.chit_id);
-    } else {
-      setDueRecords([]);
-    }
-  }, [type, rowData]);
-
-  useEffect(() => {
-    console.log("Type:", type);
-    if (type === "edit" && rowData?.chit_id) {
-      fetchDueRecords(rowData.chit_id);
-    } else if (type === "view" && rowData?.chit_id) {
-      fetchDueRecords(rowData.chit_id);
-    } else {
-      setDueRecords([]);
-    }
-  }, [type, rowData]);
+  }, [type, rowData, customerOptions, schemeOptions]);
 
   const userTitleSegment =
     type === "view"
@@ -445,7 +388,7 @@ useEffect(() => {
                       {selectedCustomer.email_id}
                     </span>
                   </div>
-                 
+
                   <div className="d-flex justify-content-between mb-3">
                     <span
                       className="text-muted fw-bold"
@@ -457,7 +400,7 @@ useEffect(() => {
                       {selectedCustomer.mobile_number}
                     </span>
                   </div>
-                   {/* <div className="d-flex justify-content-between mb-3">
+                  {/* <div className="d-flex justify-content-between mb-3">
                     <span
                       className="text-muted fw-bold"
                       style={{ fontSize: "0.9rem" }}
@@ -517,7 +460,7 @@ useEffect(() => {
                       className="text-muted fw-bold"
                       style={{ fontSize: "0.9rem" }}
                     >
-                     Scheme Name:
+                      Scheme Name:
                     </span>
                     <span style={{ fontSize: "0.9rem" }}>
                       {selectedScheme.scheme_name}
@@ -528,7 +471,7 @@ useEffect(() => {
                       className="text-muted fw-bold"
                       style={{ fontSize: "0.9rem" }}
                     >
-                     Duration:
+                      Duration:
                     </span>
                     <span
                       style={{
@@ -545,7 +488,7 @@ useEffect(() => {
                       className="text-muted fw-bold"
                       style={{ fontSize: "0.9rem" }}
                     >
-                     Due Amount:
+                      Due Amount:
                     </span>
                     <span
                       style={{
@@ -557,19 +500,19 @@ useEffect(() => {
                       {selectedScheme.schemet_due_amount}
                     </span>
                   </div>
-                 
+
                   <div className="d-flex justify-content-between">
                     <span
                       className="text-muted fw-bold"
                       style={{ fontSize: "0.9rem" }}
                     >
-                     Bonus Amount:
+                      Bonus Amount:
                     </span>
                     <span style={{ fontSize: "0.9rem" }}>
                       {selectedScheme.scheme_bonus}
                     </span>
                   </div>
-{/* 
+                  {/* 
                    <div className="d-flex justify-content-between">
                     <span
                       className="text-muted fw-bold"
@@ -587,45 +530,56 @@ useEffect(() => {
           </Col>
 
           {/* ⭐ 4. DUE PAYMENT TABLE (Only visible in edit mode with data) */}
-          {(type === "edit" || type === "view") && dueRecords.length > 0 && (
+          {(type === "edit" || type === "view") && duesData.length > 0 && (
             <Col lg={12} md={12} xs={12} className="mt-4">
               <Card className="shadow-sm">
                 <Card.Header as="h5" className="bg-light" align="center">
-                  {t("Current Due Payment Details")}
+                  {t("Current Due Payment Details")}{" "}
+                  {chitNumber && `- ${chitNumber}`}
                 </Card.Header>
                 <Card.Body className="p-0">
                   <div className="table-responsive">
                     <table className="table table-striped table-hover mb-0">
                       <thead className="thead-dark">
                         <tr>
+                          <th>{t("Chit ID")}</th>
                           <th>{t("Due Date")}</th>
+                          <th>{t("Due Number")}</th>
                           <th>{t("Due Amount")}</th>
-                          <th>{t("Balance Amount")}</th>
-                          <th>{t("Payment Method")}</th>
+                          <th>{t("Paid Amount")}</th>
                           <th>{t("Status")}</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {dueRecords.map((record, index) => (
+                        {duesData.map((record, index) => (
                           <tr key={index}>
+                            <td>
+                              {record.chit_id ? `${record.chit_id}` : "N/A"}
+                            </td>
                             <td>
                               {record.due_date
                                 ? new Date(record.due_date).toLocaleDateString()
                                 : "N/A"}
                             </td>
                             <td>
-                              {record.due_amt ? `₹${record.due_amt}` : "N/A"}
+                              {record.due_number ? `${record.due_number}` : "N/A"}
                             </td>
                             <td>
-                              {record.balance_amt
-                                ? `₹${record.balance_amt}`
+                              {record.due_amount
+                                ? `₹${record.due_amount}`
                                 : "N/A"}
                             </td>
-                            <td>{record.payment_method || t("N/A")}</td>
+
                             <td>
-                              {record.payment_status === "paid" ? (
+                              {record.paid_amount
+                                ? `₹${record.paid_amount}`
+                                : "N/A"}
+                            </td>
+
+                            <td>
+                              {record.status === "paid" ? (
                                 <span className="badge bg-success">
-                                  {record.payment_status || t("N/A")}
+                                  {record.status || t("N/A")}
                                 </span>
                               ) : (
                                 <span
@@ -637,7 +591,7 @@ useEffect(() => {
                                     }
                                   }}
                                 >
-                                  {record.payment_status || t("N/A")}
+                                  {record.status || t("N/A")}
                                 </span>
                               )}
                             </td>
@@ -650,7 +604,6 @@ useEffect(() => {
               </Card>
             </Col>
           )}
-
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div style={{ textAlign: "right", paddingRight: "5px" }}>
               {type === "view" ? (
@@ -749,112 +702,44 @@ useEffect(() => {
         </Modal>
 
         {/* Payment Modal */}
+        {/* ✅ NEW: Due Payment Confirmation Modal */}
         <Modal
-          show={showPaymentModal}
-          onHide={() => setShowPaymentModal(false)}
+          show={showConfirmationModal}
+          onHide={() => {
+            setShowConfirmationModal(false);
+            setDueToPay(null);
+          }}
           centered
-          size="md"
-          className="payment-modal"
         >
-          <Modal.Header
-            closeButton
-            className="bg-primary text-white border-0"
-            style={{ borderRadius: "10px 10px 0 0" }}
-          >
-            <Modal.Title className="d-flex align-items-center">
-              <i className="fas fa-credit-card me-2"></i>
-              Make Payment
-            </Modal.Title>
+          <Modal.Header closeButton>
+            <Modal.Title>{t("Confirm Payment")}</Modal.Title>
           </Modal.Header>
-          <Modal.Body className="p-4">
-            <Card className="border-0 shadow-sm">
-              <Card.Body className="p-0">
-                <div className="text-center mb-3">
-                  <h6 className="text-muted">
-                    Due Amount: ₹{selectedDueRecord?.due_amt || 0}
-                  </h6>
-                </div>
-                <Form>
-                  <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold text-dark">
-                      <i className="fas fa-wallet me-1"></i>Payment Method
-                    </Form.Label>
-                    <Form.Select
-                      name="payment_method"
-                      value={paymentFormData.payment_method}
-                      onChange={handlePaymentChange}
-                      className="rounded-3 shadow-sm"
-                      style={{ borderColor: "#e9ecef" }}
-                    >
-                      <option value="">Select Method</option>
-                      {paymentMethods.map((method) => (
-                        <option key={method.value} value={method.value}>
-                          {method.label}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold text-dark">
-                      <i className="fas fa-rupee-sign me-1"></i>Paid Amount
-                    </Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="paid_amount"
-                      value={paymentFormData.paid_amount}
-                      onChange={handlePaymentChange}
-                      readOnly={type === "view"}
-                      placeholder="Enter amount"
-                      className="rounded-3 shadow-sm"
-                      style={{ borderColor: "#e9ecef" }}
-                      min="0"
-                      step="0.01"
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold text-dark">
-                      <i className="fas fa-calendar-alt me-1"></i>Payment Date
-                    </Form.Label>
-                    <Form.Control
-                      type="date"
-                      name="payment_date"
-                      value={paymentFormData.payment_date}
-                      readOnly={type === "view"}
-                      onChange={handlePaymentChange}
-                      className="rounded-3 shadow-sm"
-                      style={{ borderColor: "#e9ecef" }}
-                    />
-                  </Form.Group>
-                </Form>
-              </Card.Body>
-            </Card>
+          <Modal.Body>
+            <p>
+              {t("Do you want to proceed with the payment for Due No.")} 
+              {dueToPay?.due_number}?
+            </p>
+            <p>
+              {t("Due Amount")}:₹{dueToPay?.due_amount}
+            </p>
           </Modal.Body>
-          <Modal.Footer
-            className="bg-light border-0 pt-0"
-            style={{ borderRadius: "0 0 10px 10px" }}
-          >
+          <Modal.Footer>
             <Button
-              variant="danger"
-              onClick={() => setShowPaymentModal(false)}
-              className="rounded-pill px-4 me-2"
+              variant="secondary"
+              onClick={() => {
+                setShowConfirmationModal(false);
+                setDueToPay(null);
+              }}
+              className="rounded-pill px-4"
             >
-              <i className="fas fa-times me-1"></i>Cancel
+              {t("Later")}
             </Button>
             <Button
               variant="primary"
               onClick={handlePaymentSubmit}
-              disabled={loading}
               className="rounded-pill px-4"
             >
-              {loading ? (
-                <>
-                  <i className="fas fa-spinner fa-spin me-1"></i>Processing...
-                </>
-              ) : (
-                <>
-                  <i className="fas fa-check me-1"></i>Pay Now
-                </>
-              )}
+              {t("Pay Now")}
             </Button>
           </Modal.Footer>
         </Modal>
