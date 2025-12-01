@@ -198,20 +198,16 @@ const CustomerCreations = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_DOMAIN}/customer_signup.php`, {
+      const response = await fetch(`${API_DOMAIN}/customer.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           edit_customer_id: rowData.customer_id,
-          customer_no: formData.customer_no,
-          name: formData.name,
-          phone: formData.phone,
-          address: formData.address,
-          place: formData.place,
-          img: formData.img,
-          proof_img: formData.proof_img,
+          customer_name: formData.customer_name,
+          mobile_number: formData.mobile_number,
+          email_id: formData.email_id,
           current_user_id: user.user_id,
         }),
       });

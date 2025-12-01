@@ -17,7 +17,7 @@ const CompanyCreation = () => {
 
   const location = useLocation();
   const { type, rowData } = location.state || {};
-
+  console.log("rowData", rowData);
   const initialState =
     type === "edit"
       ? { ...rowData }
@@ -29,27 +29,28 @@ const CompanyCreation = () => {
           pincode: "",
         };
 
-//         {
-//     "company_name": "Zentexus",
-//     "acc_holder_name": "Dhanu",
-//     "company_profile_img": "",
-//     "address": "Virudhunagar",
-//     "pincode": "626001",
-//     "city": "Virudhunagar",
-//     "state": "Tamil Nadu",
-//     "phone_number": "9876543210",
-//     "mobile_number": "9025148394",
-//     "gst_number": "33ABCDE1234F1Z5",
-//     "acc_number": "1234567890",
-//     "bank_name": "Indian Bank",
-//     "ifsc_code": "IDIB0001234",
-//     "bank_branch": "Virudhunagar Main"
-// }
-
+  //         {
+  //     "company_name": "Zentexus",
+  //     "acc_holder_name": "Dhanu",
+  //     "company_profile_img": "",
+  //     "address": "Virudhunagar",
+  //     "pincode": "626001",
+  //     "city": "Virudhunagar",
+  //     "state": "Tamil Nadu",
+  //     "phone_number": "9876543210",
+  //     "mobile_number": "9025148394",
+  //     "gst_number": "33ABCDE1234F1Z5",
+  //     "acc_number": "1234567890",
+  //     "bank_name": "Indian Bank",
+  //     "ifsc_code": "IDIB0001234",
+  //     "bank_branch": "Virudhunagar Main"
+  // }
 
   const [formData, setFormData] = useState(initialState);
+  console.log("formdata values", formData);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
+
   const redirectModal = () => {
     navigate("/console/company");
   };
@@ -95,6 +96,7 @@ const CompanyCreation = () => {
         place: formData.place,
         pincode: formData.pincode,
       };
+      console.log("Payload:", payload);
 
       if (type === "edit") {
         payload.edit_company_id = rowData.user_id;
@@ -107,6 +109,7 @@ const CompanyCreation = () => {
         },
         body: JSON.stringify(payload),
       });
+      console.log(response);
 
       const responseData = await response.json();
 
@@ -368,7 +371,9 @@ const CompanyCreation = () => {
                 type={"text"}
                 labelname={t("Account Holder Name")} // ✅
                 name="acc_holder_name"
-                value={type === "view" ? rowData.mobile : formData.acc_holder_name}
+                value={
+                  type === "view" ? rowData.mobile : formData.acc_holder_name
+                }
                 onChange={(e) => handleChange(e, "acc_holder_name")}
               ></TextInputForm>
             )}
