@@ -18,39 +18,19 @@ const CompanyCreation = () => {
   const location = useLocation();
   const { type, rowData } = location.state || {};
   console.log("rowData", rowData);
-
-  const defaultFormData = {
-    company_name: "",
-    mobile_number: "",
-    gst: "",
-    place: "",
-    pincode: "",
-    jewel_price: "",
-    "22_carat_price": "",
-    "21_carat_price": "",
-    "20_carat_price": "",
-    "19_carat_price": "",
-    "18_carat_price": "",
-    "17_carat_price": "",
-    "16_carat_price": "",
-  };
-
-  let initialState = defaultFormData;
-  if (type === "edit" && rowData) {
-    const parsedJewel = rowData.jewel_price_details
-      ? (() => {
-          try {
-            return JSON.parse(rowData.jewel_price_details);
-          } catch (e) {
-            console.error("Error parsing jewel_price_details:", e);
-            return {};
-          }
-        })()
-      : {};
-    initialState = { ...rowData, ...parsedJewel };
-  }
+  const initialState =
+    type === "edit"
+      ? { ...rowData }
+      : {
+          company_name: "",
+          mobile_number: "",
+          gst: "",
+          place: "",
+          pincode: "",
+        };
 
   const [formData, setFormData] = useState(initialState);
+  console.log("formdata values", formData);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
 
@@ -88,17 +68,6 @@ const CompanyCreation = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const getParsedValue = (key) => {
-    if (!rowData || !rowData.jewel_price_details) return "";
-    try {
-      const details = JSON.parse(rowData.jewel_price_details);
-      return details[key] || "";
-    } catch (e) {
-      console.error("Error parsing jewel_price_details for view:", e);
-      return "";
-    }
-  };
-
   const handleSubmit = async () => {
     setLoading(true);
 
@@ -109,17 +78,8 @@ const CompanyCreation = () => {
         gst: formData.gst,
         place: formData.place,
         pincode: formData.pincode,
-        jewel_price_details: JSON.stringify({
-          jewel_price: formData.jewel_price,
-          "22_carat_price": formData["22_carat_price"],
-          "21_carat_price": formData["21_carat_price"],
-          "20_carat_price": formData["20_carat_price"],
-          "19_carat_price": formData["19_carat_price"],
-          "18_carat_price": formData["18_carat_price"],
-          "17_carat_price": formData["17_carat_price"],
-          "16_carat_price": formData["16_carat_price"],
-        }),
       };
+      console.log("Payload:", payload);
 
       if (type === "edit") {
         payload.edit_company_id = rowData.user_id;
@@ -132,6 +92,7 @@ const CompanyCreation = () => {
         },
         body: JSON.stringify(payload),
       });
+      console.log(response);
 
       const responseData = await response.json();
 
@@ -201,7 +162,11 @@ const CompanyCreation = () => {
             <PageNav
               // ✅ Translate PageNav title
               pagetitle={`${t("Company")} ${
-                type === "view" ? t("view") : type === "edit" ? t("Edit") : t("Creation")
+                type === "view"
+                  ? t("view")
+                  : type === "edit"
+                  ? t("Edit")
+                  : t("Creation")
               }`}
             ></PageNav>
           </Col>
@@ -235,22 +200,18 @@ const CompanyCreation = () => {
                 placeholder={t("Mobile Number")} // ✅
                 type={"text"}
                 labelname={t("Mobile Number")} // ✅
-                name="mobile_number"
-                value={formData.mobile_number}
-                onChange={(e) => handleChange(e, "mobile_number")}
+                name="mobile"
+                value={formData.mobile}
+                onChange={(e) => handleChange(e, "mobile")}
               ></TextInputForm>
             ) : (
               <TextInputForm
                 placeholder={t("Mobile Number")} // ✅
                 type={"text"}
                 labelname={t("Mobile Number")} // ✅
-                name="mobile_number"
-                value={
-                  type === "view"
-                    ? rowData.mobile_number
-                    : formData.mobile_number
-                }
-                onChange={(e) => handleChange(e, "mobile_number")}
+                name="mobile"
+                value={type === "view" ? rowData.mobile : formData.mobile}
+                onChange={(e) => handleChange(e, "mobile")}
               ></TextInputForm>
             )}
           </Col>
@@ -260,17 +221,17 @@ const CompanyCreation = () => {
               <TextInputForm
                 placeholder={t("GST")} // ✅
                 labelname={t("GST")} // ✅
-                name="gst"
-                value={formData.gst}
+                name="gst_no"
+                value={formData.gst_no}
                 onChange={(e) => handleChange(e, "gst")}
               ></TextInputForm>
             ) : (
               <TextInputForm
                 placeholder={t("GST")} // ✅
                 labelname={t("GST")} // ✅
-                name="gst"
-                value={type === "view" ? rowData.gst : formData.gst}
-                onChange={(e) => handleChange(e, "gst")}
+                name="gst_no"
+                value={type === "view" ? rowData.gst_no : formData.gst_no}
+                onChange={(e) => handleChange(e, "gst_no")}
               ></TextInputForm>
             )}
           </Col>
@@ -280,17 +241,17 @@ const CompanyCreation = () => {
               <TextInputForm
                 placeholder={t("Place")} // ✅
                 labelname={t("Place")} // ✅
-                name="place"
-                value={formData.place}
-                onChange={(e) => handleChange(e, "place")}
+                name="city"
+                value={formData.city}
+                onChange={(e) => handleChange(e, "city")}
               ></TextInputForm>
             ) : (
               <TextInputForm
                 placeholder={t("Place")} // ✅
                 labelname={t("Place")} // ✅
-                name="place"
-                value={type === "view" ? rowData.place : formData.place}
-                onChange={(e) => handleChange(e, "place")}
+                name="city"
+                value={type === "view" ? rowData.city : formData.city}
+                onChange={(e) => handleChange(e, "city")}
               ></TextInputForm>
             )}
           </Col>
@@ -314,8 +275,6 @@ const CompanyCreation = () => {
               ></TextInputForm>
             )}
           </Col>
-
-        
 
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div className="text-center">

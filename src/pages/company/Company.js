@@ -19,6 +19,7 @@ const Company = () => {
 
   // 1. Handlers for Edit Actions
   const handleCompanyEditClick = (rowData) => {
+    console.log("Edit Company ID:", rowData.id);
     navigate("/console/company/create", {
       state: {
         type: "edit",
