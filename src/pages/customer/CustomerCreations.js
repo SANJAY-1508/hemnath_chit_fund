@@ -134,7 +134,7 @@ const CustomerCreations = () => {
             />
           </Col>
 
-          {type !== "create" && (
+          {(type === "edit" || type === "view") && (
             <Col lg="3" md="4" xs="12" className="py-3">
               <TextInputForm
                 labelname={t("Customer No")}
