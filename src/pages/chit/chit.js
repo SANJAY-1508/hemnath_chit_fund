@@ -150,6 +150,8 @@ const Chit = () => {
         body: JSON.stringify({
           action: "foreclose_chit",
           chit_id: selectedChitId,
+          created_by_id: user.user_id,
+          created_by_name: user.name,
         }),
       });
 
