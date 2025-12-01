@@ -31,6 +31,7 @@ const CustomerCreations = () => {
         };
 
   const [formData, setFormData] = useState(initialState);
+  console.log("Form Data:", formData);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e, fieldName) => {
@@ -86,10 +87,11 @@ const CustomerCreations = () => {
       customer_name: formData.customer_name,
       mobile_number: String(formData.mobile_number),
       email_id: formData.email_id,
+      password: formData.password,
       created_by_id: user.user_id,
       created_by_name: user.name,
     };
-
+    console.log("Update Payload:", updatePayload);
     // Only send password if user entered something
     if (formData.password.trim() !== "") {
       updatePayload.password = formData.password;
