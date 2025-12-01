@@ -132,6 +132,7 @@ const CustomerCreations = () => {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     try {
       const response = await fetch(`${API_DOMAIN}/customer_signup.php`, {
         method: "POST",
@@ -141,6 +142,8 @@ const CustomerCreations = () => {
         body: JSON.stringify({
           ...formData,
           action: "signup",
+          created_by_id: user.user_id,
+          created_by_name: user.name,
         }),
       });
 
@@ -209,6 +212,8 @@ const CustomerCreations = () => {
           mobile_number: formData.mobile_number,
           email_id: formData.email_id,
           current_user_id: user.user_id,
+          created_by_id: user.user_id,
+          created_by_name: user.name,
         }),
       });
       const responseData = await response.json();
