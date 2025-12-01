@@ -59,7 +59,7 @@ const Customer = () => {
     });
   };
   const handlecustomerDeleteClick = async (id) => {
-    console.log("delete customer",id);
+    console.log("delete customer", id);
     setLoading(true);
     try {
       const response = await fetch(`${API_DOMAIN}/customer.php`, {
@@ -69,8 +69,8 @@ const Customer = () => {
         },
         body: JSON.stringify({
           delete_customer_id: id,
-          current_user_id: user.user_id,
-          current_user_name: user.name,
+          created_by_id: user.user_id,
+          created_by_name: user.name,
         }),
       });
       const responseData = await response.json();
