@@ -24,9 +24,19 @@ const CompanyCreation = () => {
       : {
           company_name: "",
           mobile_number: "",
-          gst: "",
-          place: "",
           pincode: "",
+          acc_holder_name:"",
+          company_profile_img: "",
+          address:"",
+          city:"",
+          state: "",
+          phone_number: "",
+          mobile_number: "",
+          gst_number: "",
+          acc_number: "",
+          bank_name: "",
+          ifsc_code: "",
+          bank_branch: "",
         };
 
 //         {
@@ -91,12 +101,30 @@ const CompanyCreation = () => {
 
     try {
       const payload = {
-        company_name: formData.company_name,
-        mobile_number: formData.mobile_number,
-        gst: formData.gst,
-        place: formData.place,
-        pincode: formData.pincode,
-      };
+   
+    company_name: formData.company_name || "",
+    mobile_number: formData.mobile_number || "",
+    gst_number: formData.gst_number || "",
+    company_profile_img: formData.company_profile_img || "",
+
+    // Location Details
+    place: formData.place || "",
+    city: formData.city || "",
+    state: formData.state || "",
+    address: formData.address || "",
+    pincode: formData.pincode || "",
+    
+    // Contact Details (Assuming 'phone_number' is different from 'mobile_number')
+    phone_number: formData.phone_number || "", 
+
+    // Bank Details
+    acc_holder_name: formData.acc_holder_name || "",
+    acc_number: formData.acc_number || "",
+    bank_name: formData.bank_name || "",
+    ifsc_code: formData.ifsc_code || "",
+    bank_branch: formData.bank_branch || "",
+};
+     
       console.log("Payload:", payload);
 
       if (type === "edit") {
@@ -239,16 +267,16 @@ const CompanyCreation = () => {
               <TextInputForm
                 placeholder={t("GST")} // ✅
                 labelname={t("GST")} // ✅
-                name="gst_no"
-                value={formData.gst_no}
-                onChange={(e) => handleChange(e, "gst")}
+                name="gst_number"
+                value={formData.gst_number}
+                onChange={(e) => handleChange(e, "gst_number")}
               ></TextInputForm>
             ) : (
               <TextInputForm
                 placeholder={t("GST")} // ✅
                 labelname={t("GST")} // ✅
-                name="gst_no"
-                value={type === "view" ? rowData.gst_no : formData.gst_no}
+                name="gst_number"
+                value={type === "view" ? rowData.gst_no : formData.gst_number}
                 onChange={(e) => handleChange(e, "gst_no")}
               ></TextInputForm>
             )}
