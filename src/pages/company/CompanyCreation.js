@@ -17,49 +17,40 @@ const CompanyCreation = () => {
 
   const location = useLocation();
   const { type, rowData } = location.state || {};
-
+  console.log("rowData", rowData);
   const initialState =
     type === "edit"
       ? { ...rowData }
       : {
           company_name: "",
           mobile_number: "",
+          gst: "",
+          place: "",
           pincode: "",
-          acc_holder_name:"",
-          company_profile_img: "",
-          address:"",
-          city:"",
-          state: "",
-          phone_number: "",
-          mobile_number: "",
-          gst_number: "",
-          acc_number: "",
-          bank_name: "",
-          ifsc_code: "",
-          bank_branch: "",
         };
 
-//         {
-//     "company_name": "Zentexus",
-//     "acc_holder_name": "Dhanu",
-//     "company_profile_img": "",
-//     "address": "Virudhunagar",
-//     "pincode": "626001",
-//     "city": "Virudhunagar",
-//     "state": "Tamil Nadu",
-//     "phone_number": "9876543210",
-//     "mobile_number": "9025148394",
-//     "gst_number": "33ABCDE1234F1Z5",
-//     "acc_number": "1234567890",
-//     "bank_name": "Indian Bank",
-//     "ifsc_code": "IDIB0001234",
-//     "bank_branch": "Virudhunagar Main"
-// }
-
+  //         {
+  //     "company_name": "Zentexus",
+  //     "acc_holder_name": "Dhanu",
+  //     "company_profile_img": "",
+  //     "address": "Virudhunagar",
+  //     "pincode": "626001",
+  //     "city": "Virudhunagar",
+  //     "state": "Tamil Nadu",
+  //     "phone_number": "9876543210",
+  //     "mobile_number": "9025148394",
+  //     "gst_number": "33ABCDE1234F1Z5",
+  //     "acc_number": "1234567890",
+  //     "bank_name": "Indian Bank",
+  //     "ifsc_code": "IDIB0001234",
+  //     "bank_branch": "Virudhunagar Main"
+  // }
 
   const [formData, setFormData] = useState(initialState);
+  console.log("formdata values", formData);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
+
   const redirectModal = () => {
     navigate("/console/company");
   };
@@ -99,40 +90,13 @@ const CompanyCreation = () => {
 
     try {
       const payload = {
-<<<<<<< HEAD
-   
-    company_name: formData.company_name || "",
-    mobile_number: formData.mobile_number || "",
-    gst_number: formData.gst_number || "",
-    company_profile_img: formData.company_profile_img || "",
-
-    // Location Details
-    place: formData.place || "",
-    city: formData.city || "",
-    state: formData.state || "",
-    address: formData.address || "",
-    pincode: formData.pincode || "",
-    
-    // Contact Details (Assuming 'phone_number' is different from 'mobile_number')
-    phone_number: formData.phone_number || "", 
-
-    // Bank Details
-    acc_holder_name: formData.acc_holder_name || "",
-    acc_number: formData.acc_number || "",
-    bank_name: formData.bank_name || "",
-    ifsc_code: formData.ifsc_code || "",
-    bank_branch: formData.bank_branch || "",
-};
-     
-      console.log("Payload:", payload);
-=======
         company_name: formData.company_name,
         mobile_number: formData.mobile_number,
         gst: formData.gst,
         place: formData.place,
         pincode: formData.pincode,
       };
->>>>>>> 32270bcc769e8f4433c24106254045c5916e8b24
+      console.log("Payload:", payload);
 
       if (type === "edit") {
         payload.edit_company_id = rowData.user_id;
@@ -145,6 +109,7 @@ const CompanyCreation = () => {
         },
         body: JSON.stringify(payload),
       });
+      console.log(response);
 
       const responseData = await response.json();
 
@@ -273,16 +238,16 @@ const CompanyCreation = () => {
               <TextInputForm
                 placeholder={t("GST")} // ✅
                 labelname={t("GST")} // ✅
-                name="gst_number"
-                value={formData.gst_number}
-                onChange={(e) => handleChange(e, "gst_number")}
+                name="gst_no"
+                value={formData.gst_no}
+                onChange={(e) => handleChange(e, "gst")}
               ></TextInputForm>
             ) : (
               <TextInputForm
                 placeholder={t("GST")} // ✅
                 labelname={t("GST")} // ✅
-                name="gst_number"
-                value={type === "view" ? rowData.gst_no : formData.gst_number}
+                name="gst_no"
+                value={type === "view" ? rowData.gst_no : formData.gst_no}
                 onChange={(e) => handleChange(e, "gst_no")}
               ></TextInputForm>
             )}
@@ -406,7 +371,9 @@ const CompanyCreation = () => {
                 type={"text"}
                 labelname={t("Account Holder Name")} // ✅
                 name="acc_holder_name"
-                value={type === "view" ? rowData.mobile : formData.acc_holder_name}
+                value={
+                  type === "view" ? rowData.mobile : formData.acc_holder_name
+                }
                 onChange={(e) => handleChange(e, "acc_holder_name")}
               ></TextInputForm>
             )}
