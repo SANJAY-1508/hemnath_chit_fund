@@ -26,7 +26,6 @@ const Chit = () => {
   const isAdmin = user.role === "Admin";
 
   const fetchData = async () => {
-    console.log("Fetching data with search text:", searchText);
     setLoading(true);
 
     try {
@@ -41,7 +40,6 @@ const Chit = () => {
       });
 
       const responseData = await response.json();
-      console.log("Fetch Response:", responseData);
 
       if (responseData.head.code === 200) {
         setChitData(
@@ -62,7 +60,6 @@ const Chit = () => {
   }, []);
 
   const handleEditClick = async (rowData) => {
-    console.log("Editing chit with ID:", rowData.chit_id);
     const chitId = rowData.chit_id;
     setLoading(true);
 
@@ -74,7 +71,7 @@ const Chit = () => {
       });
 
       const responseData = await response.json();
-      console.log("Response Data:", responseData);
+
       setLoading(false);
 
       if (
@@ -84,9 +81,6 @@ const Chit = () => {
       ) {
         const detailedRowData = responseData.body.chit;
         const duesArray = responseData.body.dues || [];
-
-        console.log("Detailed Row Data (chit):", detailedRowData);
-        console.log("Dues Data:", duesArray);
 
         navigate("/console/master/chit/create", {
           state: {
@@ -147,7 +141,6 @@ const Chit = () => {
   };
 
   const handleSubmitClose = async () => {
-    console.log("Closing chit with ID:", selectedChitId);
     setLoading(true);
 
     try {
@@ -161,7 +154,7 @@ const Chit = () => {
       });
 
       const responseData = await response.json();
-      console.log("Response Data:", responseData);
+
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg || t("Chit closed successfully"));
         setShowCloseModal(false);
@@ -177,7 +170,7 @@ const Chit = () => {
           progress: undefined,
           theme: "colored",
         });
-        console.log("Showing Error Toast with message:", responseData.head.msg);
+
         setShowCloseModal(false);
       }
     } catch (error) {
@@ -199,7 +192,7 @@ const Chit = () => {
         header: t("Chit ID"),
         size: 100,
       },
-       {
+      {
         accessorKey: "customer_name",
         header: t("Customer Name"),
         size: 100,

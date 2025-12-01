@@ -15,11 +15,10 @@ const Company = () => {
   const [searchText, setSearchText] = useState("");
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { t,cacheVersion} = useLanguage();
+  const { t, cacheVersion } = useLanguage();
 
   // 1. Handlers for Edit Actions
   const handleCompanyEditClick = (rowData) => {
-    console.log("Edit Company ID:", rowData.id);
     navigate("/console/company/create", {
       state: {
         type: "edit",
@@ -31,7 +30,6 @@ const Company = () => {
   // 2. Data Fetching Logic (Unchanged)
   useEffect(() => {
     const fetchData = async () => {
-      console.log("Fetching data with search text:", searchText);
       setLoading(true);
       try {
         const response = await fetch(`${API_DOMAIN}/company.php`, {
@@ -43,9 +41,8 @@ const Company = () => {
             search_text: searchText,
           }),
         });
-     console.log(response);
+
         const responseData = await response.json();
-        console.log(responseData);
 
         if (responseData.head.code === 200) {
           setUserData(
@@ -78,22 +75,22 @@ const Company = () => {
       },
       {
         accessorKey: "company_name",
-        header: t("Company Name"), 
+        header: t("Company Name"),
         size: 50,
       },
       {
         accessorKey: "mobile",
-        header: t("Mobile Number"), 
+        header: t("Mobile Number"),
         size: 50,
       },
       {
         accessorKey: "city",
-        header: t("Location"), 
+        header: t("Location"),
         size: 50,
       },
       {
         id: "action",
-        header: t("Action"), 
+        header: t("Action"),
         size: 100,
         enableColumnFilter: false,
         enableColumnOrdering: false,
@@ -106,7 +103,7 @@ const Company = () => {
             }}
           >
             {/* Edit Icon */}
-            <Tooltip title={t("Edit")}> 
+            <Tooltip title={t("Edit")}>
               <IconButton
                 onClick={() => handleCompanyEditClick(row.original)}
                 sx={{ color: "#0d6efd", padding: 0 }}
@@ -118,7 +115,7 @@ const Company = () => {
         ),
       },
     ],
-    [t,cacheVersion] 
+    [t, cacheVersion]
   );
 
   // 4. Update JSX to render MaterialReactTable
@@ -128,10 +125,10 @@ const Company = () => {
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              <span class="nav-list">{t("Company")}</span> 
+              <span class="nav-list">{t("Company")}</span>
             </div>
           </Col>
-         
+
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
 
           {/* 5. Replace TableUI with MaterialReactTable */}

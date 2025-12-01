@@ -37,7 +37,7 @@ const LoanCreation = () => {
   const [productList, setProductList] = useState([]);
   const user = JSON.parse(localStorage.getItem("user")) || {};
 
-  console.log("productList:", productList);
+
 
   const today = new Date();
   const defaultDate = today.toISOString().substr(0, 10);
@@ -165,7 +165,7 @@ const LoanCreation = () => {
         };
 
   const [formData, setFormData] = useState(initialState);
-  console.log(formData);
+  
   const [error, setError] = useState("");
   const [grupData, setGrupData] = useState([]);
   const [userData, setUserData] = useState([]);
@@ -176,7 +176,7 @@ const LoanCreation = () => {
   const [stream, setStream] = useState(null);
   const [previewFile, setPreviewFile] = useState(null);
   const [companyRates, setCompanyRates] = useState({});
-  console.log(formData);
+  
   const handleChange = (e, field, rowIndex) => {
     const { value } = e.target;
     let updatedFormData = { ...formData };
@@ -442,7 +442,7 @@ const LoanCreation = () => {
       });
 
       const responseData = await response.json();
-      console.log("handlesubmit", responseData);
+      
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg, {
           position: "top-center",
@@ -500,7 +500,7 @@ const LoanCreation = () => {
       });
 
       const responseData = await response.json();
-      console.log(responseData);
+
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg, {
           position: "top-center",

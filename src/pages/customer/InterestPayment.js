@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Col, Container, Row, Alert } from "react-bootstrap";
 import { TextInputForm, Calender } from "../../components/Forms";
 import { ClickButton } from "../../components/ClickButton";
@@ -10,7 +10,7 @@ import API_DOMAIN from "../../config/config";
 import { useLanguage } from "../../components/LanguageContext";
 import dayjs from "dayjs";
 import { MaterialReactTable } from "material-react-table";
-import { IconButton, Menu, MenuItem } from '@mui/material';
+import { IconButton, Menu, MenuItem } from "@mui/material";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import ReceiptPDF from "../../pdf/jewelInterestPdf";
 import { PDFDownloadLink } from "@react-pdf/renderer";
@@ -72,7 +72,7 @@ const InterestPayment = () => {
   };
 
   const [formData, setFormData] = useState(getInitialState());
-  console.log(formData);
+
   useEffect(() => {
     setFormData(getInitialState());
   }, [location.state, type, rowData]);
@@ -92,7 +92,7 @@ const InterestPayment = () => {
       });
 
       const responseData = await response.json();
-      console.log(responseData);
+
       if (responseData.head.code === 200) {
         const filteredHistory = responseData.body.interest.filter(
           (item) => item.receipt_no === rowData.receipt_no
@@ -188,7 +188,7 @@ const InterestPayment = () => {
       });
 
       const responseData = await response.json();
-      console.log(responseData);
+
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg);
         setTimeout(() => {
@@ -231,7 +231,7 @@ const InterestPayment = () => {
       });
 
       const responseData = await response.json();
-      console.log(responseData);
+
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg);
         setTimeout(() => {
@@ -254,8 +254,7 @@ const InterestPayment = () => {
   };
 
   const pageTitle =
-  type === "edit" ? t("Edit Interest Payment") : t("Interest Payment");
- 
+    type === "edit" ? t("Edit Interest Payment") : t("Interest Payment");
 
   //Interest Edit and Delete click handling
   const handleinterestEditClick = (rowData) => {
@@ -281,7 +280,6 @@ const InterestPayment = () => {
       if (responseData.head.code === 200) {
         window.location.reload();
       } else {
-        console.log(responseData.head.msg);
         setLoading(false);
       }
     } catch (error) {
@@ -289,8 +287,8 @@ const InterestPayment = () => {
       setLoading(false);
     }
   };
-  
-//Material React Table
+
+  //Material React Table
   const columns = useMemo(
     () => [
       {
@@ -308,7 +306,6 @@ const InterestPayment = () => {
       {
         header: t("Name"),
         accessorKey: "name",
-       
       },
       {
         header: t("Loan Number"),
@@ -331,7 +328,6 @@ const InterestPayment = () => {
         enableSorting: false,
         Cell: ({ row }) => {
           const rowData = row.original;
-          console.log("rowData", rowData);
           const [anchorEl, setAnchorEl] = React.useState(null);
           const open = Boolean(anchorEl);
 
@@ -364,10 +360,7 @@ const InterestPayment = () => {
                   fileName={`${rowData.receipt_no}_interest.pdf`}
                 >
                   {({ loading, url }) => (
-                    <MenuItem
-                      onClick={handleClose}
-                      disabled={loading}
-                    >
+                    <MenuItem onClick={handleClose} disabled={loading}>
                       <a
                         href={url}
                         download={`${rowData.receipt_no}_interest.pdf`}
@@ -404,7 +397,7 @@ const InterestPayment = () => {
         },
       },
     ],
-    [t, isAdmin ]
+    [t, isAdmin]
   );
 
   return (

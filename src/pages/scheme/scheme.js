@@ -22,7 +22,6 @@ const Scheme = () => {
 
   // 1. Handlers for Edit and Delete Actions
   const handleEditClick = (rowData) => {
-    console.log("Edit Group ID:", rowData.id);
     navigate("/console/master/scheme/create", {
       state: {
         type: "edit",
@@ -31,7 +30,6 @@ const Scheme = () => {
     });
   };
   const handleDeleteClick = async (schemeId) => {
-    console.log("Delete Group ID:", schemeId);
     setLoading(true);
     try {
       const response = await fetch(`${API_DOMAIN}/scheme_api.php`, {
@@ -50,7 +48,6 @@ const Scheme = () => {
         window.location.reload();
         //setLoading(false);
       } else {
-        console.log(responseData.head.msg);
         setLoading(false);
       }
     } catch (error) {
@@ -65,7 +62,6 @@ const Scheme = () => {
   // 2. Data Fetching Logic (Unchanged)
   useEffect(() => {
     const fetchData = async () => {
-      console.log("Fetching data with search text:", searchText);
       setLoading(true);
       try {
         const response = await fetch(`${API_DOMAIN}/scheme_api.php`, {
@@ -77,9 +73,7 @@ const Scheme = () => {
             action: "list",
           }),
         });
-        console.log(response);
         const responseData = await response.json();
-        console.log(responseData);
 
         if (responseData.head.code === 200) {
           setChitData(

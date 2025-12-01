@@ -20,7 +20,7 @@ const SchemeCreation = () => {
     type === "edit"
       ? { ...rowData }
       : {
-          id:"",
+          id: "",
           scheme_name: "",
           duration: "",
           duration_unit: "",
@@ -29,7 +29,7 @@ const SchemeCreation = () => {
           scheme_maturtiy_amount: "",
         };
   const [formData, setFormData] = useState(initialState);
-  console.log("formdata values", formData);
+
   const [error, setError] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
@@ -40,7 +40,6 @@ const SchemeCreation = () => {
     { value: "month", title: t("Month") },
     { value: "week", title: t("Week") },
   ];
-  console.log(durationOptions);
 
   const redirectModal = () => {
     navigate("/console/master/scheme");
@@ -54,35 +53,35 @@ const SchemeCreation = () => {
   //     [fieldName]: value,
   //   });
   // };
- 
-  
-// Function to calculate maturity amount
-const calculateMaturityAmount = (currentFormData) => {
+
+  // Function to calculate maturity amount
+  const calculateMaturityAmount = (currentFormData) => {
     const duration = parseFloat(currentFormData.duration) || 0;
     const dueAmount = parseFloat(currentFormData.schemet_due_amount) || 0;
     const bonus = parseFloat(currentFormData.scheme_bonus) || 0;
     const totalDuesAmount = duration * dueAmount;
     const maturityAmount = totalDuesAmount + bonus;
-    return maturityAmount.toFixed(2); 
-};
+    return maturityAmount.toFixed(2);
+  };
 
-const handleChange = (e, fieldName) => {
+  const handleChange = (e, fieldName) => {
     const newValue = e.target.value;
     const newFormData = {
-        ...formData,
-        [fieldName]: newValue,
+      ...formData,
+      [fieldName]: newValue,
     };
-    if (['duration', 'schemet_due_amount', 'scheme_bonus'].includes(fieldName)) {
-        const updatedMaturityAmount = calculateMaturityAmount(newFormData);
-        setFormData({
-            ...newFormData,
-            scheme_maturtiy_amount: updatedMaturityAmount,
-        });
-        
+    if (
+      ["duration", "schemet_due_amount", "scheme_bonus"].includes(fieldName)
+    ) {
+      const updatedMaturityAmount = calculateMaturityAmount(newFormData);
+      setFormData({
+        ...newFormData,
+        scheme_maturtiy_amount: updatedMaturityAmount,
+      });
     } else {
-        setFormData(newFormData);
+      setFormData(newFormData);
     }
-};
+  };
   const userTitleSegment =
     type === "view"
       ? ` ${t("view")}`
@@ -91,7 +90,6 @@ const handleChange = (e, fieldName) => {
       : ` ${t("Creation")}`;
 
   const handleSubmit = async () => {
-    console.log("6754776");
     try {
       setLoading(true);
 
@@ -105,10 +103,8 @@ const handleChange = (e, fieldName) => {
           action: "create",
         }),
       });
-      console.log(formData);
-      const responseData = await response.json();
 
-      console.log(responseData);
+      const responseData = await response.json();
 
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg, {
@@ -143,7 +139,6 @@ const handleChange = (e, fieldName) => {
   };
 
   const handleUpdateSubmit = async () => {
-    console.log("Inside handleUpdateSubmit");
     setLoading(true);
 
     try {
@@ -153,14 +148,14 @@ const handleChange = (e, fieldName) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-           action: "update",
+          action: "update",
           id: rowData.id,
           scheme_name: formData.scheme_name,
           schemet_due_amount: formData.schemet_due_amount,
           scheme_bonus: formData.scheme_bonus,
-          scheme_maturtiy_amount: formData.scheme_maturtiy_amount,  
+          scheme_maturtiy_amount: formData.scheme_maturtiy_amount,
           duration_unit: formData.duration_unit,
-          duration: formData.duration
+          duration: formData.duration,
         }),
       });
 
@@ -199,7 +194,6 @@ const handleChange = (e, fieldName) => {
 
     setLoading(false);
   };
-
 
   return (
     <div>
@@ -332,14 +326,14 @@ const handleChange = (e, fieldName) => {
               ></TextInputForm>
             )}
           </Col>
-          
+
           <Col lg="3" md="6" xs="12" className="py-3">
             <TextInputForm
               placeholder={t("Maturity Amount")}
               labelname={t("Maturity Amount")}
               name="scheme_maturtiy_amount"
-              type="number" 
-              readOnly 
+              type="number"
+              readOnly
               value={
                 type === "view"
                   ? rowData.scheme_maturtiy_amount

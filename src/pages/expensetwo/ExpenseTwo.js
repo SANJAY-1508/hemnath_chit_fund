@@ -26,7 +26,6 @@ const CategoryTwo = () => {
     });
   };
   const handleexpenseTwoDeleteClick = async (id) => {
-    console.log("Deleting bank pledge ID:", id);
     setLoading(true);
     try {
       const response = await fetch(`${API_DOMAIN}/expense.php`, {
@@ -42,7 +41,6 @@ const CategoryTwo = () => {
       if (responseData.head.code === 200) {
         navigate("/console/expense");
       } else {
-        console.log(responseData.head.msg);
         setLoading(false);
       }
     } catch (error) {
@@ -66,7 +64,6 @@ const CategoryTwo = () => {
         });
 
         const responseData = await response.json();
-        console.log(responseData);
         setLoading(false);
         if (responseData.head.code === 200) {
           setUserData(responseData.body.expense);

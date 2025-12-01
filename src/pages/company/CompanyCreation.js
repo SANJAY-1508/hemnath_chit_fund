@@ -17,7 +17,7 @@ const CompanyCreation = () => {
 
   const location = useLocation();
   const { type, rowData } = location.state || {};
-  console.log("rowData", rowData);
+
   const initialState =
     type === "edit"
       ? { ...rowData }
@@ -30,10 +30,8 @@ const CompanyCreation = () => {
         };
 
   const [formData, setFormData] = useState(initialState);
-  console.log("formdata values", formData);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
-
   const redirectModal = () => {
     navigate("/console/company");
   };
@@ -79,7 +77,6 @@ const CompanyCreation = () => {
         place: formData.place,
         pincode: formData.pincode,
       };
-      console.log("Payload:", payload);
 
       if (type === "edit") {
         payload.edit_company_id = rowData.user_id;
@@ -92,7 +89,6 @@ const CompanyCreation = () => {
         },
         body: JSON.stringify(payload),
       });
-      console.log(response);
 
       const responseData = await response.json();
 

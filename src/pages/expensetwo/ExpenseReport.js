@@ -31,7 +31,6 @@ const ExpenseReport = () => {
         body: JSON.stringify({ get_categories: true }),
       });
       const responseData = await response.json();
-      console.log(responseData);
       if (responseData.head.code === 200) {
         setCategories(responseData.body.categories || []);
       } else {

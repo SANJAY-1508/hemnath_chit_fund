@@ -300,7 +300,6 @@ const CustomerDetails = () => {
         navigate("/console/master/customer");
         window.location.reload();
       } else {
-        console.log(responseData.head.msg);
         setLoading(false);
       }
     } catch (error) {
