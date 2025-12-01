@@ -56,6 +56,8 @@ const ChitCreation = () => {
   const navigate = useNavigate();
   const chitNumber = rowData?.chit_no || "";
 
+   const user = JSON.parse(localStorage.getItem("user")) || {};
+
   // --- Handlers ---
   const redirectModal = () => {
     navigate("/console/master/chit");
@@ -95,6 +97,8 @@ const ChitCreation = () => {
       action: "pay_due",
       due_id: dueToPay.id,
       amount: parseFloat(dueToPay.due_amount),
+      created_by_id: user.user_id,
+      created_by_name: user.name,
     };
 
     try {
@@ -159,6 +163,8 @@ const ChitCreation = () => {
       customer_id: formData.customer_id,
       scheme_id: formData.scheme_id,
       start_date: fromDate,
+      created_by_id: user.user_id,
+      created_by_name: user.name,
     };
     try {
       setLoading(true);

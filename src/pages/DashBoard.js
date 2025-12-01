@@ -426,6 +426,10 @@ const DashBoard = () => {
     return null;
   };
 // Function to format the label to display the percentage
+// Function to format the label to display the percentage
+// DashBoard.js (Lines 409-434, approximately)
+
+// Function to format the label to display the percentage
 const renderCustomizedLabel = ({
   cx,
   cy,
@@ -434,25 +438,30 @@ const renderCustomizedLabel = ({
   outerRadius,
   percent,
   index,
-  scheme_name, // Destructure scheme_name to show context in console if needed
-  percentage // Use the pre-calculated percentage from your data
+  scheme_name,
+  percentage
 }) => {
   
   // Calculate the position for the label text
   const RADIAN = Math.PI / 180;
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.3;
+  
+  // ✅ FIX: Changed multiplier from 0.7 to 0.5 to center the text better 
+  // and prevent overlap, especially for small slices.
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.7; 
+  
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-  // Return the text element with the formatted percentage
-  // We use the 'percentage' field from your data directly
+  // Return the text element with the formatmted percentage
   return (
     <text
       x={x}
       y={y}
       fill="white"
-      textAnchor={x > cx ? "start" : "end"}
-      dominantBaseline="central"
+      // ✅ Center the text horizontally
+      textAnchor="middle" 
+      // ✅ Center the text vertically
+      dominantBaseline="middle"
       fontWeight="bold"
     >
       {`${percentage}%`} 
