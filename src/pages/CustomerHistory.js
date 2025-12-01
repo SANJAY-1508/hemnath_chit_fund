@@ -86,7 +86,7 @@ const CustomerHistory = () => {
               <option value="">Select Customer No</option>
               {customers.map((cust) => (
                 <option key={cust.id} value={cust.customer_no}>
-                  {cust.customer_no} - {cust.name}
+                  {cust.customer_no} - {cust.customer_name}
                 </option>
               ))}
             </Form.Select>
