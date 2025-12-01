@@ -200,7 +200,8 @@ const CategoryTwo = () => {
                     muiTableHeadCellProps={{
                       sx: {
                         fontWeight: "bold",
-                        backgroundColor: "#f8f9fa",
+                        backgroundColor: "#000000ff",
+                         color: "white",
                       },
                     }}
                   />
