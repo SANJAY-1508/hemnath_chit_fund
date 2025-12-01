@@ -18,13 +18,21 @@ const UserCreation = () => {
   const { type, rowData } = location.state || {};
   const initialState =
     type === "edit"
-      ? { ...rowData }
+      ? {
+       
+          name: rowData.name || "",     
+          role: rowData.role || "",           
+          phone_number: rowData.phone || "",
+          user_name: rowData.user_name ||"",
+          password: rowData.password || "",   
+          nickname: rowData.nickname || "",   
+        }
       : {
-          Name: "",
-          RoleSelection: "",
-          Mobile_Number: "",
-          User_Name: "",
-          Password: "",
+          name: "",
+          role: "",
+          phone_number: "",
+          user_name: "",
+          password: "",
           nickname: "",
         };
   const [formData, setFormData] = useState(initialState);
@@ -55,12 +63,12 @@ const UserCreation = () => {
     navigate("/console/user");
   };
 
-  const handleChange = (e, fieldName) => {
+  const handleChange = (e, fieldname) => {
     const value = e.target ? e.target.value : e.value;
 
     setFormData({
       ...formData,
-      [fieldName]: value,
+      [fieldname]: value,
     });
   };
 
@@ -84,14 +92,14 @@ const UserCreation = () => {
           progress: undefined,
           theme: "colored",
         });
-        return; // Exit the function early if any field is empty
+        return; 
       }
     }
     try {
       setLoading(true);
-      const mobileNumber = formData.Mobile_Number;
-      if (!/^\d{10}$/.test(mobileNumber)) {
-        toast.error("Mobile number must be a 10-digit number!", {
+      const phoneNumber = formData.phone_number;
+      if (!/^\d{10}$/.test(phoneNumber)) {
+        toast.error("phone number must be a 10-digit number!", {
           position: "top-center",
           autoClose: 2000,
           hideProgressBar: false,
@@ -104,15 +112,28 @@ const UserCreation = () => {
         return;
         setLoading(false);
       }
+      
+      const requestBody = {
+      
+        name:formData.name,
+        user_name: formData.user_name,         
+        phone_number: formData.phone_number, 
+        password: formData.password,       
+        role: formData.role,             
+        user_profile_img: "", 
+      };
+      
       const response = await fetch(`${API_DOMAIN}/users.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(requestBody), 
       });
-      console.log(formData);
+      console.log("userssss");
+      console.log(JSON.stringify(requestBody)); 
       const responseData = await response.json();
+ 
 
       console.log(responseData);
 
@@ -130,6 +151,8 @@ const UserCreation = () => {
         setTimeout(() => {
           navigate("/console/user");
         }, 2000);
+        
+
       } else {
         toast.error(responseData.head.msg, {
           position: "top-center",
@@ -145,6 +168,7 @@ const UserCreation = () => {
       }
     } catch (error) {
       console.error("Error:", error);
+      
     }
   };
 
@@ -158,16 +182,17 @@ const UserCreation = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          edit_user_id: rowData.user_id, // Include the company ID in the request
-          Name: formData.Name,
-          Mobile_Number: formData.Mobile_Number,
-          RoleSelection: formData.RoleSelection,
-          FireWorksName: formData.FireWorksName,
-          User_Name: formData.User_Name,
-          Password: formData.Password,
-          nickname: formData.nickname,
+       body: JSON.stringify({
+          edit_user_id: rowData.user_id,
+          name:formData.name,
+          user_name: formData.user_name,        
+          phone_number: formData.phone_number, 
+          password: formData.password,     
+          role: formData.role,             
+          user_profile_img: "",           
+         
         }),
+   
       });
 
       const responseData = await response.json();
@@ -220,19 +245,19 @@ const UserCreation = () => {
           <Col lg="4" md="6" xs="12" className="py-3">
         {type === "edit" ? (
           <TextInputForm
-            placeholder={t("Name")} // 4. Apply t()
-            labelname={t("Name")} // 4. Apply t()
-            name="Name"
-            value={formData.Name}
-            onChange={(e) => handleChange(e, "Name")}
+            placeholder={t("name")} 
+            labelname={t("name")} 
+            name="name"
+            value={formData.name}
+            onChange={(e) => handleChange(e, "name")}
           ></TextInputForm>
         ) : (
           <TextInputForm
-            placeholder={t("Name")} // 4. Apply t() (Removed leading space for clean key)
-            labelname={t("Name")} // 4. Apply t() (Removed leading space for clean key)
-            name="Name"
-            value={type === "view" ? rowData.Name : formData.Name}
-            onChange={(e) => handleChange(e, "Name")}
+            placeholder={t("name")} 
+            labelname={t("name")} 
+            name="name"
+            value={type === "view" ? rowData.name : formData.name}
+            onChange={(e) => handleChange(e, "name")}
           ></TextInputForm>
         )}
       </Col>
@@ -240,32 +265,32 @@ const UserCreation = () => {
         {type === "edit" ? (
           <DropDownUI
             optionlist={DropList}
-            placeholder={t("Role Selection")} // 4. Apply t() (Using "Role Selection" as key)
-            labelname={t("Role Selection")} // 4. Apply t()
-            name="RoleSelection"
-            value={formData.RoleSelection}
+            placeholder={t("role")}
+            labelname={t("role")} 
+            name="role"
+            value={formData.role}
             onChange={(updatedFormData) =>
               setFormData({
                 ...formData,
-                RoleSelection: updatedFormData.RoleSelection,
+                role: updatedFormData.role,
               })
             }
           />
         ) : (
           <DropDownUI
             optionlist={DropList}
-            placeholder={t("Role Selection")} // 4. Apply t()
-            labelname={t("Role Selection")} // 4. Apply t()
-            name="RoleSelection"
+            placeholder={t("role")} // 4. Apply t()
+            labelname={t("role")} // 4. Apply t()
+            name="role"
             value={
               type === "view"
-                ? rowData.RoleSelection
-                : formData.RoleSelection
+                ? rowData.role
+                : formData.role
             }
             onChange={(updatedFormData) =>
               setFormData({
                 ...formData,
-                RoleSelection: updatedFormData.RoleSelection,
+                role: updatedFormData.role,
               })
             }
           />
@@ -274,60 +299,59 @@ const UserCreation = () => {
          <Col lg="4" md="12" xs="12" className="py-3">
         {type === "edit" ? (
           <TextInputForm
-            placeholder={t("Mobile Number")} // 4. Apply t()
+            placeholder={t("phone number")}
             type={"number"}
-            labelname={t("Mobile Number")} // 4. Apply t()
-            name="Mobile_Number"
-            value={formData.Mobile_Number}
-            onChange={(e) => handleChange(e, "Mobile_Number")}
+            labelname={t("phone number")} 
+            name="phone_number"
+            value={formData.phone_number}
+            onChange={(e) => handleChange(e, "phone_number")}
           ></TextInputForm>
         ) : (
           <TextInputForm
-            placeholder={t("Mobile Number")} // 4. Apply t()
+            placeholder={t("phone number")} 
             type={"number"}
-            labelname={t("Mobile Number")} // 4. Apply t()
-            name="Mobile_Number"
+            labelname={t("phone number")} 
+            name="phone_number"
             value={
               type === "view"
-                ? rowData.Mobile_Number
-                : formData.Mobile_Number
+                ? rowData.phone_number
+                : formData.phone_number
             }
-            onChange={(e) => handleChange(e, "Mobile_Number")}
+            onChange={(e) => handleChange(e, "phone_number")}
           ></TextInputForm>
         )}
       </Col>
           <Col lg="3" md="6" xs="12" className="py-3">
         {type === "edit" ? (
           <TextInputForm
-            placeholder={t("User Name")} // 4. Apply t()
-            labelname={t("User Name")} // 4. Apply t()
-            name="User_Name"
-            value={formData.User_Name}
-            onChange={(e) => handleChange(e, "User_Name")}
+            placeholder={t("User Name")} 
+            labelname={t("User Name")} 
+            name="user_name"
+            value={formData.user_name}
+            onChange={(e) => handleChange(e, "user_name")}
           ></TextInputForm>
         ) : (
           <TextInputForm
-            placeholder={t("User Name")} // 4. Apply t()
-            labelname={t("User Name")} // 4. Apply t()
-            name="User_Name"
-            value={type === "view" ? rowData.User_Name : formData.User_Name}
-            onChange={(e) => handleChange(e, "User_Name")}
+            placeholder={t("User Name")}
+            labelname={t("User Name")}
+            name="user_name"
+            value={type === "view" ? rowData.user_name : formData.user_name}
+            onChange={(e) => handleChange(e, "user_name")}
           ></TextInputForm>
         )}
       </Col>
           <Col lg="3" md="6" xs="12" className="py-3">
         {type === "edit" ? (
           <TextInputForm
-            placeholder={t("Nick Name")} // 4. Apply t()
-            labelname={t("Nick Name")} // 4. Apply t()
-            name="nickname"
+            placeholder={t("Nick Name")} 
+            labelname={t("Nick Name")} 
             value={formData.nickname}
             onChange={(e) => handleChange(e, "nickname")}
           ></TextInputForm>
         ) : (
           <TextInputForm
-            placeholder={t("Nick Name")} // 4. Apply t()
-            labelname={t("Nick Name")} // 4. Apply t()
+            placeholder={t("Nick Name")} 
+            labelname={t("Nick Name")}
             name="nickname"
             value={type === "view" ? rowData.nickname : formData.nickname}
             onChange={(e) => handleChange(e, "nickname")}
@@ -337,7 +361,7 @@ const UserCreation = () => {
          <Col lg="3" md="6" xs="12" className="py-3">
         {type === "view" ? null : (
           <TextInputForm
-            placeholder={t("Password")} // 4. Apply t()
+            placeholder={t("password")}
             suffix_icon={
               showPassword ? (
                 <VscEye onClick={() => setShowPassword(false)} />
@@ -345,11 +369,11 @@ const UserCreation = () => {
                 <VscEyeClosed onClick={() => setShowPassword(true)} />
               )
             }
-            labelname={t("Password")} // 4. Apply t()
+            labelname={t("password")}
             type={showPassword ? "text" : "password"}
-            name="Password"
-            value={formData.Password}
-            onChange={(e) => handleChange(e, "Password")}
+            name="password"
+            value={formData.password}
+            onChange={(e) => handleChange(e, "password")}
           ></TextInputForm>
         )}
       </Col>
