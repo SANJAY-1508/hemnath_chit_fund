@@ -27,7 +27,7 @@ const CategoryTwo = () => {
   };
 
   const handlecategoryTwoDeleteClick = async (id) => {
-    console.log("Deleting category two:", id);
+  
     setLoading(true);
     try {
       const response = await fetch(`${API_DOMAIN}/category.php`, {
@@ -40,12 +40,12 @@ const CategoryTwo = () => {
         }),
       });
       const responseData = await response.json();
-      console.log(responseData);
+     
       if (responseData.head.code === 200) {
         navigate("/console/expense");
         window.location.reload();
       } else {
-        console.log(responseData.head.msg);
+       
         setLoading(false);
       }
     } catch (error) {

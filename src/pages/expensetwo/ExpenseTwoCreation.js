@@ -31,7 +31,6 @@ const ExpenseTwoCreation = () => {
         };
 
   const [formData, setFormData] = useState(initialState);
-  console.log(formData);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);

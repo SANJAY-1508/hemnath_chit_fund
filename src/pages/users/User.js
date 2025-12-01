@@ -35,7 +35,6 @@ const User = () => {
     });
   };
   const handleDeleteClick = async (userId) => {
-    console.log("Delete Group ID:", userId);
     setLoading(true);
     try {
       const response = await fetch(`${API_DOMAIN}/users.php`, {
@@ -53,7 +52,7 @@ const User = () => {
         window.location.reload();
         //setLoading(false);
       } else {
-        console.log(responseData.head.msg);
+       
         setLoading(false);
       }
     } catch (error) {

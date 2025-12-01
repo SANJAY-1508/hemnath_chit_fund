@@ -161,9 +161,7 @@ const DashBoard = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action:"dashboard"}),
       });
-
       const responseData = await response.json();
-      console.log("Dashboard API Response:", responseData);
 
       if (responseData.head.code === 200 && responseData.body) {
         const apiData = responseData.body;

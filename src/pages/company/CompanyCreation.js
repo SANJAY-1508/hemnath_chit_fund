@@ -17,7 +17,7 @@ const CompanyCreation = () => {
 
   const location = useLocation();
   const { type, rowData } = location.state || {};
-  console.log("rowData", rowData);
+
   const initialState =
     type === "edit"
       ? { ...rowData }
@@ -58,10 +58,8 @@ const CompanyCreation = () => {
 
 
   const [formData, setFormData] = useState(initialState);
-  console.log("formdata values", formData);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
-
   const redirectModal = () => {
     navigate("/console/company");
   };
@@ -101,6 +99,7 @@ const CompanyCreation = () => {
 
     try {
       const payload = {
+<<<<<<< HEAD
    
     company_name: formData.company_name || "",
     mobile_number: formData.mobile_number || "",
@@ -126,6 +125,14 @@ const CompanyCreation = () => {
 };
      
       console.log("Payload:", payload);
+=======
+        company_name: formData.company_name,
+        mobile_number: formData.mobile_number,
+        gst: formData.gst,
+        place: formData.place,
+        pincode: formData.pincode,
+      };
+>>>>>>> 32270bcc769e8f4433c24106254045c5916e8b24
 
       if (type === "edit") {
         payload.edit_company_id = rowData.user_id;
@@ -138,7 +145,6 @@ const CompanyCreation = () => {
         },
         body: JSON.stringify(payload),
       });
-      console.log(response);
 
       const responseData = await response.json();
 

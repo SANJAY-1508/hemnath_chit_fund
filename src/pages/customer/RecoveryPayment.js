@@ -400,7 +400,6 @@ const RecoveryPayment = () => {
         navigate(-1);
         // window.location.reload();
       } else {
-        console.log(responseData.head.msg);
         setLoading(false);
       }
     } catch (error) {
@@ -448,7 +447,6 @@ const RecoveryPayment = () => {
         enableSorting: false,
         Cell: ({ row }) => {
           const rowData = row.original;
-          console.log("rowData", rowData);
           const [anchorEl, setAnchorEl] = React.useState(null);
           const open = Boolean(anchorEl);
 

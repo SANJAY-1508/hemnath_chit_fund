@@ -58,7 +58,6 @@ const Login = ({ onLogin }) => {
         });
 
         setTimeout(() => {
-          console.log(responseData.body.user);
           navigate("/console/dashboard");
         }, 2000);
       } else {

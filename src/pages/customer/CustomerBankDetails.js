@@ -46,7 +46,6 @@ const CustomerBankDetails = () => {
         }),
       });
       const responseData = await response.json();
-      console.log(responseData);
       if (responseData.head.code === 200) {
         setPawnInterestTotal(responseData.body.total_interest || 0);
       } else {

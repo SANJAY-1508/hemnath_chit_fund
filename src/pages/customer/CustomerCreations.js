@@ -14,7 +14,7 @@ const CustomerCreations = () => {
   const { t } = useLanguage();
   const location = useLocation();
   const { type, rowData } = location.state || {};
-  console.log("rowData", rowData);
+
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user")) || {};
 
@@ -37,7 +37,7 @@ const CustomerCreations = () => {
         };
 
   const [formData, setFormData] = useState(initialState);
-  console.log("data", formData);
+
   const [loading, setLoading] = useState(false);
 
   // useEffect(() => {
@@ -108,7 +108,6 @@ const CustomerCreations = () => {
     try {
       const resp = await fetch(url);
       const json = await resp.json();
-      console.log(json);
 
       if (
         Array.isArray(json) &&
@@ -144,8 +143,7 @@ const CustomerCreations = () => {
           action: "signup",
         }),
       });
-      console.log("formdata", formData);
-      console.log("reasponse", response);
+
       const responseData = await response.json();
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg, {
@@ -197,11 +195,9 @@ const CustomerCreations = () => {
   };
 
   const handleUpdateSubmit = async () => {
-    console.log("Inside handleUpdateSubmit");
     setLoading(true);
 
     try {
-      console.log("123");
       const response = await fetch(`${API_DOMAIN}/customer_signup.php`, {
         method: "POST",
         headers: {
@@ -220,7 +216,7 @@ const CustomerCreations = () => {
         }),
       });
       const responseData = await response.json();
-      console.log(responseData);
+
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg, {
           position: "top-center",

@@ -59,10 +59,8 @@ const Customer = () => {
     });
   };
   const handlecustomerDeleteClick = async (id) => {
-    console.log("Delete Group ID:", id);
     setLoading(true);
     try {
-      console.log("44554");
       const response = await fetch(`${API_DOMAIN}/customer.php`, {
         method: "POST",
         headers: {
@@ -79,7 +77,6 @@ const Customer = () => {
         navigate("/console/master/customer");
         window.location.reload();
       } else {
-        console.log(responseData.head.msg);
         setLoading(false);
       }
     } catch (error) {
@@ -102,7 +99,7 @@ const Customer = () => {
       });
 
       const responseData = await response.json();
-      console.log(responseData);
+
       setLoading(false);
       if (responseData.head.code === 200) {
         setcustomerData(responseData.body.customer);
