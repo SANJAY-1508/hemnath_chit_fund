@@ -217,7 +217,17 @@ const CustomerCreations = () => {
         }),
       });
       const responseData = await response.json();
-
+      console.log(
+        JSON.stringify({
+          edit_customer_id: rowData.customer_id,
+          customer_name: formData.customer_name,
+          mobile_number: formData.mobile_number,
+          email_id: formData.email_id,
+          current_user_id: user.user_id,
+          created_by_id: user.user_id,
+          created_by_name: user.name,
+        })
+      );
       if (responseData.head.code === 200) {
         toast.success(responseData.head.msg, {
           position: "top-center",
