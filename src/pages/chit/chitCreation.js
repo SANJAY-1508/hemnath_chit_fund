@@ -236,20 +236,11 @@ const ChitCreation = () => {
       console.log(responseData);
       if (responseData.head.code === 200) {
         const options = responseData.body.customer.map((cust) => ({
-          value: cust.customer_id,
+         value: cust.customer_id.toString(),
           label: cust.customer_name,
           fullData: cust,
         }));
         setCustomerOptions(options);
-        if (type === "edit" || (type === "view" && rowData?.customer_id)) {
-          const preSelected = options.find(
-            (opt) => opt.value === rowData.customer_id
-          );
-          if (preSelected) {
-            setSelectedCustomer(preSelected.fullData);
-            setSelectedCustomerOption(preSelected);
-          }
-        }
       }
     } catch (error) {
       console.error("Error fetching customer data:", error.message);
@@ -268,23 +259,12 @@ const ChitCreation = () => {
 
       if (responseData.head.code === 200) {
         const options = responseData.body.schemes.map((item) => ({
-          value: item.scheme_id,
+         value: item.scheme_id.toString(),
           label: item.scheme_name,
            fullData: item,
         }));
 
         setSchemeOptions(options);
-
-        // Pre-select logic
-        if (type === "edit" || (type === "view" && rowData?.scheme_id)) {
-          const preSelectedChitType = options.find(
-            (opt) => opt.value === rowData.scheme_id
-          );
-          if (preSelectedChitType) {
-             setSelectedScheme(preSelectedChitType.fullData);
-           setSelectedSchemeOption(preSelectedChitType);
-          }
-        }
       }
     } catch (error) {
       console.error("Error fetching chit type data:", error.message);
@@ -317,6 +297,43 @@ const ChitCreation = () => {
     fetchDataCustomer();
     fetchScheme();
   }, []);
+
+ 
+useEffect(() => {
+    console.log("Type:", type, "Row Data:", rowData);
+    if ((type === "edit" || type === "view") && rowData) {
+        if (customerOptions.length > 0 && rowData.customer_id) {           
+            console.log("Target Customer ID:", rowData.customer_id);            
+            const targetId = Number(rowData.customer_id);           
+            const preSelectedCust = customerOptions.find(
+                (opt) => Number(opt.fullData.id) === targetId
+            );          
+            console.log("Customer Options:", customerOptions);
+            console.log("Pre-selected Customer:", preSelectedCust);            
+            if (preSelectedCust) {
+                setSelectedCustomer(preSelectedCust.fullData);
+                setSelectedCustomerOption(preSelectedCust);
+            }
+        }        
+        if (schemeOptions.length > 0 && rowData.scheme_id) {
+              const targetSchemeId = Number(rowData.scheme_id); 
+            
+            const preSelectedScheme = schemeOptions.find(
+                (opt) => Number(opt.fullData.id) === targetSchemeId
+            );
+            
+            if (preSelectedScheme) {
+                setSelectedScheme(preSelectedScheme.fullData);
+                setSelectedSchemeOption(preSelectedScheme);
+            }
+        }
+        if (rowData.start_date) {
+            setFromDate(rowData.start_date);
+        }
+    }
+}, [type, rowData, customerOptions, schemeOptions]);
+
+// ... rest of the component
 
   useEffect(() => {
     if (type === "edit" || (type === "view" && rowData?.chit_id)) {
