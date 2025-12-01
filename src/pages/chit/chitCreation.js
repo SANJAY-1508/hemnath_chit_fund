@@ -725,12 +725,12 @@ const ChitCreation = () => {
           </Modal.Body>
           <Modal.Footer>
             <Button
-              variant="secondary"
+              variant="none"
               onClick={() => {
                 setShowConfirmationModal(false);
                 setDueToPay(null);
               }}
-              className="rounded-pill px-4"
+              className="rounded-pill px-4 bg-danger text-white"
             >
               {t("Later")}
             </Button>
