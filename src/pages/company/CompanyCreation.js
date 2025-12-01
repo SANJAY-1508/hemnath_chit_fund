@@ -222,7 +222,7 @@ const CompanyCreation = () => {
           </Col>
 
           {/* Phone Number Field */}
-          <Col lg="4" md="6" xs="12" className="py-3">
+          {/* <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
                 placeholder={t("Phone Number")}
@@ -242,10 +242,10 @@ const CompanyCreation = () => {
                 onChange={(e) => handleChange(e, "phone")}
               ></TextInputForm>
             )}
-          </Col>
+          </Col> */}
 
           {/* License Number Field (gst) */}
-          <Col lg="4" md="6" xs="12" className="py-3">
+          {/* <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
                 placeholder={t("GST")} // ✅
@@ -263,7 +263,7 @@ const CompanyCreation = () => {
                 onChange={(e) => handleChange(e, "gst_no")}
               ></TextInputForm>
             )}
-          </Col>
+          </Col> */}
 
           {/* Place Field */}
           <Col lg="4" md="6" xs="12" className="py-3">
@@ -329,7 +329,7 @@ const CompanyCreation = () => {
             )}
           </Col>
 
-          <Col lg="4" md="6" xs="12" className="py-3">
+          {/* <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
                 placeholder={t("Account Number")} // ✅
@@ -351,9 +351,9 @@ const CompanyCreation = () => {
                 onChange={(e) => handleChange(e, "acc_number")}
               ></TextInputForm>
             )}
-          </Col>
+          </Col> */}
 
-          <Col lg="4" md="6" xs="12" className="py-3">
+          {/* <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
                 placeholder={t("Bank Name")} // ✅
@@ -373,9 +373,9 @@ const CompanyCreation = () => {
                 onChange={(e) => handleChange(e, "bank_name")}
               ></TextInputForm>
             )}
-          </Col>
+          </Col> */}
 
-          <Col lg="4" md="6" xs="12" className="py-3">
+          {/* <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
                 placeholder={t("Account Holder Name")} // ✅
@@ -399,9 +399,9 @@ const CompanyCreation = () => {
                 onChange={(e) => handleChange(e, "acc_holder_name")}
               ></TextInputForm>
             )}
-          </Col>
+          </Col> */}
 
-          <Col lg="4" md="6" xs="12" className="py-3">
+          {/* <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
                 placeholder={t("IFSC Code")} // ✅
@@ -421,10 +421,10 @@ const CompanyCreation = () => {
                 onChange={(e) => handleChange(e, "ifsc_code")}
               ></TextInputForm>
             )}
-          </Col>
+          </Col> */}
 
           {/* Bank Branch Field */}
-          <Col lg="4" md="6" xs="12" className="py-3">
+          {/* <Col lg="4" md="6" xs="12" className="py-3">
             {type === "edit" ? (
               <TextInputForm
                 placeholder={t("Bank Branch")}
@@ -446,7 +446,7 @@ const CompanyCreation = () => {
                 onChange={(e) => handleChange(e, "bank_branch")}
               ></TextInputForm>
             )}
-          </Col>
+          </Col> */}
 
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div className="text-center">
