@@ -23,7 +23,6 @@ const UserCreation = () => {
           phone_number: rowData.phone || "",
           user_name: rowData.user_name || "",
           password: rowData.password || "",
-          nickname: rowData.nickname || "",
         }
       : {
           name: "",
@@ -31,7 +30,6 @@ const UserCreation = () => {
           phone_number: "",
           user_name: "",
           password: "",
-          nickname: "",
         };
   const [formData, setFormData] = useState(initialState);
   const [error, setError] = useState("");
@@ -107,8 +105,8 @@ const UserCreation = () => {
           progress: undefined,
           theme: "colored",
         });
-        return;
         setLoading(false);
+        return;
       }
 
       const requestBody = {
@@ -160,6 +158,7 @@ const UserCreation = () => {
     } catch (error) {
       console.error("Error:", error);
     }
+    setLoading(false);
   };
 
   const handleUpdateSubmit = async () => {
@@ -218,6 +217,9 @@ const UserCreation = () => {
     setLoading(false);
   };
 
+  const isView = type === "view";
+  const isEdit = type === "edit";
+
   return (
     <div>
       <Container>
@@ -228,117 +230,55 @@ const UserCreation = () => {
           </Col>
 
           <Col lg="4" md="6" xs="12" className="py-3">
-            {type === "edit" ? (
-              <TextInputForm
-                placeholder={t("name")}
-                labelname={t("name")}
-                name="name"
-                value={formData.name}
-                onChange={(e) => handleChange(e, "name")}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={t("name")}
-                labelname={t("name")}
-                name="name"
-                value={type === "view" ? rowData.name : formData.name}
-                onChange={(e) => handleChange(e, "name")}
-              ></TextInputForm>
-            )}
+            <TextInputForm
+              placeholder={t("name")}
+              labelname={t("name")}
+              name="name"
+              value={isView ? rowData.name || "" : formData.name}
+              onChange={(e) => !isView && handleChange(e, "name")}
+              disabled={isView}
+            ></TextInputForm>
           </Col>
           <Col lg="4" md="6" xs="12" className="py-3">
-            {type === "edit" ? (
-              <DropDownUI
-                optionlist={DropList}
-                placeholder={t("role")}
-                labelname={t("role")}
-                name="role"
-                value={formData.role}
-                onChange={(updatedFormData) =>
-                  setFormData({
-                    ...formData,
-                    role: updatedFormData.role,
-                  })
-                }
-              />
-            ) : (
-              <DropDownUI
-                optionlist={DropList}
-                placeholder={t("role")} // 4. Apply t()
-                labelname={t("role")} // 4. Apply t()
-                name="role"
-                value={type === "view" ? rowData.role : formData.role}
-                onChange={(updatedFormData) =>
-                  setFormData({
-                    ...formData,
-                    role: updatedFormData.role,
-                  })
-                }
-              />
-            )}
+            <DropDownUI
+              optionlist={DropList}
+              placeholder={t("role")} // 4. Apply t()
+              labelname={t("role")} // 4. Apply t()
+              name="role"
+              value={isView ? rowData.role || "" : formData.role}
+              onChange={(updatedFormData) =>
+                !isView &&
+                setFormData({
+                  ...formData,
+                  role: updatedFormData.role,
+                })
+              }
+              disabled={isView}
+            />
           </Col>
-          <Col lg="4" md="12" xs="12" className="py-3">
-            {type === "edit" ? (
-              <TextInputForm
-                placeholder={t("phone number")}
-                type={"number"}
-                labelname={t("phone number")}
-                name="phone_number"
-                value={formData.phone_number}
-                onChange={(e) => handleChange(e, "phone_number")}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={t("phone number")}
-                type={"number"}
-                labelname={t("phone number")}
-                name="phone_number"
-                value={
-                  type === "view" ? rowData.phone_number : formData.phone_number
-                }
-                onChange={(e) => handleChange(e, "phone_number")}
-              ></TextInputForm>
-            )}
+          <Col lg="4" md="6" xs="12" className="py-3">
+            <TextInputForm
+              placeholder={t("phone number")}
+              type={"number"}
+              labelname={t("phone number")}
+              name="phone_number"
+              value={isView ? rowData.phone || "" : formData.phone_number}
+              onChange={(e) => !isView && handleChange(e, "phone_number")}
+              disabled={isView}
+            ></TextInputForm>
           </Col>
-          <Col lg="3" md="6" xs="12" className="py-3">
-            {type === "edit" ? (
-              <TextInputForm
-                placeholder={t("User Name")}
-                labelname={t("User Name")}
-                name="user_name"
-                value={formData.user_name}
-                onChange={(e) => handleChange(e, "user_name")}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={t("User Name")}
-                labelname={t("User Name")}
-                name="user_name"
-                value={type === "view" ? rowData.user_name : formData.user_name}
-                onChange={(e) => handleChange(e, "user_name")}
-              ></TextInputForm>
-            )}
+          <Col lg="4" md="6" xs="12" className="py-3">
+            <TextInputForm
+              placeholder={t("User Name")}
+              labelname={t("User Name")}
+              name="user_name"
+              value={isView ? rowData.user_name || "" : formData.user_name}
+              onChange={(e) => !isView && handleChange(e, "user_name")}
+              disabled={isView}
+            ></TextInputForm>
           </Col>
-          <Col lg="3" md="6" xs="12" className="py-3">
-            {type === "edit" ? (
-              <TextInputForm
-                placeholder={t("Nick Name")}
-                labelname={t("Nick Name")}
-                value={formData.nickname}
-                onChange={(e) => handleChange(e, "nickname")}
-              ></TextInputForm>
-            ) : (
-              <TextInputForm
-                placeholder={t("Nick Name")}
-                labelname={t("Nick Name")}
-                name="nickname"
-                value={type === "view" ? rowData.nickname : formData.nickname}
-                onChange={(e) => handleChange(e, "nickname")}
-              ></TextInputForm>
-            )}
-          </Col>
-          <Col lg="3" md="6" xs="12" className="py-3">
-            {type === "view" ? null : (
+          <Col lg="4" md="6" xs="12" className="py-3">
+            {!isView && (
               <TextInputForm
                 placeholder={t("password")}
                 suffix_icon={
@@ -359,7 +299,7 @@ const UserCreation = () => {
 
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div style={{ textAlign: "right", paddingRight: "5px" }}>
-              {type === "view" ? (
+              {isView ? (
                 <ClickButton
                   label={<>{t("Back")}</>} // 4. Apply t() (Capitalized for key consistency)
                   onClick={() => navigate("/console/user")}
@@ -378,12 +318,13 @@ const UserCreation = () => {
                     pauseOnHover
                     theme="colored"
                   />
-                  {type === "edit" ? (
+                  {isEdit ? (
                     <>
                       <span className="mx-2">
                         <ClickButton
                           label={<>{t("Update")}</>} // 4. Apply t()
                           onClick={handleUpdateSubmit}
+                          disabled={loading}
                         ></ClickButton>
                       </span>
 
@@ -443,7 +384,7 @@ const UserCreation = () => {
         <Modal.Footer>
           <ClickButton
             variant="secondary"
-            label={<> Close</>}
+            label={<>{t("Close")}</>}
             onClick={() => redirectModal()}
           >
             {t("Close")}
