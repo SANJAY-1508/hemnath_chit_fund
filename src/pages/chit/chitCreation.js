@@ -336,15 +336,38 @@ const ChitCreation = () => {
                 isDisabled={type === "edit" || type === "view"}
               />
             </div>
+            
+          </Col>
+
+          <Col lg="4" md="12" xs="12" className="py-3">
+            <div className="mb-4">
+              <label htmlFor="chittype-select" className="mb-2">
+                {t("Scheme Type")}
+              </label>
+              <Select
+                id="chittype-select"
+                placeholder={t("Select Scheme Type")}
+                isSearchable={true}
+                options={schemeOptions}
+                onChange={handleSchemeChange}
+                value={selectedSchemeOption}
+                isDisabled={type === "edit" || type === "view"}
+              />
+            </div>
+            
+          </Col>
+        <Row>
+          <Col>
+          <>
             {selectedCustomer && (
               <Card
                 className="shadow border-0"
-                style={{ borderRadius: "10px" }}
+                style={{ borderRadius: "10px"}}
               >
                 <Card.Body className="p-4">
                   <h6
                     className="text-center mb-4"
-                    style={{ fontWeight: "bold", color: "#333" }}
+                    style={{ fontWeight: "bold", color: "#333"}}
                   >
                     Customer Information
                   </h6>
@@ -414,23 +437,10 @@ const ChitCreation = () => {
                 </Card.Body>
               </Card>
             )}
-          </Col>
-
-          <Col lg="4" md="12" xs="12" className="py-3">
-            <div className="mb-4">
-              <label htmlFor="chittype-select" className="mb-2">
-                {t("Scheme Type")}
-              </label>
-              <Select
-                id="chittype-select"
-                placeholder={t("Select Scheme Type")}
-                isSearchable={true}
-                options={schemeOptions}
-                onChange={handleSchemeChange}
-                value={selectedSchemeOption}
-                isDisabled={type === "edit" || type === "view"}
-              />
-            </div>
+            </>
+            </Col>
+<Col>
+            <>
             {selectedScheme && (
               <Card
                 className="shadow border-0"
@@ -527,7 +537,9 @@ const ChitCreation = () => {
                 </Card.Body>
               </Card>
             )}
+            </>
           </Col>
+        </Row>
 
           {/* ⭐ 4. DUE PAYMENT TABLE (Only visible in edit mode with data) */}
           {(type === "edit" || type === "view") && duesData.length > 0 && (
@@ -709,9 +721,10 @@ const ChitCreation = () => {
             setShowConfirmationModal(false);
             setDueToPay(null);
           }}
-          centered
+          centered 
+          backdrop="static"
         >
-          <Modal.Header closeButton>
+          <Modal.Header>
             <Modal.Title>{t("Confirm Payment")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
