@@ -38,19 +38,19 @@ const CollectionReport = () => {
 
   const fetchChitTypes = useCallback(async () => {
     try {
-      const response = await fetch(`${API_DOMAIN}/chittype.php`, {
+      const response = await fetch(`${API_DOMAIN}/scheme_api.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ search_text: "" }),
+        body: JSON.stringify({ action: "list" }),
       });
       const responseData = await response.json();
 
       if (responseData.head.code === 200) {
         setChitTypes(
-          Array.isArray(responseData.body.chit_type)
-            ? responseData.body.chit_type
-            : responseData.body.chit_type
-            ? [responseData.body.chit_type]
+          Array.isArray(responseData.body.schemes)
+            ? responseData.body.schemes
+            : responseData.body.schemes
+            ? [responseData.body.schemes]
             : []
         );
       } else {
@@ -172,7 +172,7 @@ const CollectionReport = () => {
                   <option value="">Select Customer No</option>
                   {customers.map((cust) => (
                     <option key={cust.customer_no} value={cust.customer_no}>
-                      {cust.customer_no} - {cust.name}
+                      {cust.customer_no} - {cust.customer_name}
                     </option>
                   ))}
                 </Form.Select>
@@ -187,10 +187,10 @@ const CollectionReport = () => {
                   value={chitTypeFilter}
                   onChange={(e) => setChitTypeFilter(e.target.value)}
                 >
-                  <option value="">All Chit Types</option>
+                  <option value="">All Schemes</option>
                   {chitTypes.map((chit) => (
-                    <option key={chit.chit_type_id} value={chit.chit_type}>
-                      {chit.chit_type}
+                    <option key={chit.scheme_id} value={chit.scheme_name}>
+                      {chit.scheme_name}
                     </option>
                   ))}
                 </Form.Select>

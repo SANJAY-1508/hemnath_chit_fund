@@ -152,21 +152,21 @@ const DashBoard = () => {
   const [targetData, setTargetData] = useState([]);
   const [loadingTargets, setLoadingTargets] = useState(false);
 
-  //FFunction calling
+  //Dashboard count
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_DOMAIN}/chit.php`, {
+      const response = await fetch(`${API_DOMAIN}/Dashboard.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dashboard: "" }),
+        body: JSON.stringify({ action:"dashboard"}),
       });
 
       const responseData = await response.json();
       console.log("Dashboard API Response:", responseData);
 
-      if (responseData.head.code === 200 && responseData.data) {
-        const apiData = responseData.data;
+      if (responseData.head.code === 200 && responseData.body) {
+        const apiData = responseData.body;
         const updatedWidgets = dashboardCountData.map((item) => ({
           ...item,
           value:
@@ -184,11 +184,12 @@ const DashBoard = () => {
     }
   };
 
+  ///Monthly bar graph
   const fetchBarGraphData = async (year) => {
     setBarGraphLoading(true);
 
     try {
-      const response = await fetch(`${API_DOMAIN}/groupdata.php`, {
+      const response = await fetch(`${API_DOMAIN}/Dashboard.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -219,13 +220,14 @@ const DashBoard = () => {
     }
   };
 
+  //Daily bar graph
   const fetchDailyData = async (monthKey, monthName) => {
     setBarGraphLoading(true);
     setChartTitle(`Daily Paid/UnPaid for ${monthName} ${selectedYear}`);
     setView("daily");
 
     try {
-      const response = await fetch(`${API_DOMAIN}/groupdata.php`, {
+      const response = await fetch(`${API_DOMAIN}/Dashboard.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -251,10 +253,11 @@ const DashBoard = () => {
     }
   };
 
+  //Pie chart for chit type distribution
   const fetchPieChartData = async () => {
     setPieChartLoading(true);
     try {
-      const response = await fetch(`${API_DOMAIN}/groupdata.php`, {
+      const response = await fetch(`${API_DOMAIN}/Dashboard.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -285,10 +288,12 @@ const DashBoard = () => {
       setPieChartLoading(false);
     }
   };
+
+  //Recent transactions
   const fetchRecentTransactions = async () => {
     setLoadingTransactions(true);
     try {
-      const response = await fetch(`${API_DOMAIN}/chit.php`, {
+      const response = await fetch(`${API_DOMAIN}/Dashboard.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -325,10 +330,11 @@ const DashBoard = () => {
     }
   };
 
+  //Monthly targets
   const fetchMonthlyTargets = async () => {
     setLoadingTargets(true);
     try {
-      const response = await fetch(`${API_DOMAIN}/groupdata.php`, {
+      const response = await fetch(`${API_DOMAIN}/Dashboard.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -344,7 +350,7 @@ const DashBoard = () => {
           const percentageValue = parseFloat(item.percentage_paid || 0);
 
           return {
-            label: item.chit_type.toUpperCase(),
+            label: item.scheme_name.toUpperCase(),
             value: Math.min(100, Math.max(0, percentageValue)),
             color: PROGRESS_COLORS[index % PROGRESS_COLORS.length],
           };
@@ -397,7 +403,12 @@ const DashBoard = () => {
           <Typography variant="body2" className="pie-tooltip-title">
             {data.chit_type}
           </Typography>
-
+           <Typography variant="body2" sx={{ color: sliceColor }}>
+            Scheme:{" "}
+            <Box component="span" className="pie-tooltip-value">
+              {data.scheme_name}
+            </Box>
+          </Typography>
           <Typography variant="body2" sx={{ color: sliceColor }}>
             Count:{" "}
             <Box component="span" className="pie-tooltip-value">
@@ -617,7 +628,7 @@ const DashBoard = () => {
                     className="flex-column-center-full-height"
                   >
                     <CircularProgress />
-                    <Typography variant="caption" sx={{ mt: 2 }}>
+                    <Typography variant="caption" sx={{ mt: 1 }}>
                       Loading Distribution...
                     </Typography>
                   </Box>
@@ -627,7 +638,7 @@ const DashBoard = () => {
                       <Pie
                         data={coloredPieChartData}
                         dataKey="count"
-                        nameKey="chit_type"
+                        nameKey="scheme_name"
                         cx="50%"
                         cy="50%"
                         outerRadius={100}
@@ -638,12 +649,12 @@ const DashBoard = () => {
                         ))}
                       </Pie>
                       <Tooltip content={renderPieCustomTooltip} />
-                      <Legend
+                      {/* <Legend
                         layout="horizontal"
                         verticalAlign="bottom"
                         align="center"
                         wrapperStyle={{ paddingTop: "10px" }}
-                      />
+                      /> */}
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
@@ -773,7 +784,7 @@ const DashBoard = () => {
                 ) : (
                   // ⭐ Dynamic Content Mapping
                   targetData.map((item, index) => (
-                    <Box key={index} sx={{ mb: 4 }}>
+                    <Box key={index} sx={{ mb: 2 }}>
                       <Box
                         sx={{
                           display: "flex",
