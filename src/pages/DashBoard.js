@@ -425,7 +425,40 @@ const DashBoard = () => {
     }
     return null;
   };
+// Function to format the label to display the percentage
+const renderCustomizedLabel = ({
+  cx,
+  cy,
+  midAngle,
+  innerRadius,
+  outerRadius,
+  percent,
+  index,
+  scheme_name, // Destructure scheme_name to show context in console if needed
+  percentage // Use the pre-calculated percentage from your data
+}) => {
+  
+  // Calculate the position for the label text
+  const RADIAN = Math.PI / 180;
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.3;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
+  // Return the text element with the formatted percentage
+  // We use the 'percentage' field from your data directly
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="white"
+      textAnchor={x > cx ? "start" : "end"}
+      dominantBaseline="central"
+      fontWeight="bold"
+    >
+      {`${percentage}%`} 
+    </text>
+  );
+};
   return (
     <Box className="dashboard-page-container">
       <Container maxWidth="xl">
@@ -632,29 +665,26 @@ const DashBoard = () => {
                   </Box>
                 ) : pieChartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={coloredPieChartData}
-                        dataKey="count"
-                        nameKey="scheme_name"
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={100}
-                        labelLine={false}
-                      >
-                        {coloredPieChartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip content={renderPieCustomTooltip} />
-                      {/* <Legend
-                        layout="horizontal"
-                        verticalAlign="bottom"
-                        align="center"
-                        wrapperStyle={{ paddingTop: "10px" }}
-                      /> */}
-                    </PieChart>
-                  </ResponsiveContainer>
+  <PieChart>
+    <Pie
+      data={coloredPieChartData}
+      dataKey="count"
+      nameKey="scheme_name"
+      cx="50%"
+      cy="50%"
+      outerRadius={100}
+      labelLine={false}
+      // ✅ NEW: Enable and set the custom label function
+      label={renderCustomizedLabel} 
+    >
+      {coloredPieChartData.map((entry, index) => (
+        <Cell key={`cell-${index}`} fill={entry.color} />
+      ))}
+    </Pie>
+    <Tooltip content={renderPieCustomTooltip} />
+    {/* ... Legend (if enabled) ... */}
+  </PieChart>
+</ResponsiveContainer>
                 ) : (
                   // ⭐ SHOW EMPTY STATE
                   <Typography variant="body1" color="text.secondary">

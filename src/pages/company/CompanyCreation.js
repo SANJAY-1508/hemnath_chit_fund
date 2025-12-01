@@ -29,6 +29,24 @@ const CompanyCreation = () => {
           pincode: "",
         };
 
+//         {
+//     "company_name": "Zentexus",
+//     "acc_holder_name": "Dhanu",
+//     "company_profile_img": "",
+//     "address": "Virudhunagar",
+//     "pincode": "626001",
+//     "city": "Virudhunagar",
+//     "state": "Tamil Nadu",
+//     "phone_number": "9876543210",
+//     "mobile_number": "9025148394",
+//     "gst_number": "33ABCDE1234F1Z5",
+//     "acc_number": "1234567890",
+//     "bank_name": "Indian Bank",
+//     "ifsc_code": "IDIB0001234",
+//     "bank_branch": "Virudhunagar Main"
+// }
+
+
   const [formData, setFormData] = useState(initialState);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
@@ -268,6 +286,111 @@ const CompanyCreation = () => {
                 name="pincode"
                 value={type === "view" ? rowData.pincode : formData.pincode}
                 onChange={(e) => handleChange(e, "pincode")}
+              ></TextInputForm>
+            )}
+          </Col>
+          <Col lg="4" md="6" xs="12" className="py-3">
+            {type === "edit" ? (
+              <TextInputForm
+                placeholder={t("State")} // ✅
+                type={"text"}
+                labelname={t("State")} // ✅
+                name="state"
+                value={formData.state}
+                onChange={(e) => handleChange(e, "state")}
+              ></TextInputForm>
+            ) : (
+              <TextInputForm
+                placeholder={t("state")} // ✅
+                type={"text"}
+                labelname={t("State")} // ✅
+                name="state"
+                value={type === "view" ? rowData.mobile : formData.state}
+                onChange={(e) => handleChange(e, "state")}
+              ></TextInputForm>
+            )}
+          </Col>
+          <Col lg="4" md="6" xs="12" className="py-3">
+            {type === "edit" ? (
+              <TextInputForm
+                placeholder={t("Account Number")} // ✅
+                type={"Number"}
+                labelname={t("Account Number")} // ✅
+                name="acc_number"
+                value={formData.acc_number}
+                onChange={(e) => handleChange(e, "acc_number")}
+              ></TextInputForm>
+            ) : (
+              <TextInputForm
+                placeholder={t("Account Number")} // ✅
+                type={"Number"}
+                labelname={t("Account Number")} // ✅
+                name="acc_number"
+                value={type === "view" ? rowData.mobile : formData.acc_number}
+                onChange={(e) => handleChange(e, "acc_number")}
+              ></TextInputForm>
+            )}
+          </Col>
+          <Col lg="4" md="6" xs="12" className="py-3">
+            {type === "edit" ? (
+              <TextInputForm
+                placeholder={t("Bank Name")} // ✅
+                type={"text"}
+                labelname={t("Bank Name")} // ✅
+                name="bank_name"
+                value={formData.bank_name}
+                onChange={(e) => handleChange(e, "bank_name")}
+              ></TextInputForm>
+            ) : (
+              <TextInputForm
+                placeholder={t("Bank Name")} // ✅
+                type={"text"}
+                labelname={t("Bank Name")} // ✅
+                name="bank_name"
+                value={type === "view" ? rowData.mobile : formData.bank_name}
+                onChange={(e) => handleChange(e, "bank_name")}
+              ></TextInputForm>
+            )}
+          </Col>
+          <Col lg="4" md="6" xs="12" className="py-3">
+            {type === "edit" ? (
+              <TextInputForm
+                placeholder={t("Account Holder Name")} // ✅
+                type={"text"}
+                labelname={t("Account Holder Name")} // ✅
+                name="acc_holder_name"
+                value={formData.acc_holder_name}
+                onChange={(e) => handleChange(e, "acc_holder_name")}
+              ></TextInputForm>
+            ) : (
+              <TextInputForm
+                placeholder={t("Account Holder Name")} // ✅
+                type={"text"}
+                labelname={t("Account Holder Name")} // ✅
+                name="acc_holder_name"
+                value={type === "view" ? rowData.mobile : formData.acc_holder_name}
+                onChange={(e) => handleChange(e, "acc_holder_name")}
+              ></TextInputForm>
+            )}
+          </Col>
+          <Col lg="4" md="6" xs="12" className="py-3">
+            {type === "edit" ? (
+              <TextInputForm
+                placeholder={t("IFSC Code")} // ✅
+                type={"text"}
+                labelname={t("IFSC Code")} // ✅
+                name="ifsc_code"
+                value={formData.ifsc_code}
+                onChange={(e) => handleChange(e, "ifsc_code")}
+              ></TextInputForm>
+            ) : (
+              <TextInputForm
+                placeholder={t("IFSC Code")} // ✅
+                type={"text"}
+                labelname={t("IFSC Code")} // ✅
+                name="ifsc_code"
+                value={type === "view" ? rowData.ifsc_code : formData.ifsc_code}
+                onChange={(e) => handleChange(e, "ifsc_code")}
               ></TextInputForm>
             )}
           </Col>
