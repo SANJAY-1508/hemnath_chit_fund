@@ -63,41 +63,42 @@ const Chit = () => {
     fetchData();
   }, []);
 
-  const handleEditClick = async (rowData) => {
+ const handleEditClick = async (rowData) => {
     const chitId = rowData.chit_id;
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_DOMAIN}/chit.php`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chit_id: chitId, action: "get_chit_details" }),
-      });
-
-      const responseData = await response.json();
-      setLoading(false);
-
-      if (
-        responseData.head.code === 200 &&
-        responseData.body.chit &&
-        responseData.body.chit.length > 0
-      ) {
-        const detailedRowData = responseData.data.body[0];
-
-        navigate("/console/master/chit/create", {
-          state: {
-            type: "edit",
-            rowData: detailedRowData,
-          },
+        const response = await fetch(`${API_DOMAIN}/chit.php`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chit_id: chitId, action: "get_chit_details" }),
         });
-      } else {
-        console.error("Failed to fetch chit details");
-      }
+
+        const responseData = await response.json();
+        console.log("Response Data:", responseData);
+        setLoading(false);
+        if (
+            responseData.head.code === 200 &&
+            responseData.body &&
+            responseData.body.chit 
+        ) {
+            const detailedRowData = responseData.body.chit; 
+            console.log("Detailed Row Data:", detailedRowData);
+
+            navigate("/console/master/chit/create", {
+                state: {
+                    type: "edit",
+                    rowData: detailedRowData,
+                },
+            });
+        } else {
+            console.error("Failed to fetch chit details:", responseData.head.msg);
+        }
     } catch (error) {
-      setLoading(false);
-      console.error("Error editing chit:", error);
+        setLoading(false);
+        console.error("Error editing chit:", error);
     }
-  };
+};
   const handleViewClick = async (rowData) => {
     const chitId = rowData.chit_id;
     setLoading(true);
