@@ -1,6 +1,6 @@
 import { MdSpaceDashboard } from "react-icons/md";
 import { FiUsers } from "react-icons/fi";
-
+import { FaMoneyBillWave } from 'react-icons/fa';
 import { BsBuildings, BsBarChartFill } from "react-icons/bs";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { PiUsersThreeBold } from "react-icons/pi";
@@ -49,7 +49,7 @@ const sidebarConfig = [
    {
     path: "/console/master/chitpayment",
     text: "Chit Payment",
-    icon: <FaMoneyCheck />,
+    icon: <FaMoneyBillWave />,
   },
 
   {
