@@ -226,20 +226,22 @@ const Chitpayment = () => {
         enableSorting: false,
         enableColumnFilter: false,
         Cell: ({ row }) => {
-          const isClosed =
-            row.original.freeze_at === 1 || row.original.freeze_at === "1";
+          console.log(row.original);
+          const isClosed = row.original.status === "foreclosed";
 
           return (
             <Box sx={{ display: "flex", gap: "10px" }}>
               {isClosed ? (
-                <Tooltip title={t("View")}>
-                  <IconButton
-                    onClick={() => handleViewClick(row.original)}
-                    sx={{ color: "#0d6efd", padding: 0 }}
-                  >
-                    <FaEye />
-                  </IconButton>
-                </Tooltip>
+                <span
+                  style={{
+                    color: "#dc3545", // Red color for emphasis
+                    fontWeight: "bold",
+                    fontSize: "0.9rem",
+                    whiteSpace: "nowrap", // Prevents wrapping in the small column
+                  }}
+                >
+                  {t("Closed")}
+                </span>
               ) : (
                 <>
                   <Tooltip title={t("Edit")}>

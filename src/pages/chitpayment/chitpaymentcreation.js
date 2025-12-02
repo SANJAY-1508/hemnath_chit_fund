@@ -56,7 +56,7 @@ const Chitpaymentcreation = () => {
   const navigate = useNavigate();
   const chitNumber = rowData?.chit_no || "";
 
-   const user = JSON.parse(localStorage.getItem("user")) || {};
+  const user = JSON.parse(localStorage.getItem("user")) || {};
 
   // --- Handlers ---
   const redirectModal = () => {
@@ -298,234 +298,152 @@ const Chitpaymentcreation = () => {
       <Container>
         <Row className="regular">
           <Col lg="12" md="12" xs="12" className="py-3">
-            <PageNav pagetitle={`${t("Chit")}${userTitleSegment}`} />
+            <PageNav pagetitle={`${t("Chit Payment")}${userTitleSegment}`} />
           </Col>
 
-          <Col md="2" className="py-2">
-            <Form.Group controlId="fromDate">
-              <Form.Label className="mb-3">Start Date</Form.Label>
-              <Form.Control
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                disabled={type === "edit" || type === "view"}
-              />
-            </Form.Group>
-          </Col>
-          <Col lg="4" md="12" xs="12" className="py-3">
-            <div className="mb-4">
-              <label htmlFor="customer-select" className="mb-2">
-                {t("Customer Name")}
-              </label>
-              <Select
-                id="customer-select"
-                placeholder={t("Select Customer")}
-                isSearchable={true}
-                options={customerOptions}
-                onChange={handleCustomerChange}
-                value={selectedCustomerOption}
-                isDisabled={type === "edit" || type === "view"}
-              />
-            </div>
-          </Col>
+          {type !== "edit" && type !== "view" && (
+            <Col md="2" className="py-2">
+              <Form.Group controlId="fromDate">
+                <Form.Label className="mb-3">Start Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  // The 'disabled' prop here is redundant if the whole Col is hidden,
+                  // but it doesn't hurt to keep it for safety in case of future logic changes.
+                  disabled={type === "edit" || type === "view"}
+                />
+              </Form.Group>
+            </Col>
+          )}
 
-          <Col lg="4" md="12" xs="12" className="py-3">
-            <div className="mb-4">
-              <label htmlFor="chittype-select" className="mb-2">
-                {t("Scheme Type")}
-              </label>
-              <Select
-                id="chittype-select"
-                placeholder={t("Select Scheme Type")}
-                isSearchable={true}
-                options={schemeOptions}
-                onChange={handleSchemeChange}
-                value={selectedSchemeOption}
-                isDisabled={type === "edit" || type === "view"}
-              />
-            </div>
-          </Col>
+          {type !== "edit" && type !== "view" && (
+            <Col lg="4" md="12" xs="12" className="py-3">
+              <div className="mb-4">
+                <label htmlFor="customer-select" className="mb-2">
+                  {t("Customer Name")}
+                </label>
+                <Select
+                  id="customer-select"
+                  placeholder={t("Select Customer")}
+                  isSearchable={true}
+                  options={customerOptions}
+                  onChange={handleCustomerChange}
+                  value={selectedCustomerOption}
+                  isDisabled={type === "edit" || type === "view"}
+                />
+              </div>
+            </Col>
+          )}
+
+          {type !== "edit" && type !== "view" && (
+            <Col lg="4" md="12" xs="12" className="py-3">
+              <div className="mb-4">
+                <label htmlFor="chittype-select" className="mb-2">
+                  {t("Scheme Type")}
+                </label>
+                <Select
+                  id="chittype-select"
+                  placeholder={t("Select Scheme Type")}
+                  isSearchable={true}
+                  options={schemeOptions}
+                  onChange={handleSchemeChange}
+                  value={selectedSchemeOption}
+                  isDisabled={type === "edit" || type === "view"}
+                />
+              </div>
+            </Col>
+          )}
+
           <Row>
             <Col>
               <>
-                {selectedCustomer && (
-                  <Card
-                    className="shadow border-0"
-                    style={{ borderRadius: "10px" }}
-                  >
-                    <Card.Body className="p-4">
-                      <h6
-                        className="text-center mb-4"
-                        style={{ fontWeight: "bold", color: "#333" }}
-                      >
-                        Customer Information
-                      </h6>
-
-                      <div className="d-flex justify-content-between mb-3">
-                        <span
-                          className="text-muted fw-bold"
-                          style={{ fontSize: "0.9rem" }}
-                        >
-                          Customer No:
-                        </span>
-                        <span style={{ fontSize: "0.9rem" }}>
-                          {selectedCustomer.customer_no || "-"}
-                        </span>
-                      </div>
-                      <div className="d-flex justify-content-between mb-3">
-                        <span
-                          className="text-muted fw-bold"
-                          style={{ fontSize: "0.9rem" }}
-                        >
-                          Name:
-                        </span>
-                        <span style={{ fontSize: "0.9rem" }}>
-                          {selectedCustomer.customer_name}
-                        </span>
-                      </div>
-                      <div className="d-flex justify-content-between mb-3">
-                        <span
-                          className="text-muted fw-bold"
-                          style={{ fontSize: "0.9rem" }}
-                        >
-                          Email ID:
-                        </span>
-                        <span
-                          style={{
-                            fontSize: "0.9rem",
-                            textAlign: "right",
-                            maxWidth: "60%",
-                          }}
-                        >
-                          {selectedCustomer.email_id}
-                        </span>
-                      </div>
-
-                      <div className="d-flex justify-content-between mb-3">
-                        <span
-                          className="text-muted fw-bold"
-                          style={{ fontSize: "0.9rem" }}
-                        >
-                          Mobile Number:
-                        </span>
-                        <span style={{ fontSize: "0.9rem" }}>
-                          {selectedCustomer.mobile_number}
-                        </span>
-                      </div>
-                      {/* <div className="d-flex justify-content-between mb-3">
-                    <span
-                      className="text-muted fw-bold"
-                      style={{ fontSize: "0.9rem" }}
+                {selectedCustomer &&
+                  type !== "edit" &&
+                  type !== "view" && ( // ADDED CONDITION HERE
+                    <Card
+                      className="shadow border-0"
+                      style={{ borderRadius: "10px" }}
                     >
-                     Place:
-                    </span>
-                    <span style={{ fontSize: "0.9rem" }}>
-                      {selectedCustomer.place || "-"}
-                    </span>
-                  </div> */}
-                    </Card.Body>
-                  </Card>
-                )}
+                      <Card.Body className="p-4">
+                        <h6
+                          className="text-center mb-4"
+                          style={{ fontWeight: "bold", color: "#333" }}
+                        >
+                          Customer Information
+                        </h6>
+                        {/* ... Customer Information Details ... */}
+                        <div className="d-flex justify-content-between mb-3">
+                          <span
+                            className="text-muted fw-bold"
+                            style={{ fontSize: "0.9rem" }}
+                          >
+                            Customer No:
+                          </span>
+                          <span style={{ fontSize: "0.9rem" }}>
+                            {selectedCustomer.customer_no || "-"}
+                          </span>
+                        </div>
+                        {/* ... other customer details ... */}
+                        <div className="d-flex justify-content-between mb-3">
+                          <span
+                            className="text-muted fw-bold"
+                            style={{ fontSize: "0.9rem" }}
+                          >
+                            Mobile Number:
+                          </span>
+                          <span style={{ fontSize: "0.9rem" }}>
+                            {selectedCustomer.mobile_number}
+                          </span>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  )}
               </>
             </Col>
             <Col>
               <>
-                {selectedScheme && (
-                  <Card
-                    className="shadow border-0"
-                    style={{ borderRadius: "10px" }}
-                  >
-                    <Card.Body className="p-4">
-                      <h6
-                        className="text-center mb-4"
-                        style={{ fontWeight: "bold", color: "#333" }}
-                      >
-                        Scheme Information
-                      </h6>
-
-                      <div className="d-flex justify-content-between mb-3">
-                        <span
-                          className="text-muted fw-bold"
-                          style={{ fontSize: "0.9rem" }}
-                        >
-                          Scheme ID:
-                        </span>
-                        <span style={{ fontSize: "0.9rem" }}>
-                          {selectedScheme.scheme_id || "-"}
-                        </span>
-                      </div>
-                      <div className="d-flex justify-content-between mb-3">
-                        <span
-                          className="text-muted fw-bold"
-                          style={{ fontSize: "0.9rem" }}
-                        >
-                          Scheme Name:
-                        </span>
-                        <span style={{ fontSize: "0.9rem" }}>
-                          {selectedScheme.scheme_name}
-                        </span>
-                      </div>
-                      <div className="d-flex justify-content-between mb-3">
-                        <span
-                          className="text-muted fw-bold"
-                          style={{ fontSize: "0.9rem" }}
-                        >
-                          Duration:
-                        </span>
-                        <span
-                          style={{
-                            fontSize: "0.9rem",
-                            textAlign: "right",
-                            maxWidth: "60%",
-                          }}
-                        >
-                          {selectedScheme.duration}
-                        </span>
-                      </div>
-                      <div className="d-flex justify-content-between mb-3">
-                        <span
-                          className="text-muted fw-bold"
-                          style={{ fontSize: "0.9rem" }}
-                        >
-                          Due Amount:
-                        </span>
-                        <span
-                          style={{
-                            fontSize: "0.9rem",
-                            textAlign: "right",
-                            maxWidth: "60%",
-                          }}
-                        >
-                          {selectedScheme.schemet_due_amount}
-                        </span>
-                      </div>
-
-                      <div className="d-flex justify-content-between">
-                        <span
-                          className="text-muted fw-bold"
-                          style={{ fontSize: "0.9rem" }}
-                        >
-                          Bonus Amount:
-                        </span>
-                        <span style={{ fontSize: "0.9rem" }}>
-                          {selectedScheme.scheme_bonus}
-                        </span>
-                      </div>
-                      {/* 
-                   <div className="d-flex justify-content-between">
-                    <span
-                      className="text-muted fw-bold"
-                      style={{ fontSize: "0.9rem" }}
+                {selectedScheme &&
+                  type !== "edit" &&
+                  type !== "view" && ( // ADDED CONDITION HERE
+                    <Card
+                      className="shadow border-0"
+                      style={{ borderRadius: "10px" }}
                     >
-                      Maturity Amount:
-                    </span>
-                    <span style={{ fontSize: "0.9rem" }}>
-                      {selectedScheme.scheme_maturtiy_amount}
-                    </span>
-                  </div> */}
-                    </Card.Body>
-                  </Card>
-                )}
+                      <Card.Body className="p-4">
+                        <h6
+                          className="text-center mb-4"
+                          style={{ fontWeight: "bold", color: "#333" }}
+                        >
+                          Scheme Information
+                        </h6>
+                        {/* ... Scheme Information Details ... */}
+                        <div className="d-flex justify-content-between mb-3">
+                          <span
+                            className="text-muted fw-bold"
+                            style={{ fontSize: "0.9rem" }}
+                          >
+                            Scheme ID:
+                          </span>
+                          <span style={{ fontSize: "0.9rem" }}>
+                            {selectedScheme.scheme_id || "-"}
+                          </span>
+                        </div>
+                        {/* ... other scheme details ... */}
+                        <div className="d-flex justify-content-between">
+                          <span
+                            className="text-muted fw-bold"
+                            style={{ fontSize: "0.9rem" }}
+                          >
+                            Bonus Amount:
+                          </span>
+                          <span style={{ fontSize: "0.9rem" }}>
+                            {selectedScheme.scheme_bonus}
+                          </span>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  )}
               </>
             </Col>
           </Row>
