@@ -281,15 +281,6 @@ const Chitpayment = () => {
             </div>
           </Col>
 
-          <Col lg="5" className="text-end align-self-center">
-            {isAdmin && (
-              <ClickButton
-                label={<>{t("Add Chit Payment")}</>}
-                onClick={() => navigate("/console/master/chitpayment/create")}
-              ></ClickButton>
-            )}
-          </Col>
-
           <Col lg={12} className="px-0 py-2">
             {loading ? (
               <LoadingOverlay isLoading={loading} />
