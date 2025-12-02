@@ -11,7 +11,7 @@ import {
 import fontRegular from "./fonts/NotoSansTamil-Regular.ttf";
 import fontBold from "./fonts/NotoSansTamil-Bold.ttf";
 
-// --- Font Registration (Keep as is) ---
+// --- Font Registration ---
 Font.register({
   family: "NotoSansTamil",
   src: fontRegular,
@@ -23,17 +23,12 @@ Font.register({
   fontWeight: "bold",
 });
 
-// Helper function to format the complex object history value for PDF/Excel
+// Helper function
 const formatHistoryObject = (value) => {
-  if (
-    !value ||
-    typeof value !== "object" ||
-    Object.keys(value).length === 0
-  ) {
+  if (!value || typeof value !== "object" || Object.keys(value).length === 0) {
     return "-";
   }
 
-  // Filter out the 'password' field
   const filteredEntries = Object.entries(value).filter(
     ([key]) => key !== "password"
   );
@@ -46,16 +41,17 @@ const formatHistoryObject = (value) => {
         .join(" ");
 
       let displayValue = val;
+
       if (key.includes("amount") || key.includes("due_id")) {
         displayValue = `₹${val}`;
       }
 
       return `${displayKey}: ${displayValue || "-"}`;
     })
-    .join("\n"); // Use newline for separating key:value pairs in the PDF cell
+    .join("\n");
 };
 
-// --- PDF Document Component for Customer History ---
+// --- Customer History PDF ---
 const CustomerHistoryDocument = ({ historyData, customerCode }) => {
   const tableHeaders = [
     "S.No",
@@ -72,23 +68,15 @@ const CustomerHistoryDocument = ({ historyData, customerCode }) => {
       ? new Date(item.created_at).toLocaleDateString("en-GB")
       : "-",
     item.action_type || "-",
-    formatHistoryObject(item.old_value), // Use the helper function
-    formatHistoryObject(item.new_value), // Use the helper function
+    formatHistoryObject(item.old_value),
+    formatHistoryObject(item.new_value),
     item.remarks || "-",
   ]);
-
-  const ROWS_PER_PAGE = 10; // Adjusted for a simpler portrait layout
-  const pages = [];
-  for (let i = 0; i < tableRows.length; i += ROWS_PER_PAGE) {
-    pages.push(tableRows.slice(i, i + ROWS_PER_PAGE));
-  }
 
   const styles = StyleSheet.create({
     page: {
       padding: 30,
       fontFamily: "NotoSansTamil",
-      // Changed to 'portrait' since 6 columns fit better than 10
-      orientation: "portrait", 
     },
     title: {
       fontSize: 18,
@@ -105,7 +93,6 @@ const CustomerHistoryDocument = ({ historyData, customerCode }) => {
       flexDirection: "row",
     },
     tableColHeader: {
-      borderStyle: "solid",
       borderWidth: 0.5,
       borderColor: "#000",
       backgroundColor: "#1e1e1e",
@@ -114,15 +101,13 @@ const CustomerHistoryDocument = ({ historyData, customerCode }) => {
       padding: 5,
     },
     tableCol: {
-      borderStyle: "solid",
       borderWidth: 0.5,
       borderColor: "#000",
       padding: 3,
     },
     tableCell: {
       fontSize: 8,
-      // 'left' alignment for the complex values
-      textAlign: "left", 
+      textAlign: "left",
     },
     headerCell: {
       fontSize: 9,
@@ -130,14 +115,13 @@ const CustomerHistoryDocument = ({ historyData, customerCode }) => {
       fontFamily: "NotoSansTamil-Bold",
       color: "#fff",
     },
-    // Define column widths for a 6-column table (must sum to 1.0 or use fixed widths)
     colWidths: {
-      0: { width: "5%" }, // S.No
-      1: { width: "10%" }, // Date
-      2: { width: "15%" }, // History Type
-      3: { width: "25%" }, // Old Value
-      4: { width: "25%" }, // New Value
-      5: { width: "20%" }, // Remark
+      0: { width: "5%" },
+      1: { width: "10%" },
+      2: { width: "15%" },
+      3: { width: "25%" },
+      4: { width: "25%" },
+      5: { width: "20%" },
     },
   });
 
@@ -146,59 +130,64 @@ const CustomerHistoryDocument = ({ historyData, customerCode }) => {
     ...styles.colWidths[index],
   });
 
-  const renderPage = (pageRows, pageIndex) => (
-    <Page size="A4" style={styles.page} key={pageIndex}>
-      <Text style={styles.title}>Customer History Report</Text>
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <Text style={styles.title}>Customer History Report</Text>
 
-      {pageIndex === 0 && customerCode && (
-        <Text style={styles.filterText}>
-          Customer No: {customerCode}
-        </Text>
-      )}
+        {customerCode && (
+          <Text style={styles.filterText}>
+            Customer No: {customerCode}
+          </Text>
+        )}
 
-      {/* Table Header */}
-      <View style={styles.tableRow} fixed>
-        {tableHeaders.map((header, idx) => (
-          <View key={idx} style={getColStyle(idx, true)}>
-            <Text style={styles.headerCell}>{header}</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* Table Rows for this page */}
-      {pageRows.map((row, rowIdx) => (
-        <View key={rowIdx} style={styles.tableRow}>
-          {row.map((cell, cellIdx) => (
-            <View key={cellIdx} style={getColStyle(cellIdx, false)}>
-              <Text style={{
-                ...styles.tableCell,
-                // Center S.No and Date
-                textAlign: (cellIdx === 0 || cellIdx === 1) ? 'center' : 'left',
-              }}>
-                {cell}
-              </Text>
+        {/* Header (repeats on every page automatically) */}
+        <View style={styles.tableRow} fixed>
+          {tableHeaders.map((header, idx) => (
+            <View key={idx} style={getColStyle(idx, true)}>
+              <Text style={styles.headerCell}>{header}</Text>
             </View>
           ))}
         </View>
-      ))}
-    </Page>
-  );
 
-  return (
-    <Document>
-      {pages.map((pageRows, pageIndex) => renderPage(pageRows, pageIndex))}
+        {/* All rows - React PDF auto-paginates */}
+        {tableRows.map((row, rowIdx) => (
+          <View
+            key={rowIdx}
+            style={styles.tableRow}
+            wrap={false}
+            minPresenceAhead={120}
+          >
+            {row.map((cell, cellIdx) => (
+              <View key={cellIdx} style={getColStyle(cellIdx, false)}>
+                <Text
+                  style={{
+                    ...styles.tableCell,
+                    textAlign:
+                      cellIdx === 0 || cellIdx === 1 ? "center" : "left",
+                  }}
+                >
+                  {cell}
+                </Text>
+              </View>
+            ))}
+          </View>
+        ))}
+      </Page>
     </Document>
   );
 };
 
-// --- Export Functions ---
-
-// Updated exportToPDF for Customer History
+// --- Export to PDF ---
 export const exportToPDF = async (historyData, customerCode) => {
   try {
     const blob = await pdf(
-      <CustomerHistoryDocument historyData={historyData} customerCode={customerCode} />
+      <CustomerHistoryDocument
+        historyData={historyData}
+        customerCode={customerCode}
+      />
     ).toBlob();
+
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -209,5 +198,3 @@ export const exportToPDF = async (historyData, customerCode) => {
     console.error("Error generating PDF:", error);
   }
 };
-
-// Updated exportToExcel for Customer History
