@@ -276,7 +276,7 @@ const CollectionReport = () => {
                         <th>Collection Date</th>
                         <th>Customer No.</th>
                         <th>Customer Name</th>
-                        <th>Chit Type</th>
+                        <th>Scheme Type</th>
                         <th>Due No.</th>
                         <th>Due Amount</th>
                         <th>Paid Amount</th>

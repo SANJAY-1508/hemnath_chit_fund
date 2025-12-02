@@ -10,6 +10,44 @@ const CustomerHistory = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  
+  const formatHistoryValue = (value) => {
+    if (
+      !value ||
+      typeof value !== "object" ||
+      Object.keys(value).length === 0
+    ) {
+      return "-"; 
+    }
+    return (
+      <ul style={{ listStyleType: "none", paddingLeft: "0" }}>
+        {Object.entries(value).map(([key, val], index) => {
+          if (key === "password") {
+             return null; 
+             }
+
+          const displayKey = key
+            .split("_")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+
+          let displayValue = val;
+          if (key.includes("amount") || key.includes("due_id")) {
+            displayValue = `₹${val}`;
+          }
+
+          return (
+            <li key={key} style={{ fontSize: "0.9em", lineHeight: "1.4" }}>
+              <span className="fw-bold me-1">{displayKey}:</span>
+              {displayValue || "-"}
+            </li>
+          );
+        })}
+      </ul>
+    );
+  };
+
+  // ... (rest of the component)
   const fetchCustomers = async () => {
     setLoading(true);
     try {
@@ -104,14 +142,18 @@ const CustomerHistory = () => {
                     striped
                     responsive
                     className="mt-4 shadow-sm rounded overflow-hidden"
+                    style={{ tableLayout: "fixed" }}
                   >
-                    <thead className="table-dark" style={{borderRadius: "10px" }}>
+                    <thead
+                      className="table-dark"
+                      style={{ borderRadius: "10px" }}
+                    >
                       <tr>
-                        <th>S.No</th>
-                        <th>Date</th>
-                        <th>History Type</th>
-                        <th>Old Value</th>
-                        <th>New Value</th>
+                        <th style={{width:"50px"}}>S.No</th>
+                        <th style={{width:"100px"}}>Date</th>
+                        <th style={{width:"180px"}}>History Type</th>
+                        <th style={{ width: "200px" }}>Old Value</th>{" "}
+                        <th style={{ width: "200px" }}>New Value</th>
                         <th>Remark</th>
                       </tr>
                     </thead>
@@ -128,8 +170,8 @@ const CustomerHistory = () => {
                                 : "-"}
                             </td>
                             <td>{history.action_type}</td>
-                            <td>{formatValue(history.old_value)}</td>
-                            <td>{formatValue(history.new_value)}</td>
+                            <td>{formatHistoryValue(history.old_value)}</td>
+                            <td>{formatHistoryValue(history.new_value)}</td>
                             <td>{history.remarks}</td>
                           </tr>
                         ))
