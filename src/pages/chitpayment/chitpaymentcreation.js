@@ -604,7 +604,7 @@ const Chitpaymentcreation = () => {
                       <span className="mx-2">
                         <Delete
                           label={<>{t("Cancel")}</>}
-                          onClick={() => navigate("/console/master/chit")}
+                          onClick={() => navigate("/console/master/chitpayment")}
                         ></Delete>
                       </span>
                     </>
