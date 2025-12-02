@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Table, Form } from "react-bootstrap";
 import PageTitle from "../components/PageTitle";
 import API_DOMAIN from "../config/config";
-
+import { ClickButton } from "../components/ClickButton";
+import {
+  exportToPDF,
+  exportToExcel,
+} from "./CustomerHistoryReportPdfandExcel"; 
 const CustomerHistory = () => {
   const [customers, setCustomers] = useState([]);
   const [customerHistory, setCustomerHistory] = useState([]);
@@ -89,7 +93,17 @@ const CustomerHistory = () => {
       setError(error.message);
     }
   };
+  const handleExportPDF = () => {
+    // Note: The exportToPDF function needs the array of history items and the customer code.
+    // Assuming you have updated exportToPDF to take these arguments.
+ exportToPDF(filteredHistory, customerCode);
+ };
 
+ const handleExportExcel = () => {
+    // Adding excel export handler for completeness
+    // Assuming you have updated exportToExcel in the imported file.
+ exportToExcel(filteredHistory, customerCode);
+};
   useEffect(() => {
     fetchCustomers();
     fetchCustomerhistory();
@@ -127,7 +141,20 @@ const CustomerHistory = () => {
                   {cust.customer_no} - {cust.customer_name}
                 </option>
               ))}
+              
             </Form.Select>
+            <div className="d-flex gap-2 mt-2"> {/* Added a div for layout */}
+              <ClickButton
+                            label="PDF"
+                            disabled={loading || filteredHistory.length === 0}
+                            onClick={handleExportPDF}
+              ></ClickButton>
+              <ClickButton
+                            label="Excel"
+                            disabled={loading || filteredHistory.length === 0}
+                            onClick={handleExportExcel}
+              ></ClickButton>
+            </div>
           </Col>
         </Row>
 
