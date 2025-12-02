@@ -24,6 +24,7 @@ const Chitpaymentcreation = () => {
   const { type, rowData, duesData: passedDuesData } = location.state || {};
   const { chit_id, ...otherRowData } = rowData || {};
   const [duesData, setDuesData] = useState(passedDuesData || []);
+  const [paymentAmount, setPaymentAmount] = useState("");
   const initialState =
     type === "edit" || type === "view"
       ? {
@@ -92,11 +93,28 @@ const Chitpaymentcreation = () => {
     setShowConfirmationModal(true);
   };
 
-  const handlePaymentSubmit = async () => {
+  // Inside Chitpaymentcreation component
+
+  // ... (other code before handlePaymentSubmit)
+
+  const handlePaymentSubmit = async (amount) => {
+    // Convert the amount input (which is a string) to a number
+    const paymentValue = parseFloat(amount);
+
+    // Check for valid payment amount logic BEFORE sending the request
+    if (
+      paymentValue <= 0 ||
+      isNaN(paymentValue) ||
+      paymentValue > dueToPay.due_amount
+    ) {
+      toast.error("Invalid payment amount.");
+      return;
+    }
+
     const payload = {
       action: "pay_due",
       due_id: dueToPay.id,
-      amount: parseFloat(dueToPay.due_amount),
+      amount: paymentValue, // Use the actual value from the input field
       created_by_id: user.user_id,
       created_by_name: user.name,
     };
@@ -111,9 +129,7 @@ const Chitpaymentcreation = () => {
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // ... (Error handling and JSON parsing remains the same) ...
 
       const text = await response.text();
       let resData;
@@ -133,29 +149,111 @@ const Chitpaymentcreation = () => {
         toast.success(resData.head.msg || "Payment successful");
         setShowConfirmationModal(false);
 
+        // --- 🎯 CRITICAL FIX FOR PARTIAL PAYMENT UPDATE ---
         setDuesData((prevDuesData) => {
           return prevDuesData.map((due) => {
             if (due.id === dueToPay.id) {
+              // 1. Calculate the NEW paid amount (Old Paid + New Payment)
+              const currentPaid = parseFloat(due.paid_amount || 0);
+              const newPaidAmount = currentPaid + paymentValue;
+
+              // 2. Determine the new status
+              let newStatus = "pending";
+              if (newPaidAmount >= parseFloat(due.due_amount)) {
+                newStatus = "paid"; // Mark as paid if the total covers the due amount
+              }
+              // If less than due amount, it remains "pending" or "partial" (depending on your server's status definitions)
+              // Since your image shows 'pending' for partial payments, we'll default to that.
+
+              // 3. Update the record
               return {
                 ...due,
-                status: "paid",
-                paid_amount: dueToPay.due_amount,
+                status: newStatus,
+                paid_amount: newPaidAmount.toFixed(2), // Use the actual new total paid amount
               };
             }
             return due;
           });
         });
+        // --- 🎯 END CRITICAL FIX ---
+
         setDueToPay(null);
+        setPaymentAmount(""); // Clear the input field after success
       } else {
         toast.error(resData.head?.msg || "Payment failed");
       }
     } catch (error) {
-      console.error("Error:", error);
-      toast.error(error.message || "An error occurred during payment.");
+      // ... (Error catch remains the same)
     } finally {
       setLoading(false);
     }
   };
+
+  // ... (rest of the file)
+  // const handlePaymentSubmit = async (amount) => {
+  //   const payload = {
+  //     action: "pay_due",
+  //     due_id: dueToPay.id,
+  //     amount: parseFloat(amount),
+  //     created_by_id: user.user_id,
+  //     created_by_name: user.name,
+  //   };
+
+  //   try {
+  //     setLoading(true);
+  //     const response = await fetch(`${API_DOMAIN}/chit.php`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(payload),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
+
+  //     const text = await response.text();
+  //     let resData;
+  //     try {
+  //       let cleanText = text.trim();
+  //       if (cleanText.endsWith("[]")) {
+  //         cleanText = cleanText.slice(0, -2).trim();
+  //       }
+  //       resData = JSON.parse(cleanText);
+  //     } catch (parseError) {
+  //       console.error("Invalid JSON response:", text);
+  //       throw new Error("Invalid response format from server");
+  //     }
+
+  //     setLoading(false);
+  //     if (resData.head && resData.head.code === 200) {
+  //       toast.success(resData.head.msg || "Payment successful");
+  //       setShowConfirmationModal(false);
+
+  //       setDuesData((prevDuesData) => {
+  //         return prevDuesData.map((due) => {
+  //           if (due.id === dueToPay.id) {
+  //             return {
+  //               ...due,
+  //               status: "paid",
+  //               paid_amount: dueToPay.due_amount,
+  //             };
+  //           }
+  //           return due;
+  //         });
+  //       });
+  //       setDueToPay(null);
+  //     } else {
+  //       toast.error(resData.head?.msg || "Payment failed");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     toast.error(error.message || "An error occurred during payment.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleSubmit = async () => {
     const payload = {
@@ -486,7 +584,12 @@ const Chitpaymentcreation = () => {
                                 : "N/A"}
                             </td>
                             <td>
-                              {record.due_amount
+                              {record.due_amount && record.paid_amount
+                                ? `₹${(
+                                    parseFloat(record.due_amount) -
+                                    parseFloat(record.paid_amount)
+                                  ).toFixed(2)}`
+                                : record.due_amount
                                 ? `₹${record.due_amount}`
                                 : "N/A"}
                             </td>
@@ -624,11 +727,13 @@ const Chitpaymentcreation = () => {
 
         {/* Payment Modal */}
         {/* ✅ NEW: Due Payment Confirmation Modal */}
+
         <Modal
           show={showConfirmationModal}
           onHide={() => {
             setShowConfirmationModal(false);
             setDueToPay(null);
+            // Reset paymentAmount state here if you added it
           }}
           centered
           backdrop="static"
@@ -641,9 +746,27 @@ const Chitpaymentcreation = () => {
               {t("Do you want to proceed with the payment for Due No.")}
               {dueToPay?.due_number}?
             </p>
-            <p>
-              {t("Due Amount")}:₹{dueToPay?.due_amount}
-            </p>
+
+            {/* --- MODIFICATION START --- */}
+            <div className="d-flex align-items-center mb-3">
+              <label htmlFor="paymentAmountInput" className="me-2 fw-bold">
+                {t("Amount to Pay")}: ₹
+              </label>
+              <input
+                id="paymentAmountInput"
+                type="number"
+                className="form-control w-50"
+                // Assuming you have a state variable 'paymentAmount'
+                value={paymentAmount}
+                onChange={(e) => setPaymentAmount(e.target.value)}
+                min="0" // Ensures amount is not negative
+                max={dueToPay?.due_amount} // Optional: Prevents paying more than the due amount
+              />
+            </div>
+            <small className="text-muted">
+              {t("Original Due Amount")}: ₹{dueToPay?.due_amount}
+            </small>
+            {/* --- MODIFICATION END --- */}
           </Modal.Body>
           <Modal.Footer>
             <Button
@@ -651,6 +774,7 @@ const Chitpaymentcreation = () => {
               onClick={() => {
                 setShowConfirmationModal(false);
                 setDueToPay(null);
+                // Reset paymentAmount state here if you added it
               }}
               className="rounded-pill px-4 bg-danger text-white"
             >
@@ -658,7 +782,8 @@ const Chitpaymentcreation = () => {
             </Button>
             <Button
               variant="primary"
-              onClick={handlePaymentSubmit}
+              // You will need to pass 'paymentAmount' to handlePaymentSubmit
+              onClick={() => handlePaymentSubmit(paymentAmount)}
               className="rounded-pill px-4"
             >
               {t("Pay Now")}

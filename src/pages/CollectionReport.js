@@ -201,7 +201,7 @@ const CollectionReport = () => {
             {/* Chit Type Dropdown */}
             <Col md="2" className="py-2">
               <Form.Group controlId="chitType">
-                <Form.Label>Chit Type</Form.Label>
+                <Form.Label>Chit Scheme</Form.Label>
                 <Form.Select
                   value={chitTypeFilter}
                   onChange={(e) => setChitTypeFilter(e.target.value)}
