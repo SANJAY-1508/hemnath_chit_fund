@@ -3,6 +3,10 @@ import { Container, Row, Col, Table, Form, Button } from "react-bootstrap";
 import PageTitle from "../components/PageTitle";
 import API_DOMAIN from "../config/config";
 import { ClickButton } from "../components/ClickButton";
+import {
+  exportToPDF,
+  exportToExcel,
+} from "./../pdf/CollectionReportPdfandExcel";
 import "./custom.css";
 
 const CollectionReport = () => {
@@ -14,7 +18,6 @@ const CollectionReport = () => {
   const [chitTypes, setChitTypes] = useState([]);
   const [chitTypeFilter, setChitTypeFilter] = useState("");
   const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -44,7 +47,6 @@ const CollectionReport = () => {
         body: JSON.stringify({ action: "list" }),
       });
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
         setChitTypes(
           Array.isArray(responseData.body.schemes)
@@ -65,7 +67,6 @@ const CollectionReport = () => {
   const fetchCollectionReport = useCallback(
     async (custCode, fromDt, toDt, chitType, paymentStatus) => {
       setError(null);
-
       try {
         const response = await fetch(`${API_DOMAIN}/collection_report.php`, {
           method: "POST",
@@ -80,7 +81,6 @@ const CollectionReport = () => {
           }),
         });
         const responseData = await response.json();
-
         if (responseData.head.code === 200) {
           setCollectionData(responseData.data || []);
           if ((responseData.data || []).length === 0) {
@@ -120,6 +120,28 @@ const CollectionReport = () => {
     );
   };
 
+  // Handle PDF Export
+  const handleExportPDF = () => {
+    exportToPDF(collectionData, {
+      fromDate,
+      toDate,
+      customerCode,
+      chitTypeFilter,
+      paymentStatusFilter,
+    });
+  };
+
+  // Handle Excel Export
+  const handleExportExcel = () => {
+    exportToExcel(collectionData, {
+      fromDate,
+      toDate,
+      customerCode,
+      chitTypeFilter,
+      paymentStatusFilter,
+    });
+  };
+
   // 5. Initial setup
   useEffect(() => {
     fetchCustomers();
@@ -147,7 +169,6 @@ const CollectionReport = () => {
                 />
               </Form.Group>
             </Col>
-
             {/* To Date */}
             <Col md="2" className="py-2">
               <Form.Group controlId="toDate">
@@ -159,7 +180,6 @@ const CollectionReport = () => {
                 />
               </Form.Group>
             </Col>
-
             {/* Customer Filter */}
             <Col md="2" className="py-2">
               <Form.Group controlId="customerNo">
@@ -178,7 +198,6 @@ const CollectionReport = () => {
                 </Form.Select>
               </Form.Group>
             </Col>
-
             {/* Chit Type Dropdown */}
             <Col md="2" className="py-2">
               <Form.Group controlId="chitType">
@@ -196,7 +215,6 @@ const CollectionReport = () => {
                 </Form.Select>
               </Form.Group>
             </Col>
-
             {/* Payment Status Dropdown */}
             <Col md="2" className="py-2">
               <Form.Group controlId="paymentStatus">
@@ -211,8 +229,7 @@ const CollectionReport = () => {
                 </Form.Select>
               </Form.Group>
             </Col>
-
-            {/* Apply Button */}
+            {/* Apply Filters Button */}
             <Col md="2" className="py-2 d-flex align-items-end">
               <ClickButton
                 label="Apply Filters"
@@ -221,6 +238,21 @@ const CollectionReport = () => {
               >
                 {loading ? "Applying..." : "Apply Filters"}
               </ClickButton>
+            </Col>
+            {/* Export Buttons */}
+            <Col md="2" className="py-2 d-flex align-items-end">
+              <div className="d-flex w-100 gap-1">
+                <ClickButton
+                  label="PDF"
+                  disabled={loading}
+                  onClick={handleExportPDF}
+                ></ClickButton>
+                <ClickButton
+                  label="Excel"
+                  disabled={loading}
+                  onClick={handleExportExcel}
+                ></ClickButton>
+              </div>
             </Col>
           </Row>
         </Form>
