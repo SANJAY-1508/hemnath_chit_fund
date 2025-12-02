@@ -130,7 +130,7 @@ export const exportToExcel = (data, filters) => {
     "Collection Date",
     "Customer No",
     "Customer Name",
-    "Chit Type",
+    "Scheme Name",
     "Due No",
     "Due Amount",
     "Paid Amount",
