@@ -601,13 +601,28 @@ const Chitpaymentcreation = () => {
                             </td>
 
                             <td>
+                              {/* Check 1: Paid (Green Badge) */}
                               {record.status === "paid" ? (
                                 <span className="badge bg-success">
                                   {record.status || t("N/A")}
                                 </span>
-                              ) : (
+                              ) : record.status === "partial" ? (
+                                // Check 2: Partial Pay (Warning Badge)
                                 <span
                                   className="badge bg-warning"
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => {
+                                    if (type !== "view") {
+                                      handleOpenPayment(record);
+                                    }
+                                  }}
+                                >
+                                  {record.status || t("N/A")}
+                                </span>
+                              ) : (
+                                // Check 3: Any Other Status (Danger Badge)
+                                <span
+                                  className="badge bg-danger"
                                   style={{ cursor: "pointer" }}
                                   onClick={() => {
                                     if (type !== "view") {
