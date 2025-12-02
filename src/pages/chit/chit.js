@@ -98,39 +98,41 @@ const Chit = () => {
     }
   };
   const handleViewClick = async (rowData) => {
-    const chitId = rowData.chit_id;
+     const chitId = rowData.chit_id;
     setLoading(true);
 
     try {
       const response = await fetch(`${API_DOMAIN}/chit.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chit_id: chitId }),
+        body: JSON.stringify({ chit_id: chitId, action: "get_chit_details" }),
       });
 
       const responseData = await response.json();
+
       setLoading(false);
 
       if (
         responseData.head.code === 200 &&
-        responseData.data.chit &&
-        responseData.data.chit.length > 0
+        responseData.body &&
+        responseData.body.chit
       ) {
-        const detailedRowData = responseData.data.chit[0];
-        console.log("Detailed Row Data:", detailedRowData);
+        const detailedRowData = responseData.body.chit;
+        const duesArray = responseData.body.dues || [];
+
         navigate("/console/master/chit/create", {
           state: {
-            // ⭐ Navigate to 'view' type
-            type: "view",
+            type: "edit",
             rowData: detailedRowData,
+            duesData: duesArray,
           },
         });
       } else {
-        console.error("Failed to fetch chit details for view");
+        console.error("Failed to fetch chit details:", responseData.head.msg);
       }
     } catch (error) {
       setLoading(false);
-      console.error("Error viewing chit:", error);
+      console.error("Error editing chit:", error);
     }
   };
 
@@ -231,7 +233,7 @@ const Chit = () => {
 
           return (
             <Box sx={{ display: "flex", gap: "10px" }}>
-              {isClosed ? (
+             
                 <Tooltip title={t("View")}>
                   <IconButton
                     onClick={() => handleViewClick(row.original)}
@@ -240,8 +242,7 @@ const Chit = () => {
                     <FaEye />
                   </IconButton>
                 </Tooltip>
-              ) : (
-                <>
+                  {/* <>
                   <Tooltip title={t("Edit")}>
                     <IconButton
                       onClick={() => handleEditClick(row.original)}
@@ -259,8 +260,8 @@ const Chit = () => {
                       <FiX />
                     </IconButton>
                   </Tooltip>
-                </>
-              )}
+                </> */}
+            
             </Box>
           );
         },

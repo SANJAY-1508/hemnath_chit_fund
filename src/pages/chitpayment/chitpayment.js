@@ -82,7 +82,7 @@ const Chitpayment = () => {
         const detailedRowData = responseData.body.chit;
         const duesArray = responseData.body.dues || [];
 
-        navigate("/console/master/chit/create", {
+        navigate("/console/master/chitpayment/create", {
           state: {
             type: "edit",
             rowData: detailedRowData,
