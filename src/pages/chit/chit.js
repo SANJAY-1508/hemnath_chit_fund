@@ -35,7 +35,7 @@ const Chit = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          action: "list_chits",
+          action: "list_web_chits",
         }),
       });
 
