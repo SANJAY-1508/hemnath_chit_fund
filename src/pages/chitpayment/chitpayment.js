@@ -12,7 +12,7 @@ import { LiaEditSolid } from "react-icons/lia";
 import { FiX } from "react-icons/fi";
 import { FaEye } from "react-icons/fa";
 
-const Chit = () => {
+const Chitpayment = () => {
   const { t, cacheVersion } = useLanguage();
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
@@ -82,7 +82,7 @@ const Chit = () => {
         const detailedRowData = responseData.body.chit;
         const duesArray = responseData.body.dues || [];
 
-        navigate("/console/master/chit/create", {
+        navigate("/console/master/chitpayment/create", {
           state: {
             type: "edit",
             rowData: detailedRowData,
@@ -98,41 +98,39 @@ const Chit = () => {
     }
   };
   const handleViewClick = async (rowData) => {
-     const chitId = rowData.chit_id;
+    const chitId = rowData.chit_id;
     setLoading(true);
 
     try {
       const response = await fetch(`${API_DOMAIN}/chit.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chit_id: chitId, action: "get_chit_details" }),
+        body: JSON.stringify({ chit_id: chitId }),
       });
 
       const responseData = await response.json();
-
       setLoading(false);
 
       if (
         responseData.head.code === 200 &&
-        responseData.body &&
-        responseData.body.chit
+        responseData.data.chit &&
+        responseData.data.chit.length > 0
       ) {
-        const detailedRowData = responseData.body.chit;
-        const duesArray = responseData.body.dues || [];
-
+        const detailedRowData = responseData.data.chit[0];
+        console.log("Detailed Row Data:", detailedRowData);
         navigate("/console/master/chit/create", {
           state: {
-            type: "edit",
+            // ⭐ Navigate to 'view' type
+            type: "view",
             rowData: detailedRowData,
-            duesData: duesArray,
           },
         });
       } else {
-        console.error("Failed to fetch chit details:", responseData.head.msg);
+        console.error("Failed to fetch chit details for view");
       }
     } catch (error) {
       setLoading(false);
-      console.error("Error editing chit:", error);
+      console.error("Error viewing chit:", error);
     }
   };
 
@@ -233,7 +231,7 @@ const Chit = () => {
 
           return (
             <Box sx={{ display: "flex", gap: "10px" }}>
-             
+              {isClosed ? (
                 <Tooltip title={t("View")}>
                   <IconButton
                     onClick={() => handleViewClick(row.original)}
@@ -242,7 +240,8 @@ const Chit = () => {
                     <FaEye />
                   </IconButton>
                 </Tooltip>
-                  {/* <>
+              ) : (
+                <>
                   <Tooltip title={t("Edit")}>
                     <IconButton
                       onClick={() => handleEditClick(row.original)}
@@ -260,8 +259,8 @@ const Chit = () => {
                       <FiX />
                     </IconButton>
                   </Tooltip>
-                </> */}
-            
+                </>
+              )}
             </Box>
           );
         },
@@ -276,15 +275,15 @@ const Chit = () => {
         <Row>
           <Col lg="7">
             <div className="page-nav py-3">
-              <span className="nav-list">{t("Chit")}</span>
+              <span className="nav-list">{t("Chit Payment")}</span>
             </div>
           </Col>
 
           <Col lg="5" className="text-end align-self-center">
             {isAdmin && (
               <ClickButton
-                label={<>{t("Add Chit")}</>}
-                onClick={() => navigate("/console/master/chit/create")}
+                label={<>{t("Add Chit Payment")}</>}
+                onClick={() => navigate("/console/master/chitpayment/create")}
               ></ClickButton>
             )}
           </Col>
@@ -354,4 +353,4 @@ const Chit = () => {
   );
 };
 
-export default Chit;
+export default Chitpayment;

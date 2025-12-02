@@ -77,7 +77,7 @@ const Login = ({ onLogin }) => {
             <div className="shadow login-box">
               <div className="text-center py-3">
                 <img
-                  src={require("../components/sidebar/images/pngegg.png")}
+                  src={require("../components/sidebar/images/logo1.png")}
                   className="img-fluid logo"
                   alt="Tirupathi Balaji"
                 />

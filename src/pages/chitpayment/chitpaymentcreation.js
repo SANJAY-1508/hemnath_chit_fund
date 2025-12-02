@@ -18,11 +18,10 @@ import API_DOMAIN from "../../config/config";
 import Select from "react-select";
 import { useLanguage } from "../../components/LanguageContext";
 
-const ChitCreation = () => {
+const Chitpaymentcreation = () => {
   const { t } = useLanguage();
   const location = useLocation();
   const { type, rowData, duesData: passedDuesData } = location.state || {};
-  console.log("type:", type);
   const { chit_id, ...otherRowData } = rowData || {};
   const [duesData, setDuesData] = useState(passedDuesData || []);
   const initialState =
@@ -309,7 +308,7 @@ const ChitCreation = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-               disabled={type === "edit" || type === "view"}
+                disabled={type === "edit" || type === "view"}
               />
             </Form.Group>
           </Col>
@@ -532,7 +531,7 @@ const ChitCreation = () => {
           </Row>
 
           {/* ⭐ 4. DUE PAYMENT TABLE (Only visible in edit mode with data) */}
-          {/* {(type === "edit" || type === "view") && duesData.length > 0 && (
+          {(type === "edit" || type === "view") && duesData.length > 0 && (
             <Col lg={12} md={12} xs={12} className="mt-4">
               <Card className="shadow-sm">
                 <Card.Header as="h5" className="bg-light" align="center">
@@ -607,7 +606,7 @@ const ChitCreation = () => {
                 </Card.Body>
               </Card>
             </Col>
-          )} */}
+          )}
           <Col lg="12" md="12" xs="12" className="py-5 align-self-center">
             <div style={{ textAlign: "right", paddingRight: "5px" }}>
               {type === "view" ? (
@@ -753,4 +752,4 @@ const ChitCreation = () => {
   );
 };
 
-export default ChitCreation;
+export default Chitpaymentcreation;
