@@ -77,7 +77,7 @@ const CustomerHistoryDocument = ({ historyData, customerCode }) => {
     item.remarks || "-",
   ]);
 
-  const ROWS_PER_PAGE = 15; // Adjusted for a simpler portrait layout
+  const ROWS_PER_PAGE = 10; // Adjusted for a simpler portrait layout
   const pages = [];
   for (let i = 0; i < tableRows.length; i += ROWS_PER_PAGE) {
     pages.push(tableRows.slice(i, i + ROWS_PER_PAGE));
@@ -211,64 +211,3 @@ export const exportToPDF = async (historyData, customerCode) => {
 };
 
 // Updated exportToExcel for Customer History
-export const exportToExcel = (historyData, customerCode) => {
-  const wsData = [];
-  // ==== Center Title Row ====
-  wsData.push(["Customer History Report"]);
-  wsData.push([]); // Empty row
-  // ==== Filter ====
-  if (customerCode) wsData.push(["Customer No", customerCode]);
-  wsData.push([]); // spacing row
-  // ==== Headers ====
-  const headers = [
-    "S.No",
-    "Date",
-    "History Type",
-    "Old Value",
-    "New Value",
-    "Remark",
-  ];
-  wsData.push(headers);
-  // ==== Rows ====
-  historyData.forEach((item, index) => {
-    wsData.push([
-      index + 1,
-      item.created_at
-        ? new Date(item.created_at).toLocaleDateString("en-GB")
-        : "-",
-      item.action_type || "-",
-      formatHistoryObject(item.old_value), // Use the helper function
-      formatHistoryObject(item.new_value), // Use the helper function
-      item.remarks || "-",
-    ]);
-  });
-  // ==== Create worksheet ====
-  const ws = XLSX.utils.aoa_to_sheet(wsData);
-  // Merge title cells to center text
-  ws["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: headers.length - 1 } }];
-  // Auto column width (basic approximation)
-  const columnWidths = [
-      { wch: 5 }, // S.No
-      { wch: 15 }, // Date
-      { wch: 20 }, // History Type
-      { wch: 30 }, // Old Value
-      { wch: 30 }, // New Value
-      { wch: 20 }, // Remark
-  ];
-  ws["!cols"] = columnWidths;
-  // Style Header Row
-  const headerRowIndex = wsData.findIndex((r) => r === headers);
-  headers.forEach((_, colIndex) => {
-    const cellRef = XLSX.utils.encode_cell({ r: headerRowIndex, c: colIndex });
-    if (!ws[cellRef]) return;
-    ws[cellRef].s = {
-      fill: { fgColor: { rgb: "262626" } }, // dark bg
-      font: { bold: true, color: { rgb: "FFFFFF" } },
-      alignment: { horizontal: "center" },
-    };
-  });
-  // ==== Workbook ====
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Customer History");
-  XLSX.writeFile(wb, `customer-history-${customerCode || "all"}.xlsx`);
-};

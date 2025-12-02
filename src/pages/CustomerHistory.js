@@ -3,10 +3,7 @@ import { Container, Row, Col, Table, Form } from "react-bootstrap";
 import PageTitle from "../components/PageTitle";
 import API_DOMAIN from "../config/config";
 import { ClickButton } from "../components/ClickButton";
-import {
-  exportToPDF,
-  exportToExcel,
-} from "../pdf/CustomerHistoryReportPdfandExcel"; 
+import { exportToPDF } from "../pdf/CustomerHistoryReportPdfandExcel";
 const CustomerHistory = () => {
   const [customers, setCustomers] = useState([]);
   const [customerHistory, setCustomerHistory] = useState([]);
@@ -14,21 +11,20 @@ const CustomerHistory = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  
   const formatHistoryValue = (value) => {
     if (
       !value ||
       typeof value !== "object" ||
       Object.keys(value).length === 0
     ) {
-      return "-"; 
+      return "-";
     }
     return (
       <ul style={{ listStyleType: "none", paddingLeft: "0" }}>
         {Object.entries(value).map(([key, val], index) => {
           if (key === "password") {
-             return null; 
-             }
+            return null;
+          }
 
           const displayKey = key
             .split("_")
@@ -94,16 +90,9 @@ const CustomerHistory = () => {
     }
   };
   const handleExportPDF = () => {
-    // Note: The exportToPDF function needs the array of history items and the customer code.
-    // Assuming you have updated exportToPDF to take these arguments.
- exportToPDF(filteredHistory, customerCode);
- };
+    exportToPDF(filteredHistory, customerCode);
+  };
 
- const handleExportExcel = () => {
-    // Adding excel export handler for completeness
-    // Assuming you have updated exportToExcel in the imported file.
- exportToExcel(filteredHistory, customerCode);
-};
   useEffect(() => {
     fetchCustomers();
     fetchCustomerhistory();
@@ -141,20 +130,17 @@ const CustomerHistory = () => {
                   {cust.customer_no} - {cust.customer_name}
                 </option>
               ))}
-              
             </Form.Select>
-            <div className="d-flex gap-2 mt-2"> {/* Added a div for layout */}
-              <ClickButton
-                            label="PDF"
-                            disabled={loading || filteredHistory.length === 0}
-                            onClick={handleExportPDF}
-              ></ClickButton>
-              <ClickButton
-                            label="Excel"
-                            disabled={loading || filteredHistory.length === 0}
-                            onClick={handleExportExcel}
-              ></ClickButton>
-            </div>
+          </Col>
+          <Col md="3">
+            <ClickButton
+              style={{ marginTop: "1px" }}
+              label="PDF"
+              disabled={loading || filteredHistory.length === 0}
+              onClick={handleExportPDF}
+              size="sm"
+            ></ClickButton>
+                     
           </Col>
         </Row>
 
@@ -176,9 +162,9 @@ const CustomerHistory = () => {
                       style={{ borderRadius: "10px" }}
                     >
                       <tr>
-                        <th style={{width:"50px"}}>S.No</th>
-                        <th style={{width:"100px"}}>Date</th>
-                        <th style={{width:"180px"}}>History Type</th>
+                        <th style={{ width: "50px" }}>S.No</th>
+                        <th style={{ width: "100px" }}>Date</th>
+                        <th style={{ width: "180px" }}>History Type</th>
                         <th style={{ width: "200px" }}>Old Value</th>{" "}
                         <th style={{ width: "200px" }}>New Value</th>
                         <th>Remark</th>
