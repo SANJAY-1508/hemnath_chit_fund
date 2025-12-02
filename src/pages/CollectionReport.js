@@ -242,24 +242,16 @@ const CollectionReport = () => {
             {/* Export Buttons */}
             <Col md="2" className="py-2 d-flex align-items-end">
               <div className="d-flex w-100 gap-1">
-                <Button
-                  variant="bg-success"
-                  size="sm"
+                <ClickButton
+                  label="PDF"
                   disabled={loading}
                   onClick={handleExportPDF}
-                  className="flex-fill"
-                >
-                  PDF
-                </Button>
-                <Button
-                  variant="bf-info"
-                  size="sm"
+                ></ClickButton>
+                <ClickButton
+                  label="Excel"
                   disabled={loading}
                   onClick={handleExportExcel}
-                  className="flex-fill"
-                >
-                  Excel
-                </Button>
+                ></ClickButton>
               </div>
             </Col>
           </Row>
