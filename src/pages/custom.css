@@ -1,27 +1,44 @@
 /* Example CSS */
 .text-input {
-    width: 100%;
-    min-width: 100px;
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  
-  .status-paid-badge {
-    background-color: #9fbba6;  
-    color: #155724; 
-    padding: 0.25em 0.6em;
-    border-radius: 0.25rem;
-    font-weight: 900;
-    font-size: 80%;
+  width: 100%;
+  min-width: 100px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
- .status-pending-badge {
-    background-color: #cc7d7d; 
-    color: #155724; 
-    padding: 0.25em 0.6em;
-    border-radius: 0.25rem;
-    font-weight: 900;
-    font-size: 80%;
+
+.status-paid-badge {
+ background-color: #1cd34d;
+  color: #e0ede3;
+  border: 1px solid #22e065;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.status-pending-badge {
+  background-color: #b71717;
+  color: #e0ede3;
+  border: 1px solid #b71717;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+/* For Partial Payment - Orange/Yellow */
+.status-partial-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #c05f00; /* Darker orange text */
+  background-color: #ffdab9; /* Light peach/orange background */
+  border: 1px solid #c05f00;
 }

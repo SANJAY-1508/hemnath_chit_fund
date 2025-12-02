@@ -226,6 +226,7 @@ const CollectionReport = () => {
                   <option value="">All Statuses</option>
                   <option value="paid">paid</option>
                   <option value="pending">pending</option>
+                  <option value="partial">partial</option>
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -307,8 +308,10 @@ const CollectionReport = () => {
                               <span
                                 className={
                                   item.payment_status === "paid"
-                                    ? "status-paid-badge"
-                                    : "status-pending-badge"
+                                    ? "status-paid-badge" // Green color
+                                    : item.payment_status === "partial"
+                                    ? "status-partial-badge" // Orange color (New)
+                                    : "status-pending-badge" // Red color (Default for pending/unpaid)
                                 }
                               >
                                 {item.payment_status}

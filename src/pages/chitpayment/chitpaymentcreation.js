@@ -93,10 +93,6 @@ const Chitpaymentcreation = () => {
     setShowConfirmationModal(true);
   };
 
-  // Inside Chitpaymentcreation component
-
-  // ... (other code before handlePaymentSubmit)
-
   const handlePaymentSubmit = async (amount) => {
     // Convert the amount input (which is a string) to a number
     const paymentValue = parseFloat(amount);
@@ -148,24 +144,22 @@ const Chitpaymentcreation = () => {
       if (resData.head && resData.head.code === 200) {
         toast.success(resData.head.msg || "Payment successful");
         setShowConfirmationModal(false);
-
-        // --- 🎯 CRITICAL FIX FOR PARTIAL PAYMENT UPDATE ---
         setDuesData((prevDuesData) => {
           return prevDuesData.map((due) => {
             if (due.id === dueToPay.id) {
-              // 1. Calculate the NEW paid amount (Old Paid + New Payment)
               const currentPaid = parseFloat(due.paid_amount || 0);
               const newPaidAmount = currentPaid + paymentValue;
-
-              // 2. Determine the new status
               let newStatus = "pending";
               if (newPaidAmount >= parseFloat(due.due_amount)) {
-                newStatus = "paid"; // Mark as paid if the total covers the due amount
+                newStatus = "paid";
+              } else if (
+                newPaidAmount > 0 &&
+                newPaidAmount < parseFloat(due.due_amount)
+              ) {
+                newStatus = "partial";
+              } else if (newPaidAmount === 0) {
+                newStatus = "pending";
               }
-              // If less than due amount, it remains "pending" or "partial" (depending on your server's status definitions)
-              // Since your image shows 'pending' for partial payments, we'll default to that.
-
-              // 3. Update the record
               return {
                 ...due,
                 status: newStatus,
@@ -188,72 +182,6 @@ const Chitpaymentcreation = () => {
       setLoading(false);
     }
   };
-
-  // ... (rest of the file)
-  // const handlePaymentSubmit = async (amount) => {
-  //   const payload = {
-  //     action: "pay_due",
-  //     due_id: dueToPay.id,
-  //     amount: parseFloat(amount),
-  //     created_by_id: user.user_id,
-  //     created_by_name: user.name,
-  //   };
-
-  //   try {
-  //     setLoading(true);
-  //     const response = await fetch(`${API_DOMAIN}/chit.php`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(payload),
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error(`HTTP error! status: ${response.status}`);
-  //     }
-
-  //     const text = await response.text();
-  //     let resData;
-  //     try {
-  //       let cleanText = text.trim();
-  //       if (cleanText.endsWith("[]")) {
-  //         cleanText = cleanText.slice(0, -2).trim();
-  //       }
-  //       resData = JSON.parse(cleanText);
-  //     } catch (parseError) {
-  //       console.error("Invalid JSON response:", text);
-  //       throw new Error("Invalid response format from server");
-  //     }
-
-  //     setLoading(false);
-  //     if (resData.head && resData.head.code === 200) {
-  //       toast.success(resData.head.msg || "Payment successful");
-  //       setShowConfirmationModal(false);
-
-  //       setDuesData((prevDuesData) => {
-  //         return prevDuesData.map((due) => {
-  //           if (due.id === dueToPay.id) {
-  //             return {
-  //               ...due,
-  //               status: "paid",
-  //               paid_amount: dueToPay.due_amount,
-  //             };
-  //           }
-  //           return due;
-  //         });
-  //       });
-  //       setDueToPay(null);
-  //     } else {
-  //       toast.error(resData.head?.msg || "Payment failed");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //     toast.error(error.message || "An error occurred during payment.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleSubmit = async () => {
     const payload = {
