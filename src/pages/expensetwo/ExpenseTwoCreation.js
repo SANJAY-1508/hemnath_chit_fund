@@ -41,18 +41,18 @@ const ExpenseTwoCreation = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${API_DOMAIN}/category_report.php`, {
+      const response = await fetch(`${API_DOMAIN}/category.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          get_categories: true,
+          search_text:"",
         }),
       });
       const responseData = await response.json();
       if (responseData.head.code === 200) {
-        setCategories(responseData.body.categories || []);
+        setCategories(responseData.body.category || []);
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
