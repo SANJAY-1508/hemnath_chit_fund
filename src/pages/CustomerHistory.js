@@ -6,7 +6,7 @@ import { ClickButton } from "../components/ClickButton";
 import {
   exportToPDF,
   exportToExcel,
-} from "./CustomerHistoryReportPdfandExcel"; 
+} from "../pdf/CustomerHistoryReportPdfandExcel"; 
 const CustomerHistory = () => {
   const [customers, setCustomers] = useState([]);
   const [customerHistory, setCustomerHistory] = useState([]);
