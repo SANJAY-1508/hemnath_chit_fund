@@ -18,7 +18,7 @@ import API_DOMAIN from "../../config/config";
 import Select from "react-select";
 import { useLanguage } from "../../components/LanguageContext";
 
-const ChitCreation = () => {
+const Chitpaymentcreation = () => {
   const { t } = useLanguage();
   const location = useLocation();
   const { type, rowData, duesData: passedDuesData } = location.state || {};
@@ -751,4 +751,4 @@ const ChitCreation = () => {
   );
 };
 
-export default ChitCreation;
+export default Chitpaymentcreation;

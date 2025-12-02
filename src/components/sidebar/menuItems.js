@@ -46,6 +46,11 @@ const sidebarConfig = [
     text: "Chit",
     icon: <FaMoneyCheck />,
   },
+   {
+    path: "/console/master/chitpayment",
+    text: "Chit Payment",
+    icon: <FaMoneyCheck />,
+  },
 
   {
     path: "/console/expense",

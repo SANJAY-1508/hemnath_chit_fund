@@ -12,6 +12,8 @@ import ChitType from "../pages/scheme/scheme";
 import ChitTypeCreation from "../pages/scheme/schemeCreation";
 import Chit from "../pages/chit/chit";
 import ChitCreation from "../pages/chit/chitCreation";
+import Chitpayment from "../pages/chitpayment/chitpayment";
+import Chitpaymentcreation from "../pages/chitpayment/chitpaymentcreation";
 import CustomerBankDetails from "../pages/customer/CustomerBankDetails";
 import CustomerHistory from "../pages/CustomerHistory";
 import CategoryTwoCreation from "../pages/categorytwo/CategoryTwoCreation";
@@ -32,6 +34,8 @@ const routes = [
   { path: "/console/master/scheme/create", element: <ChitTypeCreation /> },
   { path: "/console/master/chit", element: <Chit /> },
   { path: "/console/master/chit/create", element: <ChitCreation /> },
+  { path: "/console/master/chitpayment", element: <Chitpayment /> },
+  { path: "/console/master/chitpayment/create", element: <Chitpaymentcreation /> },
 
   {
     path: "/console/customer/customerbankdetails",

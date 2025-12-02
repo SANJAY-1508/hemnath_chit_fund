@@ -12,7 +12,7 @@ import { LiaEditSolid } from "react-icons/lia";
 import { FiX } from "react-icons/fi";
 import { FaEye } from "react-icons/fa";
 
-const Chit = () => {
+const Chitpayment = () => {
   const { t, cacheVersion } = useLanguage();
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
@@ -275,15 +275,15 @@ const Chit = () => {
         <Row>
           <Col lg="7">
             <div className="page-nav py-3">
-              <span className="nav-list">{t("Chit")}</span>
+              <span className="nav-list">{t("Chit Payment")}</span>
             </div>
           </Col>
 
           <Col lg="5" className="text-end align-self-center">
             {isAdmin && (
               <ClickButton
-                label={<>{t("Add Chit")}</>}
-                onClick={() => navigate("/console/master/chit/create")}
+                label={<>{t("Add Chit Payment")}</>}
+                onClick={() => navigate("/console/master/chitpayment/create")}
               ></ClickButton>
             )}
           </Col>
@@ -353,4 +353,4 @@ const Chit = () => {
   );
 };
 
-export default Chit;
+export default Chitpayment;
