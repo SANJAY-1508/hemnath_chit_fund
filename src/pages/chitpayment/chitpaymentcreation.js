@@ -308,6 +308,7 @@ const Chitpaymentcreation = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
+                disabled={type === "edit" || type === "view"}
               />
             </Form.Group>
           </Col>
