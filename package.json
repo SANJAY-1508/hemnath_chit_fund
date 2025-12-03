@@ -1,8 +1,8 @@
 {
-  "name": "gopuramfinance",
+  "name": "zenchitbilling",
   "version": "0.1.0",
   "private": true,
-  "description": "A billing application for GOPURAM FINANCE.",
+  "description": "A billing application for Zentexus.",
   "author": "Zentexus Technologies",
   "homepage": "https://diwalichit.zentexus.in/zenchitbilling",
   "dependencies": {
