@@ -51,14 +51,14 @@ const dashboardCountData = [
     key: "customer_count",
   },
   {
-    title: "OVER DUE AMOUNT",
+    title: "OVER DUE COUNT",
     value: "0",
     icon: <InfoIcon sx={{ fontSize: 50, opacity: 0.4 }} />,
     color: "#00BCD4",
     key: "overdue_count",
   },
   {
-    title: "CURRENT DUE AMOUNTS",
+    title: "CURRENT DUE COUNT",
     value: "0",
     icon: <EmailIcon sx={{ fontSize: 50, opacity: 0.4 }} />,
     color: "#8BC34A",
@@ -425,9 +425,6 @@ const DashBoard = () => {
     }
     return null;
   };
-// Function to format the label to display the percentage
-// Function to format the label to display the percentage
-// DashBoard.js (Lines 409-434, approximately)
 
 // Function to format the label to display the percentage
 const renderCustomizedLabel = ({
@@ -442,25 +439,20 @@ const renderCustomizedLabel = ({
   percentage
 }) => {
   
-  // Calculate the position for the label text
+
   const RADIAN = Math.PI / 180;
-  
-  // ✅ FIX: Changed multiplier from 0.7 to 0.5 to center the text better 
-  // and prevent overlap, especially for small slices.
   const radius = innerRadius + (outerRadius - innerRadius) * 0.7; 
   
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-  // Return the text element with the formatmted percentage
+  
   return (
     <text
       x={x}
       y={y}
       fill="white"
-      // ✅ Center the text horizontally
       textAnchor="middle" 
-      // ✅ Center the text vertically
       dominantBaseline="middle"
       fontWeight="bold"
     >
