@@ -13,6 +13,8 @@ import Chit from "../pages/chit/chit";
 import ChitCreation from "../pages/chit/chitCreation";
 import Chitpayment from "../pages/chitpayment/chitpayment";
 import Chitpaymentcreation from "../pages/chitpayment/chitpaymentcreation";
+import ChatSupport from "../pages/chatsupport/ChatSupport";
+import ChatView from "../pages/chatsupport/ChatView";
 import CustomerHistory from "../pages/CustomerHistory";
 import CategoryTwoCreation from "../pages/categorytwo/CategoryTwoCreation";
 import ExpenseTwoCreation from "../pages/expensetwo/ExpenseTwoCreation";
@@ -33,6 +35,8 @@ const routes = [
   { path: "/console/master/chit/create", element: <ChitCreation /> },
   { path: "/console/master/chitpayment", element: <Chitpayment /> },
   { path: "/console/master/chitpayment/create", element: <Chitpaymentcreation /> },
+   { path: "/console/master/chatsupport", element: <ChatSupport /> },
+    { path: "/console/master/chatsupport/chatview", element: <ChatView /> },
 
   
   {

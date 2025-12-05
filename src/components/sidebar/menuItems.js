@@ -51,6 +51,11 @@ const sidebarConfig = [
     text: "Chit Payment",
     icon: <FaMoneyBillWave />,
   },
+    {
+    path: "/console/master/chatsupport",
+    text: "Chat  Support",
+    icon: <FaMoneyBillWave />,
+  },
 
   {
     path: "/console/expense",
