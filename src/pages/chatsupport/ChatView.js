@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from "react"; 
 import { Container, Row, Col, Card } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -33,7 +34,29 @@ const ChatView = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  
+
+  const sendDeliveryConfirmation = async (customerId) => {
+    if (!customerId) return;
+    if (!navigator.onLine) {
+      console.warn("Network is offline. Skipping 'deliver' API call.");
+      return;
+    }
+    
+    try {
+      await fetch(`${API_DOMAIN}/chat.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+            action: "deliver", 
+            customer_id: customerId,
+            sender: "customer"
+        }),
+      });
+    } catch (error) {
+      console.error("Error sending delivery confirmation:", error.message);
+    }
+  };
+
   const fetchMessages = async () => {
     if (!customerId) return;
     const initialLoad = messages.length === 0;
@@ -70,12 +93,14 @@ const ChatView = () => {
  
   useEffect(() => {
     fetchMessages(); 
+    sendDeliveryConfirmation(customerId);
     const interval = setInterval(() => {
       fetchMessages();
     }, POLLING_INTERVAL);
+    
+    // Clean up
     return () => clearInterval(interval);
-  }, [customerId, POLLING_INTERVAL]); 
-
+  }, [customerId, POLLING_INTERVAL]);
  
   useEffect(() => {
     scrollToBottom();

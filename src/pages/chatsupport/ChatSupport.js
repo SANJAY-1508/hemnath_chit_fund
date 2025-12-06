@@ -1,19 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Container, Col, Row } from "react-bootstrap";
-import { ClickButton, Delete } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import "jspdf-autotable";
 import { useLanguage } from "../../components/LanguageContext";
 import { MaterialReactTable } from "material-react-table";
-import {
-  Box,
-  Tooltip,
-  IconButton,
-  Menu,
-  MenuItem, 
-} from "@mui/material";
+import { Box, Tooltip, IconButton } from "@mui/material";
 import { FaEye } from "react-icons/fa";
 
 const ChatSupport = () => {
@@ -23,25 +16,23 @@ const ChatSupport = () => {
   const [customerData, setcustomerData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedRowData, setSelectedRowData] = useState(null); 
+  const [selectedRowData, setSelectedRowData] = useState(null);
   const menuOpen = Boolean(anchorEl);
 
- 
   // 2. **NEW** Handlers for Action Menu
   const handleMenuClick = (event, rowData) => {
     setAnchorEl(event.currentTarget);
-    setSelectedRowData(rowData); 
+    setSelectedRowData(rowData);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-    setSelectedRowData(null); 
+    setSelectedRowData(null);
   };
 
- const handleViewChatClick = async () => {
-    if (!selectedRowData) return;
-    const customerId = selectedRowData.customer_id; 
-    handleMenuClose(); 
+  const handleViewChatClick = async (rowData) => {
+    if (!rowData) return;
+    const customerId = rowData.customer_id;
     setLoading(true);
 
     try {
@@ -51,7 +42,7 @@ const ChatSupport = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          action: "list", // Matches your Postman request
+          action: "list", 
           customer_id: customerId,
         }),
       });
@@ -64,18 +55,17 @@ const ChatSupport = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            action: "seen", 
+            action: "seen",
             customer_id: customerId,
+            sender: "customer",
           }),
-        }).catch(error => {
-            console.error("Error sending seen confirmation:", error);
-        });
-        
-        // Navigate to the chat page
+        }).catch((error) => {
+          console.error("Error sending seen confirmation:", error);
+        }); 
         navigate("/console/master/chatsupport/chatview", {
           state: {
             customerId: customerId,
-            customerName: selectedRowData.customer_name,
+            customerName: rowData.customer_name,
             messages: responseData.body.messages,
           },
         });
@@ -120,7 +110,6 @@ const ChatSupport = () => {
     fetchDataCustomer();
   }, [searchText]);
 
-
   const columns = useMemo(
     () => [
       {
@@ -152,34 +141,30 @@ const ChatSupport = () => {
         size: 70,
       },
       {
-        id: "action",
-        header: t("Action"),
-        size: 100,
-        enableSorting: false,
-        enableColumnFilter: false,
-        Cell: ({ row }) => {
-          return (
-            <Box sx={{ display: "flex", gap: "10px" }}>
-              <Tooltip title={t("Actions")}>
-                {/* Click the Icon to open the Menu/Dropdown */}
-                <IconButton
-                  onClick={(e) => handleMenuClick(e, row.original)}
-                  sx={{ color: "#0d6efd", padding: 0 }}
-                  aria-controls={menuOpen ? 'basic-menu' : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={menuOpen ? 'true' : undefined}
-                >
-                  <FaEye />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          );
-        },
-      },
+             id: "action",
+             header: t("Action"),
+             size: 100,
+             enableSorting: false,
+             enableColumnFilter: false,
+             Cell: ({ row }) => {
+               return (
+                 <Box sx={{ display: "flex", gap: "10px" }}>
+                   <Tooltip title={t("View Chat")}>
+                     {/* 💡 CHANGE: This IconButton now calls handleViewChatClick directly */}
+                     <IconButton
+                       onClick={() => handleViewChatClick(row.original)} // Pass row data for navigation
+                       sx={{ color: "#0d6efd", padding: 0 }}
+                     >
+                       <FaEye />
+                     </IconButton>
+                   </Tooltip>
+                 </Box>
+               );
+             },
+           },
     ],
-    [t, cacheVersion, menuOpen] 
+    [t, cacheVersion, menuOpen]
   );
-
 
   return (
     <div>
@@ -190,7 +175,7 @@ const ChatSupport = () => {
               <span className="nav-list">{t("Customer List")}</span>
             </div>
           </Col>
-         
+
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
 
           {loading ? (
@@ -218,7 +203,7 @@ const ChatSupport = () => {
                         fontWeight: "bold",
                         backgroundColor: "black",
                         color: "white",
-                        alignItems: "center", 
+                        alignItems: "center",
                       },
                     }}
                   />
@@ -227,24 +212,9 @@ const ChatSupport = () => {
             </>
           )}
 
-          <Menu
-            anchorEl={anchorEl}
-            open={menuOpen}
-            onClose={handleMenuClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button',
-            }}
-          >
-          
-            <MenuItem onClick={handleViewChatClick}>
-              {t("View Chat")}
-            </MenuItem>
-          </Menu>
-
           <Col lg="4"></Col>
         </Row>
       </Container>
-    
     </div>
   );
 };
