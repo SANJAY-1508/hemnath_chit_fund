@@ -17,12 +17,9 @@ const ChatView = () => {
   const { t } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
-  
-  // 1. Ref for the scrollable container
-  const chatMessagesAreaRef = useRef(null); 
-  const messagesEndRef = useRef(null); // Ref for the bottom-most element
+  const messagesEndRef = useRef(null);
 
-  const POLLING_INTERVAL = 3000; 
+  const POLLING_INTERVAL = 3000; // Check for new messages every 3 seconds (3000ms)
   const locationState = location.state || {};
   const { customerId, customerName: initialCustomerName } = locationState;
 
@@ -32,28 +29,11 @@ const ChatView = () => {
   const [isSending, setIsSending] = useState(false); 
   const [customerName, setCustomerName] = useState(initialCustomerName || `ID: ${customerId}`); 
 
-  
-  // 2. UPDATED: Conditional scroll function
-  const scrollToBottom = (force = false) => {
-    const chatArea = chatMessagesAreaRef.current;
-    if (chatArea) {
-      // Check if the user is currently scrolled near the bottom (within 50px)
-      // This is the threshold to decide if new incoming messages should auto-scroll.
-      const isAtBottom = 
-        chatArea.scrollHeight - chatArea.scrollTop <= chatArea.clientHeight + 50;
-      
-      // Scroll if 'force' is true (e.g., manager sending a message, initial load) 
-      // OR if the user is already near the bottom (new customer message arrived).
-      if (force || isAtBottom) {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }
-    } else {
-        // Fallback for initial render before ref is set
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
+    const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // 3. UPDATED: Fetch Messages function
+  
   const fetchMessages = async () => {
     if (!customerId) return;
     const initialLoad = messages.length === 0;
@@ -73,19 +53,8 @@ const ChatView = () => {
       if (initialLoad) setLoading(false); 
 
       if (responseData.head.code === 200) {
-        if (responseData.body.messages) {
-          const newMessages = responseData.body.messages;
-          
-          if (newMessages.length !== messages.length) {
-             setMessages(newMessages);
-             
-             // Conditionally scroll when new messages arrive.
-             // Force scroll on initial load (first time setting messages).
-             scrollToBottom(initialLoad); 
-          } else if (initialLoad) {
-             // If messages were retrieved but there were none initially (length === 0), ensure scroll happens once.
-             scrollToBottom(true);
-          }
+        if (responseData.body.messages && responseData.body.messages.length !== messages.length) {
+             setMessages(responseData.body.messages);
         }
       } else {
         console.error("Failed to fetch chat messages:", responseData.head.msg);
@@ -100,21 +69,17 @@ const ChatView = () => {
 
  
   useEffect(() => {
-    // Initial fetch
     fetchMessages(); 
-
-    // Set up polling interval
     const interval = setInterval(() => {
       fetchMessages();
     }, POLLING_INTERVAL);
-    
-    // Clean up
     return () => clearInterval(interval);
   }, [customerId, POLLING_INTERVAL]); 
 
-
-  // This hook is now REMOVED: 
-  // useEffect(() => { scrollToBottom(); }, [messages]);
+ 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
 
   
@@ -208,11 +173,11 @@ const ChatView = () => {
           created_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
         };
 
+        // Append the confirmed message only after success
         setMessages((prevMessages) => [...prevMessages, sentMessage]);
         setNewMessage(""); 
-        
-        // Force scroll to bottom when manager sends a message
-        scrollToBottom(true); 
+        scrollToBottom();
+
       } else {
         alert(t("Failed to send message: ") + responseData.head.msg);
       }
@@ -237,7 +202,7 @@ const ChatView = () => {
     );
   }
 
-  // Component to render a single chat message (Unchanged)
+  // Component to render a single chat message (UPDATED)
   const ChatMessage = ({ msg }) => {
     const isCustomer = msg.sender.toLowerCase() === "customer";
     const alignmentClass = isCustomer ? "d-flex justify-content-start" : "d-flex justify-content-end";
@@ -279,8 +244,7 @@ const ChatView = () => {
       </Row>
       
       {/* Chat Messages Area */}
-      {/* 5. ADD the ref to the scrollable div */}
-      <div className="chat-messages-area p-3" ref={chatMessagesAreaRef}>
+      <div className="chat-messages-area p-3">
         {loading && messages.length === 0 ? (
             <div className="text-center py-5 text-muted">
                 {t("Loading chat history...")}
@@ -298,7 +262,7 @@ const ChatView = () => {
       </div>
 
       {/* Input Field with Send Icon */}
-     <form onSubmit={handleSendMessage} className="chat-input-row mb-3 sticky-bottom">
+      <form onSubmit={handleSendMessage} className="chat-input-row py-2 mb-3 sticky-bottom">
         <Col>
           <input 
             type="text" 
@@ -306,7 +270,7 @@ const ChatView = () => {
             className="form-control"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            disabled={isSending} 
+            disabled={isSending} // Use isSending for button
           />
         </Col>
         <Col xs="auto">
@@ -314,7 +278,7 @@ const ChatView = () => {
           <button 
             type="submit" 
             className="btn-primary"
-            disabled={!newMessage.trim() || isSending} 
+            disabled={!newMessage.trim() || isSending} // Disable while sending
             style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             <IoSend style={{ fontSize: '1.2rem' }} />
