@@ -38,6 +38,11 @@ const sidebarConfig = [
         icon: <PiUsersThreeBold />,
         text: "Customer",
       },
+       {
+        path: "/console/master/banner",
+        icon: <PiUsersThreeBold />,
+        text: "Banner",
+      },
     ],
   },
 

@@ -14,21 +14,7 @@ const ChatSupport = () => {
   const { t, cacheVersion } = useLanguage();
   const [searchText, setSearchText] = useState("");
   const [customerData, setcustomerData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedRowData, setSelectedRowData] = useState(null);
-  const menuOpen = Boolean(anchorEl);
-
-  // 2. **NEW** Handlers for Action Menu
-  const handleMenuClick = (event, rowData) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedRowData(rowData);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setSelectedRowData(null);
-  };
+  const [loading, setLoading] = useState(false); 
 
   const handleViewChatClick = async (rowData) => {
     if (!rowData) return;
@@ -154,9 +140,6 @@ const ChatSupport = () => {
                 <IconButton
                  onClick={() => handleViewChatClick(row.original)}
                   sx={{ color: "#0d6efd", padding: 0 }}
-                  aria-controls={menuOpen ? "basic-menu" : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={menuOpen ? "true" : undefined}
                 >
                   <FaEye />
                 </IconButton>
@@ -166,7 +149,7 @@ const ChatSupport = () => {
         },
       },
     ],
-    [t, cacheVersion, menuOpen]
+    [t, cacheVersion]
   );
 
   return (

@@ -9,6 +9,7 @@ import Customer from "../pages/customer/Customer";
 import CustomerCreations from "../pages/customer/CustomerCreations";
 import ChitType from "../pages/scheme/scheme";
 import ChitTypeCreation from "../pages/scheme/schemeCreation";
+import Banner from "../pages/banner/bannner";
 import Chit from "../pages/chit/chit";
 import ChitCreation from "../pages/chit/chitCreation";
 import Chitpayment from "../pages/chitpayment/chitpayment";
@@ -31,6 +32,7 @@ const routes = [
   { path: "/console/master/customer", element: <Customer /> },
   { path: "/console/master/scheme", element: <ChitType /> },
   { path: "/console/master/scheme/create", element: <ChitTypeCreation /> },
+   { path: "/console/master/banner", element: <Banner /> },
   { path: "/console/master/chit", element: <Chit /> },
   { path: "/console/master/chit/create", element: <ChitCreation /> },
   { path: "/console/master/chitpayment", element: <Chitpayment /> },

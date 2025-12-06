@@ -570,3 +570,8 @@ input:focus {
     background-color: #4771c0 !important; 
     border-color: #3b44c5 !important;
 }
+.card .btn-danger{
+   color: #fff !important; 
+    background-color: #dc3545 !important; /* Default red for 'danger' */
+    border-color: #dc3545 !important;
+}
