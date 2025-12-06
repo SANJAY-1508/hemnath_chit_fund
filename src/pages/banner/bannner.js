@@ -239,14 +239,6 @@ const Banner = () => {
                     <MdOutlineDelete size={20} />
                   </Button>
                 </div>
-                <Card.Body className="p-2">
-                   <Card.Text className="text-muted small mb-0 text-truncate">
-                      {t("Created By")}: {item.created_name || t("N/A")}
-                   </Card.Text>
-                   <Card.Text className="text-muted small">
-                      {t("Date")}: {item.created_date || t("N/A")}
-                   </Card.Text>
-                </Card.Body>
               </Card>
             </Col>
           );
