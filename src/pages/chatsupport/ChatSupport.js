@@ -141,27 +141,30 @@ const ChatSupport = () => {
         size: 70,
       },
       {
-             id: "action",
-             header: t("Action"),
-             size: 100,
-             enableSorting: false,
-             enableColumnFilter: false,
-             Cell: ({ row }) => {
-               return (
-                 <Box sx={{ display: "flex", gap: "10px" }}>
-                   <Tooltip title={t("View Chat")}>
-                     {/* 💡 CHANGE: This IconButton now calls handleViewChatClick directly */}
-                     <IconButton
-                       onClick={() => handleViewChatClick(row.original)} // Pass row data for navigation
-                       sx={{ color: "#0d6efd", padding: 0 }}
-                     >
-                       <FaEye />
-                     </IconButton>
-                   </Tooltip>
-                 </Box>
-               );
-             },
-           },
+        id: "action",
+        header: t("Action"),
+        size: 100,
+        enableSorting: false,
+        enableColumnFilter: false,
+        Cell: ({ row }) => {
+          return (
+            <Box sx={{ display: "flex", gap: "10px" }}>
+              <Tooltip title={t("Actions")}>
+                {/* Click the Icon to open the Menu/Dropdown */}
+                <IconButton
+                 onClick={() => handleViewChatClick(row.original)}
+                  sx={{ color: "#0d6efd", padding: 0 }}
+                  aria-controls={menuOpen ? "basic-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={menuOpen ? "true" : undefined}
+                >
+                  <FaEye />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          );
+        },
+      },
     ],
     [t, cacheVersion, menuOpen]
   );
