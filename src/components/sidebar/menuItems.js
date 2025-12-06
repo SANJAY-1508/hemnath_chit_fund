@@ -7,6 +7,8 @@ import { PiUsersThreeBold } from "react-icons/pi";
 import { MdCategory } from "react-icons/md";
 import { FaCogs, FaMoneyCheck } from "react-icons/fa";
 import { BiCollection } from "react-icons/bi";
+import { BsChatDotsFill } from "react-icons/bs";
+import { BsFillImageFill } from "react-icons/bs";
 
 const sidebarConfig = [
   {
@@ -40,7 +42,7 @@ const sidebarConfig = [
       },
        {
         path: "/console/master/banner",
-        icon: <PiUsersThreeBold />,
+        icon: <BsFillImageFill />,
         text: "Banner",
       },
     ],
@@ -59,7 +61,7 @@ const sidebarConfig = [
     {
     path: "/console/master/chatsupport",
     text: "Chat  Support",
-    icon: <FaMoneyBillWave />,
+    icon: <BsChatDotsFill />,
   },
 
   {

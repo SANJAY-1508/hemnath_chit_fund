@@ -274,26 +274,61 @@ const Banner = () => {
           </Col>
         </Row>
         
+     
+
         {loading ? (
             <LoadingOverlay isLoading={loading} />
         ) : (
             <Row>
                 <Col lg="12" className="px-0">
+                    {/* Tabbed Interface */}
                     <Tabs
                         id="banner-control-tabs"
                         activeKey={activeTab}
                         onSelect={(k) => setActiveTab(k)}
-                        className="mb-3"
+                        className="mb-3" 
                     >
+                     
                         <Tab 
                             eventKey="bannerOne" 
-                            title={t("Banner One List")}
+                            title={
+                                <span 
+                                    style={{
+                                        // Base style for all tabs
+                                        padding: '10px 15px',
+                                        borderRadius: '5px 5px 0 0',
+                                        fontWeight: activeTab === 'bannerOne' ? 'bold' : 'normal',
+                                        backgroundColor: activeTab === 'bannerOne' ? '#fff' : '#e9ecef', // White background for active
+                                        color: activeTab === 'bannerOne' ? '#495057' : '#6c757d', 
+                                        transition: 'all 0.3s ease',
+                                        boxShadow: activeTab === 'bannerOne' ? '0 -2px 5px rgba(0,0,0,0.05)' : 'none',
+                                    }}
+                                >
+                                    {t("Banner One List")}
+                                </span>
+                            }
                         >
                             <BannerImageList data={bannerOneData} type="one" />
                         </Tab>
+                        
+                        {/* Tab for Banner Two List */}
                         <Tab 
                             eventKey="bannerTwo" 
-                            title={t("Banner Two List")}
+                            title={
+                                <span 
+                                    style={{
+                                        padding: '10px 15px',
+                                        borderRadius: '5px 5px 0 0',
+                                        fontWeight: activeTab === 'bannerTwo' ? 'bold' : 'normal',
+                                        backgroundColor: activeTab === 'bannerTwo' ? '#fff' : '#e9ecef', // White background for active
+                                        color: activeTab === 'bannerTwo' ? '#495057' : '#6c757d', // Dark text for active
+                                        transition: 'all 0.3s ease',
+                                        boxShadow: activeTab === 'bannerTwo' ? '0 -2px 5px rgba(0,0,0,0.05)' : 'none',
+                                    }}
+                                >
+                                    {t("Banner Two List")}
+                                </span>
+                            }
                         >
                             <BannerImageList data={bannerTwoData} type="two" />
                         </Tab>
