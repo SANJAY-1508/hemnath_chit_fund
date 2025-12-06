@@ -283,7 +283,7 @@ const Banner = () => {
                       src={imageSrc}
                       alt={`Banner ${index + 1}`}
                       style={{
-                        objectFit: "cover",
+                        objectFit: "fill",
                         width: "100%",
                         height: "100%",
                       }}
@@ -324,22 +324,24 @@ const Banner = () => {
     <div>
       <Container fluid>
         <Row>
-          <Col lg="6" md="6" xs="6">
+          <Col lg="3" md="3" xs="4">
             <div className="page-nav py-3">
-              <span className="nav-list">{t("Banner Master")}</span>
+              <span className="nav-list">{t("Banner")}</span>
             </div>
           </Col>
 
-          {/* Add Button opens the Upload Modal */}
-          <Col lg="6" md="6" xs="6" className="align-self-center text-end">
+          <Col
+            lg="9"
+            md="9"
+            xs="8"
+            className="align-self-center text-end text-nowrap"
+          >
             {isAdmin && (
               <ClickButton
                 label={
-                  activeTab === "bannerOne" ? (
-                    <>{t("Add Banner One")}</>
-                  ) : (
-                    <>{t("Add Banner Two")}</>
-                  )
+                  activeTab === "bannerOne"
+                    ? t("Add Banner One")
+                    : t("Add Banner Two")
                 }
                 onClick={handleShowModal}
               />
@@ -352,12 +354,12 @@ const Banner = () => {
         ) : (
           <Row>
             <Col lg="12" className="px-0">
-              {/* Tabbed Interface */}
               <Tabs
                 id="banner-control-tabs"
                 activeKey={activeTab}
                 onSelect={(k) => setActiveTab(k)}
                 className="mb-3"
+                style={{ borderBottom: "none" }}
               >
                 <Tab
                   eventKey="bannerOne"
@@ -423,14 +425,13 @@ const Banner = () => {
       <Modal
         show={showModal}
         onHide={handleCloseModal}
-        centered
-        // Setting backdrop to "static" prevents closing when clicking outside
-        backdrop="static"
+        centered       
+        backdrop="static" // Setting backdrop to "static" prevents closing when clicking outside
         keyboard={false} // Prevent ESC key from closing
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            {t("Upload New Banner Image")} (
+            {t("Upload Banner Image")} (
             {activeTab === "bannerOne" ? t("Banner One") : t("Banner Two")})
           </Modal.Title>
         </Modal.Header>
