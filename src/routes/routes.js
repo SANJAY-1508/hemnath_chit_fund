@@ -10,6 +10,8 @@ import CustomerCreations from "../pages/customer/CustomerCreations";
 import ChitType from "../pages/scheme/scheme";
 import ChitTypeCreation from "../pages/scheme/schemeCreation";
 import Banner from "../pages/banner/bannner";
+import BankDetails from "../pages/BankDetails/BankDetails";
+import BankDetailsCreations from "../pages/BankDetails/BankDetailsCreation";
 import Chit from "../pages/chit/chit";
 import ChitCreation from "../pages/chit/chitCreation";
 import Chitpayment from "../pages/chitpayment/chitpayment";
@@ -29,6 +31,8 @@ const routes = [
   { path: "/console/company", element: <Company /> },
   { path: "/console/company/create", element: <CompanyCreation /> },
   { path: "/console/master/customer/create", element: <CustomerCreations /> },
+  { path: "/console/master/bankdetails", element: <BankDetails /> },
+  { path: "/console/master/bankdetails/create", element: <BankDetailsCreations /> },
   { path: "/console/master/customer", element: <Customer /> },
   { path: "/console/master/scheme", element: <ChitType /> },
   { path: "/console/master/scheme/create", element: <ChitTypeCreation /> },

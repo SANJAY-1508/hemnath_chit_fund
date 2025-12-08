@@ -45,6 +45,11 @@ const sidebarConfig = [
         icon: <BsFillImageFill />,
         text: "Banner",
       },
+       {
+        path: "/console/master/bankdetails",
+        icon: <BsFillImageFill />,
+        text: "Bank Details",
+      },
     ],
   },
 

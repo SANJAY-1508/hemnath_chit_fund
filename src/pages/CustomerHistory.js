@@ -164,9 +164,9 @@ const CustomerHistory = () => {
                       <tr>
                         <th style={{ width: "50px" }}>S.No</th>
                         <th style={{ width: "100px" }}>Date</th>
-                        <th style={{ width: "180px" }}>History Type</th>
-                        <th style={{ width: "200px" }}>Old Value</th>{" "}
-                        <th style={{ width: "200px" }}>New Value</th>
+                       <th style={{ width: "235px", whiteSpace: "normal" }}>History Type</th>
+                        <th style={{ width: "260px" }}>Old Value</th>{" "}
+                        <th style={{ width: "260px" }}>New Value</th>
                         <th>Remark</th>
                       </tr>
                     </thead>
