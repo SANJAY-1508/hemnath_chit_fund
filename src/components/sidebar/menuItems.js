@@ -65,11 +65,11 @@ const sidebarConfig = [
     text: "Chit Payment",
     icon: <FaMoneyBillWave />,
   },
-  // {
-  //   path: "/console/master/paymentapproval",
-  //   text: "Payment Approval",
-  //   icon: <CreditScoreIcon />,
-  // },
+  {
+    path: "/console/master/paymentapproval",
+    text: "Payment Approval",
+    icon: <CreditScoreIcon />,
+  },
     {
     path: "/console/master/chatsupport",
     text: "Chat Support",

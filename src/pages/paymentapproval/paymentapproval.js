@@ -1,233 +1,190 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Container, Col, Row, Modal, Form, Button } from "react-bootstrap";
-import { ClickButton } from "../../components/ClickButton";
+import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
+import { Container, Col, Row } from "react-bootstrap";
+import { ClickButton, Delete } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import LoadingOverlay from "../../components/LoadingOverlay";
+import "jspdf-autotable";
 import { useLanguage } from "../../components/LanguageContext";
-import { ToastContainer, toast } from "react-toastify";
+
+// 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
 import { MaterialReactTable } from "material-react-table";
-import { Box, Tooltip, IconButton } from "@mui/material";
+import { Box, Tooltip, IconButton, Dialog, DialogContent } from "@mui/material";
+
 import { LiaEditSolid } from "react-icons/lia";
-import { FiX } from "react-icons/fi";
-import { FaEye } from "react-icons/fa";
-
-const PaymentApproval = () => {
-  const { t, cacheVersion } = useLanguage();
+const Customer = () => {
   const navigate = useNavigate();
+  const { t, cacheVersion } = useLanguage();
   const [searchText, setSearchText] = useState("");
-  const [chitData, setChitData] = useState([]);
+  const [customerData, setcustomerData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showCloseModal, setShowCloseModal] = useState(false);
-  const [selectedChitId, setSelectedChitId] = useState(null);
-  const [closeReason, setCloseReason] = useState("");
-
   const user = JSON.parse(localStorage.getItem("user")) || {};
-  const isAdmin = user.role === "Admin";
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
 
-  const fetchData = async () => {
+  // Handler functions for the preview modal
+  const handlePreviewOpen = (imageUrl) => {
+    setPreviewImage(imageUrl);
+    setPreviewOpen(true);
+  };
+
+  const handlePreviewClose = () => {
+    setPreviewOpen(false);
+    setPreviewImage("");
+  };
+
+  // 1. Handlers for View  Edit and Delete Actions
+
+  const handlecustomerViewClick = (rowData) => {
+    navigate("/console/master/customerdetails", {
+      state: { type: "view", rowData: rowData },
+    });
+  };
+  const handlecustomerEditClick = (rowData) => {
+    navigate("/console/master/customer/create", {
+      state: { type: "edit", rowData: rowData },
+    });
+  };
+  const handlecustomerDeleteClick = async (id) => {
+    console.log("delete customer", id);
     setLoading(true);
-
     try {
-      const response = await fetch(`${API_DOMAIN}/chit.php`, {
+      const response = await fetch(`${API_DOMAIN}/customer.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          action: "list_web_chits",
-        }),
-      });
-
-      const responseData = await response.json();
-
-      if (responseData.head.code === 200) {
-        setChitData(
-          Array.isArray(responseData.body.chits) ? responseData.body.chits : []
-        );
-      } else {
-        setChitData([]);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handleEditClick = async (rowData) => {
-    const chitId = rowData.chit_id;
-    setLoading(true);
-
-    try {
-      const response = await fetch(`${API_DOMAIN}/chit.php`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chit_id: chitId, action: "get_chit_details" }),
-      });
-
-      const responseData = await response.json();
-
-      setLoading(false);
-
-      if (
-        responseData.head.code === 200 &&
-        responseData.body &&
-        responseData.body.chit
-      ) {
-        const detailedRowData = responseData.body.chit;
-        const duesArray = responseData.body.dues || [];
-
-        navigate("/console/master/chitpayment/create", {
-          state: {
-            type: "edit",
-            rowData: detailedRowData,
-            duesData: duesArray,
-          },
-        });
-      } else {
-        console.error("Failed to fetch chit details:", responseData.head.msg);
-      }
-    } catch (error) {
-      setLoading(false);
-      console.error("Error editing chit:", error);
-    }
-  };
- 
-
-  const handleCloseClick = (chitId) => {
-    setSelectedChitId(chitId);
-    setCloseReason("");
-    setShowCloseModal(true);
-  };
-
-  const handleSubmitClose = async () => {
-    setLoading(true);
-
-    try {
-      const response = await fetch(`${API_DOMAIN}/chit.php`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "foreclose_chit",
-          chit_id: selectedChitId,
+          delete_customer_id: id,
           created_by_id: user.user_id,
           created_by_name: user.name,
         }),
       });
-
       const responseData = await response.json();
-
       if (responseData.head.code === 200) {
-        toast.success(responseData.head.msg || t("Chit closed successfully"));
-        setShowCloseModal(false);
-        fetchData(); // REFRESH TABLE
+        navigate("/console/master/customer");
+        window.location.reload();
       } else {
-        toast.error(responseData.head.msg, {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-
-        setShowCloseModal(false);
+        setLoading(false);
       }
     } catch (error) {
-      toast.error(t("An error occurred while closing the chit"));
-    } finally {
+      console.error("Error:", error);
       setLoading(false);
     }
   };
+  // 2. Data Fetching Logic (Unchanged)
+  const fetchDataCustomer = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_DOMAIN}/customer.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          search_text: searchText,
+        }),
+      });
 
+      const responseData = await response.json();
+
+      setLoading(false);
+      if (responseData.head.code === 200) {
+        setcustomerData(responseData.body.customer);
+        setLoading(false);
+      } else {
+        throw new Error(responseData.head.msg);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching data:", error.message);
+    }
+  };
+  useEffect(() => {
+    fetchDataCustomer();
+  }, [searchText]);
+
+  ///for pdf and excel download
+
+  // 3. Define Material React Table Columns
   const columns = useMemo(
     () => [
       {
+        accessorKey: "s_no_key",
         header: t("S.No"),
+        size: 5,
+        enableColumnFilter: false,
         Cell: ({ row }) => row.index + 1,
-        size: 50,
       },
+
       {
-        accessorKey: "chit_id",
-        header: t("Chit ID"),
-        size: 100,
+        accessorKey: "customer_no",
+        header: t("Customer No"),
+        size: 70,
       },
       {
         accessorKey: "customer_name",
-        header: t("Customer Name"),
-        size: 100,
-      },
-      {
-        accessorKey: "scheme_name",
         header: t("Scheme Name"),
-        size: 150,
+        size: 70,
       },
       {
-        accessorKey: "schemet_due_amount",
-        header: t("Scheme Due Amount"),
-        size: 150,
+        accessorKey: "mobile_number",
+        header: t("Mobile No"),
+        size: 70,
       },
+      // {
+      //   accessorKey: "email_id",
+      //   header: t("Email Id"),
+      //   size: 70,
+      // },
+
       {
-        accessorKey: "scheme_maturtiy_amount",
-        header: t("Scheme Maturity Amount"),
-        size: 150,
-      },
-      {
-        accessorKey: "total_paid_amount",
-        header: t("Total Paid Amount"),
-        size: 150,
+        accessorKey: "status",
+        header: t("Status"),
+        size: 70,
       },
       {
         id: "action",
         header: t("Action"),
-        size: 100,
-        enableSorting: false,
+        size: 50,
         enableColumnFilter: false,
+        enableColumnOrdering: false,
+        enableSorting: false,
+
         Cell: ({ row }) => {
-          console.log(row.original);
-          const isClosed = row.original.status === "foreclosed";
+          const [anchorEl, setAnchorEl] = useState(null);
+          const open = Boolean(anchorEl);
+          const handleMenuClick = (event) => {
+            setAnchorEl(event.currentTarget);
+          };
+
+          const handleMenuClose = () => {
+            setAnchorEl(null);
+          };
+          const handleActionClick = (actionHandler) => {
+            actionHandler();
+            handleMenuClose();
+          };
 
           return (
-            <Box sx={{ display: "flex", gap: "10px" }}>
-              {isClosed ? (
-                <span
-                  style={{
-                    color: "#dc3545", // Red color for emphasis
-                    fontWeight: "bold",
-                    fontSize: "0.9rem",
-                    whiteSpace: "nowrap", // Prevents wrapping in the small column
-                  }}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-start",
+              }}
+            >
+              {/* Tooltip for better UX */}
+              <Tooltip title={t("Edit")}>
+                <IconButton
+                  aria-label="edit bank details"
+                  onClick={handlecustomerEditClick}
+                  sx={{ color: "#0d6efd", padding: 0 }}
                 >
-                  {t("Closed")}
-                </span>
-              ) : (
-                <>
-                  <Tooltip title={t("Edit")}>
-                    <IconButton
-                      onClick={() => handleEditClick(row.original)}
-                      sx={{ color: "#0d6efd", padding: 0 }}
-                    >
-                      <LiaEditSolid />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title={t("Close")}>
-                    <IconButton
-                      onClick={() => handleCloseClick(row.original.chit_id)}
-                      sx={{ color: "#dc3545", padding: 0 }}
-                    >
-                      <FiX />
-                    </IconButton>
-                  </Tooltip>
-                </>
-              )}
+                  <LiaEditSolid
+                    sx={{ color: "rgb(22 59 140)" }} // Use the same color as the menu item
+                  />
+                </IconButton>
+              </Tooltip>
             </Box>
           );
         },
@@ -236,79 +193,117 @@ const PaymentApproval = () => {
     [t, cacheVersion]
   );
 
+  // 4. Update JSX to render MaterialReactTable
   return (
     <div>
       <Container fluid>
         <Row>
-          <Col lg="7">
+          <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
+              {/* 1. Translate "Customer" */}
               <span className="nav-list">{t("Payment Approval")}</span>
             </div>
           </Col>
+          {/* <Col lg="5" md="6" xs="6" className="align-self-center text-end">
+            <ClickButton
+              label={<>{t("Add Customer")}</>}
+              onClick={() => navigate("/console/master/customer/create")}
+            ></ClickButton>
+          </Col> */}
+          {/* ... (Search Bar remains the same) ... */}
+          {/* <Col
+            lg="3"
+            md="5"
+            xs="12"
+            className="py-1"
+            style={{ marginLeft: "-10px" }}
+          >
+            <TextInputForm
+              placeholder={"Search Group"}
+              prefix_icon={<FaMagnifyingGlass />}
+              onChange={(e) => handleSearch(e.target.value)}
+              labelname={"Search"}
+            >
+              {" "}
+            </TextInputForm>
+          </Col> */}
+          <Col lg={9} md={12} xs={12} className="py-2"></Col>
 
-          <Col lg={12} className="px-0 py-2">
-            {loading ? (
-              <LoadingOverlay isLoading={loading} />
-            ) : (
-              <MaterialReactTable
-                columns={columns}
-                data={chitData}
-                enablePagination
-                enableSorting
-                enableColumnFilters={false}
-                enableColumnActions={false}
-                initialState={{ density: "compact" }}
-                muiTablePaperProps={{
-                  sx: {
-                    borderRadius: "5px",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                  },
-                }}
-                muiTableHeadCellProps={{
-                  sx: {
-                    fontWeight: "bold",
-                    backgroundColor: "#000000ff",
-                    color: "white",
-                  },
-                }}
-              />
-            )}
-          </Col>
+          {/* 5. Replace TableUI with MaterialReactTable */}
+          {loading ? (
+            <LoadingOverlay isLoading={loading} />
+          ) : (
+            <>
+              <Col lg="12" md="12" xs="12" className="px-0">
+                <div className="py-1">
+                  <MaterialReactTable
+                    columns={columns}
+                    data={customerData}
+                    enableColumnActions={false}
+                    enableColumnFilters={true}
+                    enablePagination={true}
+                    enableSorting={true}
+                    initialState={{ density: "compact" }}
+                    muiTablePaperProps={{
+                      sx: {
+                        borderRadius: "5px",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        //textAlign: "center",
+                      },
+                    }}
+                    muiTableHeadCellProps={{
+                      sx: {
+                        fontWeight: "bold",
+                        backgroundColor: "black",
+                        color: "white",
+                        alignItems: "center", // Light gray header background
+                      },
+                    }}
+                  />
+                </div>
+              </Col>
+            </>
+          )}
+          <Col lg="4"></Col>
         </Row>
       </Container>
-
-      {/* CLOSE CHIT MODAL */}
-      <Modal
-        size="sm"
-        show={showCloseModal}
-        onHide={() => setShowCloseModal(false)}
-        centered
-        backdrop="static"
+      <Dialog
+        open={previewOpen}
+        onClose={handlePreviewClose}
+        maxWidth="sm"
+        fullWidth
       >
-        <Modal.Header>
-          <Modal.Title>{t("Close Chit")}</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body className="text-center">
-          <p>{t("Are you sure you want to close this chit?")}</p>
-        </Modal.Body>
-
-        <Modal.Footer className="justify-content-center">
-          <Button variant="danger" onClick={() => setShowCloseModal(false)}>
-            {t("Cancel")}
-          </Button>
-          <Button
-            variant="danger"
-            onClick={handleSubmitClose}
-            disabled={loading}
+        <DialogContent sx={{ padding: 0 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              p: 2,
+            }}
           >
-            {loading ? t("Closing...") : t("Close Chit")}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <ToastContainer />
+            {/* The full-size image */}
+            <img
+              src={previewImage}
+              alt="Customer Proof Preview"
+              style={{
+                maxWidth: " 80%",
+                maxHeight: "80vh",
+                objectFit: "contain",
+              }}
+            />
+
+            {/* Close Button */}
+            <Delete
+              label="Close"
+              onClick={handlePreviewClose}
+              style={{ marginTop: "16px" }}
+            />
+          </Box>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
-export default PaymentApproval;
+export default Customer;

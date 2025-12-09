@@ -1,30 +1,18 @@
 import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
 import { Container, Col, Row } from "react-bootstrap";
-import { ClickButton, Delete } from "../../components/ClickButton";
+import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import "jspdf-autotable";
 import { useLanguage } from "../../components/LanguageContext";
-
-// 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
 import { MaterialReactTable } from "material-react-table";
 import {
   Box,
   Tooltip,
   IconButton,
-  Dialog,
-  DialogContent,
-  Button,
-  Menu, // <-- New component
-  MenuItem,
 } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-
-import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-
+import { LiaEditSolid } from "react-icons/lia";
 const Customer = () => {
   const navigate = useNavigate();
   const { t, cacheVersion } = useLanguage();
@@ -151,7 +139,7 @@ const Customer = () => {
           return fullDetails;
         },
       }, // 5. Action (MUST BE LAST)
-     {
+      {
         id: "action",
         header: t("Action"),
         size: 50,
@@ -160,38 +148,38 @@ const Customer = () => {
         enableSorting: false,
 
         Cell: ({ row }) => {
-            // NOTE: All Menu logic (useState, anchorEl, handleMenuClick, etc.) is removed.
-            
-            // Define the action handler directly
-            const handleEditClick = () => {
-                // This function assumes handlecustomerEditClick is available in the component scope
-                // where the columns array is defined.
-                handlecustomerEditClick(row.original);
-            };
+          // NOTE: All Menu logic (useState, anchorEl, handleMenuClick, etc.) is removed.
 
-            return (
-                <Box
-                    sx={{
-                        display: "flex",
-                        justifyContent: "flex-start",
-                    }}
+          // Define the action handler directly
+          const handleEditClick = () => {
+            // This function assumes handlecustomerEditClick is available in the component scope
+            // where the columns array is defined.
+            handlecustomerEditClick(row.original);
+          };
+
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-start",
+              }}
+            >
+              {/* Tooltip for better UX */}
+              <Tooltip title={t("Edit")}>
+                <IconButton
+                  aria-label="edit bank details"
+                  onClick={handleEditClick}
+                  sx={{ color: "#0d6efd", padding: 0 }}
                 >
-                    {/* Tooltip for better UX */}
-                    <Tooltip title={t("Edit")}>
-                        <IconButton
-                            aria-label="edit bank details"
-                            onClick={handleEditClick}
-                            sx={{ padding: 0 }}
-                        >
-                            <DriveFileRenameOutlineIcon 
-                                sx={{ color: "rgb(22 59 140)" }} // Use the same color as the menu item
-                            />
-                        </IconButton>
-                    </Tooltip>
-                </Box>
-            );
+                  <LiaEditSolid
+                    sx={{ color: "rgb(22 59 140)" }} // Use the same color as the menu item
+                  />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          );
         },
-    },
+      },
     ],
     [t]
   );
