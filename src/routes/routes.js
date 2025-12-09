@@ -17,8 +17,8 @@ import ChitCreation from "../pages/chit/chitCreation";
 import Chitpayment from "../pages/chitpayment/chitpayment";
 import Chitpaymentcreation from "../pages/chitpayment/chitpaymentcreation";
 import PaymentApproval from "../pages/paymentapproval/paymentapproval";
-import PaymentApprovalCreations from "../pages/paymentapproval/PaymentApprovalCreations";
-
+import PaymentApprovalCreations from "../pages/paymentapproval/PaymentApprovalCreate";
+import PaymentDetailsView from "../pages/paymentapproval/paymentdetailsview";
 import ChatSupport from "../pages/chatsupport/ChatSupport";
 import ChatView from "../pages/chatsupport/ChatView";
 import CustomerHistory from "../pages/CustomerHistory";
@@ -35,20 +35,35 @@ const routes = [
   { path: "/console/company/create", element: <CompanyCreation /> },
   { path: "/console/master/customer/create", element: <CustomerCreations /> },
   { path: "/console/master/bankdetails", element: <BankDetails /> },
-  { path: "/console/master/bankdetails/create", element: <BankDetailsCreations /> },
+  {
+    path: "/console/master/bankdetails/create",
+    element: <BankDetailsCreations />,
+  },
   { path: "/console/master/customer", element: <Customer /> },
   { path: "/console/master/scheme", element: <ChitType /> },
   { path: "/console/master/scheme/create", element: <ChitTypeCreation /> },
-   { path: "/console/master/banner", element: <Banner /> },
+  { path: "/console/master/banner", element: <Banner /> },
   { path: "/console/master/chit", element: <Chit /> },
   { path: "/console/master/chit/create", element: <ChitCreation /> },
   { path: "/console/master/chitpayment", element: <Chitpayment /> },
-  { path: "/console/master/chitpayment/create", element: <Chitpaymentcreation /> },
- { path: "/console/master/paymentapproval/create", element: <PaymentApprovalCreations/> },
-   { path: "/console/master/chatsupport", element: <ChatSupport /> },
-    { path: "/console/master/chatsupport/chatview", element: <ChatView /> },
-{ path: "/console/master/paymentapproval", element: <PaymentApproval /> },
+  {
+    path: "/console/master/chitpayment/create",
+    element: <Chitpaymentcreation />,
+  },
+  {
+    path: "/console/master/paymentapproval/create",
+    element: <PaymentApprovalCreations />,
+  },
+
+  {
+    path: "/console/master/paymentapproval/payment-details/:customerId",
+    element: <PaymentDetailsView />,
+  },
   
+  { path: "/console/master/chatsupport", element: <ChatSupport /> },
+  { path: "/console/master/chatsupport/chatview", element: <ChatView /> },
+  { path: "/console/master/paymentapproval", element: <PaymentApproval /> },
+
   {
     path: "/console/report/customerhistory",
     element: <CustomerHistory />,

@@ -1,17 +1,14 @@
-import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
+import React, { useState, useEffect, useMemo } from "react";
 import { Container, Col, Row } from "react-bootstrap";
-import { ClickButton, Delete } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import "jspdf-autotable";
 import { useLanguage } from "../../components/LanguageContext";
-
-// 💡 NEW IMPORTS FOR MATERIAL REACT TABLE
 import { MaterialReactTable } from "material-react-table";
-import { Box, Tooltip, IconButton, Dialog, DialogContent } from "@mui/material";
+import { Box} from "@mui/material";
 
-import { LiaEditSolid } from "react-icons/lia";
+
 const Customer = () => {
   const navigate = useNavigate();
   const { t, cacheVersion } = useLanguage();
@@ -19,24 +16,11 @@ const Customer = () => {
   const [customerData, setcustomerData] = useState([]);
   const [loading, setLoading] = useState(false);
   const user = JSON.parse(localStorage.getItem("user")) || {};
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
 
-  // Handler functions for the preview modal
-  const handlePreviewOpen = (imageUrl) => {
-    setPreviewImage(imageUrl);
-    setPreviewOpen(true);
-  };
-
-  const handlePreviewClose = () => {
-    setPreviewOpen(false);
-    setPreviewImage("");
-  };
-
-  // 1. Handlers for View  Edit and Delete Action
-  const handlecustomerEditClick = (rowData) => {
-    navigate("/console/master/paymentapproval/create", {
-      state: { type: "edit", rowData: rowData },
+  
+  const handleViewDetailsNavigate = (rowData) => {
+    navigate(`/console/master/paymentapproval/payment-details/${rowData.customer_id}`, {
+      state: { customerData: rowData },
     });
   };
 
@@ -72,8 +56,6 @@ const Customer = () => {
     fetchDataCustomer();
   }, [searchText]);
 
-  ///for pdf and excel download
-
   // 3. Define Material React Table Columns
   const columns = useMemo(
     () => [
@@ -92,7 +74,7 @@ const Customer = () => {
       },
       {
         accessorKey: "customer_name",
-        header: t("Scheme Name"),
+        header: t("Customer Name"),
         size: 70,
       },
       {
@@ -100,15 +82,9 @@ const Customer = () => {
         header: t("Mobile No"),
         size: 70,
       },
-      // {
-      //   accessorKey: "email_id",
-      //   header: t("Email Id"),
-      //   size: 70,
-      // },
-
       {
-        accessorKey: "status",
-        header: t("Status"),
+        accessorKey: "email_id",
+        header: t("Email Id"),
         size: 70,
       },
       {
@@ -118,23 +94,7 @@ const Customer = () => {
         enableColumnFilter: false,
         enableColumnOrdering: false,
         enableSorting: false,
-
         Cell: ({ row }) => {
-          
-          const [anchorEl, setAnchorEl] = useState(null);
-          const open = Boolean(anchorEl);
-          const handleMenuClick = (event) => {
-            setAnchorEl(event.currentTarget);
-          };
-
-          const handleMenuClose = () => {
-            setAnchorEl(null);
-          };
-          const handleActionClick = (actionHandler) => {
-            actionHandler();
-            handleMenuClose();
-          };
-
           return (
             <Box
               sx={{
@@ -142,22 +102,17 @@ const Customer = () => {
                 justifyContent: "flex-start",
               }}
             >
-              {/* Tooltip for better UX */}
-              <Tooltip title={t("Edit")}>
-                <IconButton
-                  aria-label="edit bank details"
-                  onClick={() =>
-                    handleActionClick(() =>
-                      handlecustomerEditClick(row.original)
-                    )
-                  }
-                  sx={{ color: "#0d6efd", padding: 0 }}
-                >
-                  <LiaEditSolid
-                    sx={{ color: "rgb(22 59 140)" }} // Use the same color as the menu item
-                  />
-                </IconButton>
-              </Tooltip>
+              {/* Call the new navigation handler */}
+              <span
+                onClick={() => handleViewDetailsNavigate(row.original)}
+                style={{
+                  color: "#0d6efd",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                }}
+              >
+                {t("View Details")}
+              </span>
             </Box>
           );
         },
@@ -166,23 +121,16 @@ const Customer = () => {
     [t, cacheVersion]
   );
 
-  // 4. Update JSX to render MaterialReactTable
+  // 4. Render Component (without Dialog/Modal)
   return (
     <div>
       <Container fluid>
         <Row>
           <Col lg="7" md="6" xs="6">
             <div className="page-nav py-3">
-              {/* 1. Translate "Customer" */}
               <span className="nav-list">{t("Payment Approval")}</span>
             </div>
           </Col>
-          {/* <Col lg="5" md="6" xs="6" className="align-self-center text-end">
-            <ClickButton
-              label={<>{t("Add Customer")}</>}
-              onClick={() => navigate("/console/master/customer/create")}
-            ></ClickButton>
-          </Col> */}
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
           {loading ? (
             <LoadingOverlay isLoading={loading} />
@@ -202,7 +150,6 @@ const Customer = () => {
                       sx: {
                         borderRadius: "5px",
                         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                        //textAlign: "center",
                       },
                     }}
                     muiTableHeadCellProps={{
@@ -210,7 +157,7 @@ const Customer = () => {
                         fontWeight: "bold",
                         backgroundColor: "black",
                         color: "white",
-                        alignItems: "center", 
+                        alignItems: "center",
                       },
                     }}
                   />
