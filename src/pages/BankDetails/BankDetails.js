@@ -32,7 +32,7 @@ const Customer = () => {
   const [customerData, setcustomerData] = useState([]);
   const [loading, setLoading] = useState(false);
   const user = JSON.parse(localStorage.getItem("user")) || {};
-  
+
   const handlecustomerEditClick = (rowData) => {
     navigate("/console/master/bankdetails/create", {
       state: { type: "edit", rowData: rowData },
@@ -97,129 +97,104 @@ const Customer = () => {
     fetchBankDetails();
   }, [searchText]);
 
- const columns = useMemo(
-  () => [
-    {
-      accessorKey: "s_no_key",
-      header: t("S.No"),
-      size: 5,
-      enableColumnFilter: false,
-      Cell: ({ row }) => row.index + 1,
-    },
+  const columns = useMemo(
+    () => [
+      // 1. S.No
+      {
+        accessorKey: "s_no_key",
+        header: t("S.No"),
+        size: 5,
+        enableColumnFilter: false,
+        Cell: ({ row }) => row.index + 1,
+      }, // 2. UPI Id
 
-    {
-      accessorKey: "upi_id", 
-      header: t("UPI Id"),
-      size: 70,
-    },
-    {
-      // The accessorKey will be the whole 'bank_details' string
-      accessorKey: "bank_details", 
-      header: t("Bank Name"),
-      size: 70,
-      Cell: ({ cell }) => {
-        const fullDetails = cell.getValue();        
-        if (!fullDetails) return t("N/A");
-        const parts = fullDetails.split(", "); 
-        const bankNamePart = parts.find(part => part.startsWith("Bank Name:"));
-
-        if (bankNamePart) {
-          return bankNamePart.replace("Bank Name:", "").trim();
-        }
-        return fullDetails; 
-      },
-    },
-    
-    {
-      id: "action",
-      header: t("Action"),
-      size: 50,
-      enableColumnFilter: false,
-      enableColumnOrdering: false,
-      enableSorting: false,
-
-      Cell: ({ row }) => {
-        const [anchorEl, setAnchorEl] = useState(null);
-        const open = Boolean(anchorEl);
-        const handleMenuClick = (event) => {
-            setAnchorEl(event.currentTarget);
-          };
-
-          const handleMenuClose = () => {
-            setAnchorEl(null);
-          };
-          const handleActionClick = (actionHandler) => {
-            actionHandler();
-            handleMenuClose();
-          };
-        
-          return (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <Tooltip title={t("Actions")}>
-                <IconButton
-                  aria-label="more actions"
-                  aria-controls={open ? "action-menu" : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={open ? "true" : undefined}
-                  onClick={handleMenuClick}
-                  sx={{ padding: 0 }}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                id="action-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleMenuClose}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-              >
-                {/* Edit Action */}
-                <MenuItem
-                  onClick={() =>
-                    handleActionClick(() =>
-                      handlecustomerEditClick(row.original)
-                    )
-                  }
-                >
-                  <DriveFileRenameOutlineIcon
-                    sx={{ size: 8, mr: 1, color: "rgb(22 59 140)" }}
-                  />
-                  {t("Edit")}
-                </MenuItem>
-
-                {/* Delete Action */}
-                <MenuItem
-                  onClick={() =>
-                    handleActionClick(() =>
-                      // NOTE: Changed customer_id to id to match your API response structure
-                      handlecustomerDeleteClick(row.original.id) 
-                    )
-                  }
-                >
-                  <DeleteOutlineIcon sx={{ mr: 1, color: "#991212" }} />
-                  {t("Delete")}
-                </MenuItem>
-              </Menu>
-            </Box>
+      {
+        accessorKey: "upi_id",
+        header: t("UPI Id"),
+        size: 70,
+      }, // 3. Bank Name
+      {
+        id: "bank_name_display",
+        accessorKey: "bank_details",
+        header: t("Bank Name"),
+        size: 70,
+        Cell: ({ cell }) => {
+          const fullDetails = cell.getValue();
+          if (!fullDetails) return t("N/A");
+          const parts = fullDetails.split(", ");
+          const bankNamePart = parts.find((part) =>
+            part.startsWith("Bank Name:")
           );
-      },
+
+          if (bankNamePart) {
+            return bankNamePart.replace("Bank Name:", "").trim();
+          }
+          return fullDetails;
+        },
+      }, // 4. Branch Name (PLACED HERE)
+      {
+        id: "branch_name_display",
+        accessorKey: "bank_details",
+        header: t("Branch Name"),
+        size: 70,
+        Cell: ({ cell }) => {
+          const fullDetails = cell.getValue();
+          if (!fullDetails) return t("N/A");
+          const parts = fullDetails.split(", ");
+          const branchNamePart = parts.find((part) =>
+            part.startsWith("Branch Name:")
+          );
+
+          if (branchNamePart) {
+            return branchNamePart.replace("Branch Name:", "").trim();
+          }
+          return fullDetails;
+        },
+      }, // 5. Action (MUST BE LAST)
+     {
+        id: "action",
+        header: t("Action"),
+        size: 50,
+        enableColumnFilter: false,
+        enableColumnOrdering: false,
+        enableSorting: false,
+
+        Cell: ({ row }) => {
+            // NOTE: All Menu logic (useState, anchorEl, handleMenuClick, etc.) is removed.
+            
+            // Define the action handler directly
+            const handleEditClick = () => {
+                // This function assumes handlecustomerEditClick is available in the component scope
+                // where the columns array is defined.
+                handlecustomerEditClick(row.original);
+            };
+
+            return (
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                    }}
+                >
+                    {/* Tooltip for better UX */}
+                    <Tooltip title={t("Edit")}>
+                        <IconButton
+                            aria-label="edit bank details"
+                            onClick={handleEditClick}
+                            sx={{ padding: 0 }}
+                        >
+                            <DriveFileRenameOutlineIcon 
+                                sx={{ color: "rgb(22 59 140)" }} // Use the same color as the menu item
+                            />
+                        </IconButton>
+                    </Tooltip>
+                </Box>
+            );
+        },
     },
-  ],
-  [t] 
-);
+    ],
+    [t]
+  );
 
   // 4. Update JSX to render MaterialReactTable
   return (
@@ -271,7 +246,17 @@ const Customer = () => {
                     enableColumnFilters={true}
                     enablePagination={true}
                     enableSorting={true}
-                    initialState={{ density: "compact" }}
+                    initialState={{
+                      density: "compact",
+                      columnOrder: [
+                        // <--- THIS IS THE FIX
+                        "s_no_key",
+                        "upi_id",
+                        "bank_name_display", // Must match the new ID
+                        "branch_name_display", // Must match the new ID
+                        "action", // Must be last
+                      ],
+                    }}
                     muiTablePaperProps={{
                       sx: {
                         borderRadius: "5px",

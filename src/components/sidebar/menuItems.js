@@ -9,6 +9,8 @@ import { FaCogs, FaMoneyCheck } from "react-icons/fa";
 import { BiCollection } from "react-icons/bi";
 import { BsChatDotsFill } from "react-icons/bs";
 import { BsFillImageFill } from "react-icons/bs";
+import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
+import CreditScoreIcon from '@mui/icons-material/CreditScore';
 
 const sidebarConfig = [
   {
@@ -47,7 +49,7 @@ const sidebarConfig = [
       },
        {
         path: "/console/master/bankdetails",
-        icon: <BsFillImageFill />,
+        icon: <AssuredWorkloadIcon />,
         text: "Bank Details",
       },
     ],
@@ -62,6 +64,11 @@ const sidebarConfig = [
     path: "/console/master/chitpayment",
     text: "Chit Payment",
     icon: <FaMoneyBillWave />,
+  },
+  {
+    path: "/console/master/paymentapproval",
+    text: "Payment Approval",
+    icon: <CreditScoreIcon />,
   },
     {
     path: "/console/master/chatsupport",

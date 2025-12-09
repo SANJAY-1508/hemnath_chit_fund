@@ -14,8 +14,10 @@ import BankDetails from "../pages/BankDetails/BankDetails";
 import BankDetailsCreations from "../pages/BankDetails/BankDetailsCreation";
 import Chit from "../pages/chit/chit";
 import ChitCreation from "../pages/chit/chitCreation";
-import Chitpayment from "../pages/chitpayment/chitpayment";
-import Chitpaymentcreation from "../pages/chitpayment/chitpaymentcreation";
+import Chitpayment from "../pages/paymentapproval/paymentapproval";
+import Chitpaymentcreation from "../pages/paymentapproval/paymentapprovalcreation";
+import PaymentApproval from "../pages/chitpayment/chitpayment";
+import PaymentApprovalcreation from "../pages/chitpayment/chitpaymentcreation";
 import ChatSupport from "../pages/chatsupport/ChatSupport";
 import ChatView from "../pages/chatsupport/ChatView";
 import CustomerHistory from "../pages/CustomerHistory";
@@ -41,6 +43,8 @@ const routes = [
   { path: "/console/master/chit/create", element: <ChitCreation /> },
   { path: "/console/master/chitpayment", element: <Chitpayment /> },
   { path: "/console/master/chitpayment/create", element: <Chitpaymentcreation /> },
+   { path: "/console/master/paymentapproval", element: <PaymentApproval /> },
+    { path: "/console/master/paymentapproval/create", element: <PaymentApprovalcreation /> },
    { path: "/console/master/chatsupport", element: <ChatSupport /> },
     { path: "/console/master/chatsupport/chatview", element: <ChatView /> },
 
