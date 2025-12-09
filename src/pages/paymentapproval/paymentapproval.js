@@ -33,45 +33,13 @@ const Customer = () => {
     setPreviewImage("");
   };
 
-  // 1. Handlers for View  Edit and Delete Actions
-
-  const handlecustomerViewClick = (rowData) => {
-    navigate("/console/master/customerdetails", {
-      state: { type: "view", rowData: rowData },
-    });
-  };
+  // 1. Handlers for View  Edit and Delete Action
   const handlecustomerEditClick = (rowData) => {
-    navigate("/console/master/customer/create", {
+    navigate("/console/master/paymentapproval/create", {
       state: { type: "edit", rowData: rowData },
     });
   };
-  const handlecustomerDeleteClick = async (id) => {
-    console.log("delete customer", id);
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_DOMAIN}/customer.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          delete_customer_id: id,
-          created_by_id: user.user_id,
-          created_by_name: user.name,
-        }),
-      });
-      const responseData = await response.json();
-      if (responseData.head.code === 200) {
-        navigate("/console/master/customer");
-        window.location.reload();
-      } else {
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoading(false);
-    }
-  };
+
   // 2. Data Fetching Logic (Unchanged)
   const fetchDataCustomer = async () => {
     setLoading(true);
@@ -152,6 +120,7 @@ const Customer = () => {
         enableSorting: false,
 
         Cell: ({ row }) => {
+          
           const [anchorEl, setAnchorEl] = useState(null);
           const open = Boolean(anchorEl);
           const handleMenuClick = (event) => {
@@ -177,7 +146,11 @@ const Customer = () => {
               <Tooltip title={t("Edit")}>
                 <IconButton
                   aria-label="edit bank details"
-                  onClick={handlecustomerEditClick}
+                  onClick={() =>
+                    handleActionClick(() =>
+                      handlecustomerEditClick(row.original)
+                    )
+                  }
                   sx={{ color: "#0d6efd", padding: 0 }}
                 >
                   <LiaEditSolid
@@ -210,26 +183,7 @@ const Customer = () => {
               onClick={() => navigate("/console/master/customer/create")}
             ></ClickButton>
           </Col> */}
-          {/* ... (Search Bar remains the same) ... */}
-          {/* <Col
-            lg="3"
-            md="5"
-            xs="12"
-            className="py-1"
-            style={{ marginLeft: "-10px" }}
-          >
-            <TextInputForm
-              placeholder={"Search Group"}
-              prefix_icon={<FaMagnifyingGlass />}
-              onChange={(e) => handleSearch(e.target.value)}
-              labelname={"Search"}
-            >
-              {" "}
-            </TextInputForm>
-          </Col> */}
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
-
-          {/* 5. Replace TableUI with MaterialReactTable */}
           {loading ? (
             <LoadingOverlay isLoading={loading} />
           ) : (
@@ -256,7 +210,7 @@ const Customer = () => {
                         fontWeight: "bold",
                         backgroundColor: "black",
                         color: "white",
-                        alignItems: "center", // Light gray header background
+                        alignItems: "center", 
                       },
                     }}
                   />
@@ -267,41 +221,6 @@ const Customer = () => {
           <Col lg="4"></Col>
         </Row>
       </Container>
-      <Dialog
-        open={previewOpen}
-        onClose={handlePreviewClose}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogContent sx={{ padding: 0 }}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              p: 2,
-            }}
-          >
-            {/* The full-size image */}
-            <img
-              src={previewImage}
-              alt="Customer Proof Preview"
-              style={{
-                maxWidth: " 80%",
-                maxHeight: "80vh",
-                objectFit: "contain",
-              }}
-            />
-
-            {/* Close Button */}
-            <Delete
-              label="Close"
-              onClick={handlePreviewClose}
-              style={{ marginTop: "16px" }}
-            />
-          </Box>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

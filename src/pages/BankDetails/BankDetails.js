@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react"; // ADD useMemo
+import React, { useState, useEffect, useMemo } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import { ClickButton } from "../../components/ClickButton";
 import { useNavigate } from "react-router-dom";
@@ -9,7 +9,8 @@ import { useLanguage } from "../../components/LanguageContext";
 import { MaterialReactTable } from "material-react-table";
 import { Box, Tooltip, IconButton } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
-const Customer = () => {
+
+const BankDetails = () => {
   const navigate = useNavigate();
   const { t, cacheVersion } = useLanguage();
   const [searchText, setSearchText] = useState("");
@@ -22,33 +23,7 @@ const Customer = () => {
       state: { type: "edit", rowData: rowData },
     });
   };
-  const handlecustomerDeleteClick = async (id) => {
-    console.log("delete customer", id);
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_DOMAIN}/customer.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          delete_customer_id: id,
-          created_by_id: user.user_id,
-          created_by_name: user.name,
-        }),
-      });
-      const responseData = await response.json();
-      if (responseData.head.code === 200) {
-        navigate("/console/master/customer");
-        window.location.reload();
-      } else {
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoading(false);
-    }
-  };
+
   // 2. Data Fetching Logic (Unchanged)
   const fetchBankDetails = async () => {
     setLoading(true);
@@ -170,38 +145,31 @@ const Customer = () => {
     [t]
   );
 
+  // ⭐ New logic to determine column size and button visibility
+  const hasMultipleOrNoData = customerData.length !== 1;
+  const titleColLgSize = hasMultipleOrNoData ? 7 : 12;
+
   return (
     <div>
       <Container fluid>
         <Row>
-          <Col lg="7" md="6" xs="6">
+          {/* ⭐ The size of the title column is now dynamic */}
+          <Col lg={titleColLgSize} md="6" xs="6"> 
             <div className="page-nav py-3">
               <span className="nav-list">{t("Bank Details")}</span>
             </div>
           </Col>
-          <Col lg="5" md="6" xs="6" className="align-self-center text-end">
-            <ClickButton
-              label={<>{t("Add Bank Details")}</>}
-              onClick={() => navigate("/console/master/bankdetails/create")}
-            ></ClickButton>
-          </Col>
-          {/* ... (Search Bar remains the same) ... */}
-          {/* <Col
-            lg="3"
-            md="5"
-            xs="12"
-            className="py-1"
-            style={{ marginLeft: "-10px" }}
-          >
-            <TextInputForm
-              placeholder={"Search Group"}
-              prefix_icon={<FaMagnifyingGlass />}
-              onChange={(e) => handleSearch(e.target.value)}
-              labelname={"Search"}
-            >
-              {" "}
-            </TextInputForm>
-          </Col> */}
+          
+          {/* ⭐ Conditional rendering for the 'Add Bank Details' button's column */}
+          {hasMultipleOrNoData && ( 
+            <Col lg="5" md="6" xs="6" className="align-self-center text-end">
+              <ClickButton
+                label={<>{t("Add Bank Details")}</>}
+                onClick={() => navigate("/console/master/bankdetails/create")}
+              ></ClickButton>
+            </Col>
+          )}
+
           <Col lg={9} md={12} xs={12} className="py-2"></Col>
           {loading ? (
             <LoadingOverlay isLoading={loading} />
@@ -221,9 +189,9 @@ const Customer = () => {
                       columnOrder: [
                         "s_no_key",
                         "upi_id",
-                        "bank_name_display", 
-                        "branch_name_display", 
-                        "action", 
+                        "bank_name_display",
+                        "branch_name_display",
+                        "action",
                       ],
                     }}
                     muiTablePaperProps={{
@@ -237,7 +205,7 @@ const Customer = () => {
                         fontWeight: "bold",
                         backgroundColor: "black",
                         color: "white",
-                        alignItems: "center", 
+                        alignItems: "center",
                       },
                     }}
                   />
@@ -252,4 +220,4 @@ const Customer = () => {
   );
 };
 
-export default Customer;
+export default BankDetails;
