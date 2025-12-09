@@ -39,7 +39,6 @@ const BankDetailsCreation = () => {
       ? {
           qr_code_img: rowData.qr_code_img || "",
           upi_id: rowData.upi_id || "",
-          // Extract individual fields from the merged 'bank_details' string for editing
           bank_name: rowData.bank_details
             ? extractDetail(rowData.bank_details, "Bank Name:")
             : "",
@@ -63,7 +62,6 @@ const BankDetailsCreation = () => {
         };
 
   const [formData, setFormData] = useState(initialState);
-  console.log("formData", formData);
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -95,7 +93,6 @@ const BankDetailsCreation = () => {
       };
       reader.readAsDataURL(file);
     } else {
-      // Reset if no file is selected (e.g., user cancels the file picker)
       setFormData((prev) => ({
         ...prev,
         qr_code_img: "",

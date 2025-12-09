@@ -145,7 +145,6 @@ const BankDetails = () => {
     [t]
   );
 
-  // ⭐ New logic to determine column size and button visibility
   const hasMultipleOrNoData = customerData.length !== 1;
   const titleColLgSize = hasMultipleOrNoData ? 7 : 12;
 
@@ -153,14 +152,11 @@ const BankDetails = () => {
     <div>
       <Container fluid>
         <Row>
-          {/* ⭐ The size of the title column is now dynamic */}
           <Col lg={titleColLgSize} md="6" xs="6"> 
             <div className="page-nav py-3">
               <span className="nav-list">{t("Bank Details")}</span>
             </div>
           </Col>
-          
-          {/* ⭐ Conditional rendering for the 'Add Bank Details' button's column */}
           {hasMultipleOrNoData && ( 
             <Col lg="5" md="6" xs="6" className="align-self-center text-end">
               <ClickButton
