@@ -37,17 +37,17 @@ const ChatSupport = () => {
       setLoading(false);
 
       if (responseData.head.code === 200) {
-        fetch(`${API_DOMAIN}/chat.php`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "seen",
-            customer_id: customerId,
-            sender: "customer",
-          }),
-        }).catch((error) => {
-          console.error("Error sending seen confirmation:", error);
-        }); 
+        // fetch(`${API_DOMAIN}/chat.php`, {
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify({
+        //     action: "seen",
+        //     customer_id: customerId,
+        //     sender: "customer",
+        //   }),
+        // }).catch((error) => {
+        //   console.error("Error sending seen confirmation:", error);
+        // }); 
         navigate("/console/master/chatsupport/chatview", {
           state: {
             customerId: customerId,

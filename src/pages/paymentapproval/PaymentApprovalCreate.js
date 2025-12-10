@@ -20,6 +20,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Stack,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
@@ -104,7 +105,7 @@ const PaymentApprovalCreate = () => {
           action: "update payment",
           edit_payment_id: formData.payment_details_id,
           payment_amount: formData.payment_amount,
-          new_status: "Approved", 
+          new_status: "Approved",
         }),
       });
 
@@ -132,7 +133,6 @@ const PaymentApprovalCreate = () => {
       alert(t("An error occurred during payment details update."));
     }
 
-   
     if (paymentUpdateSuccess) {
       try {
         const chitResponse = await fetch(CHIT_UPDATE_API, {
@@ -141,7 +141,7 @@ const PaymentApprovalCreate = () => {
           body: JSON.stringify({
             action: "pay_due",
             due_id: dueId,
-            amount: formData.payment_amount, 
+            amount: formData.payment_amount,
           }),
         });
 
@@ -176,6 +176,21 @@ const PaymentApprovalCreate = () => {
 
     setUpdateLoading(false);
   };
+  const DataRow = ({ label, value }) => (
+    <Box sx={{ display: "flex", mb: 0.5 }}>
+      <Typography
+        variant="body1"
+        sx={{
+          fontWeight: "bold",
+          minWidth: "170px", // Set a fixed width for the label column
+          pr: 1, // Add padding right for spacing after the label
+        }}
+      >
+        {label}
+      </Typography>
+      <Typography variant="body1">{value}</Typography>
+    </Box>
+  );
 
   return (
     <div>
@@ -190,84 +205,161 @@ const PaymentApprovalCreate = () => {
         </Row>
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <Card variant="outlined">
+          <Grid item xs={12} md={3.5}>
+            <Card
+              variant="outlined"
+              style={{ backgroundColor: "#f8f9fa" }}
+              sx={{
+                transition: "transform 0.2s, box-shadow 0.2s", // Smooth transition
+                "&:hover": {
+                  transform: "translateY(-5px)", // Slight lift effect
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)", // Deeper shadow
+                  cursor: "pointer", // Optional: Indicates interactivity
+                },
+              }}
+            >
               <CardContent>
-                <Typography variant="h6">
+                <Typography
+                  variant="h6"
+                  style={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    marginBottom: "10px",
+                    color: "rgb(95 10 7)",
+                  }}
+                >
                   <strong>{t("Customer Details")}</strong>
                 </Typography>
-                <Typography variant="body1">
-                  <strong>{t("Customer No")}:</strong>{" "}
-                  {customerInfo.customer_no}
-                </Typography>
-                <Typography>
-                  <strong>{t("Name")}:</strong> {customerInfo.name}
-                </Typography>
-                <Typography>
-                  <strong>{t("Mobile")}:</strong> {customerInfo.mobile}
-                </Typography>
+                <Stack spacing={0.5}>
+                  {/* Use DataRow component for alignment */}
+                  <DataRow
+                    label={t("Customer No")}
+                    value={customerInfo.customer_no}
+                  />
+                  <DataRow
+                    label={t("Customer Name")}
+                    value={customerInfo.name}
+                  />
+                  <DataRow
+                    label={t("Mobile Number")}
+                    value={customerInfo.mobile}
+                  />
+                </Stack>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={6}>
-            <Card variant="outlined">
+          <Grid item xs={12} md={3.5}>
+            <Card
+              variant="outlined"
+              style={{ backgroundColor: "#f8f9fa" }}
+              sx={{
+                transition: "transform 0.2s, box-shadow 0.2s", // Smooth transition
+                "&:hover": {
+                  transform: "translateY(-5px)", // Slight lift effect
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)", // Deeper shadow
+                  cursor: "pointer", // Optional: Indicates interactivity
+                },
+              }}
+            >
               <CardContent>
-                <Typography variant="h6">
+                <Typography
+                  variant="h6"
+                  style={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    marginBottom: "10px",
+                    color: "rgb(95 10 7)",
+                  }}
+                >
                   <strong>{t("Due Details")}</strong>
                 </Typography>
-                <Typography variant="body1">
-                  <strong>{t("Due Number")}:</strong> {dueInfo.due_number}
-                </Typography>
-                <Typography>
-                  <strong>{t("Due Date")}:</strong> {dueInfo.due_date}
-                </Typography>
-                <Typography>
-                  <strong>{t("Amount")}:</strong> ₹{dueInfo.due_amount}
-                </Typography>
+                <Stack spacing={0.5}>
+                  <DataRow label={t("Due Number")} value={dueInfo.due_number} />
+                  <DataRow label={t("Due Date")} value={dueInfo.due_date} />
+                  <DataRow
+                    label={t("Due Amount")}
+                    value={`₹${dueInfo.due_amount}`}
+                  />
+                </Stack>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} md={3.7}>
+            <Card
+              variant="outlined"
+              style={{ backgroundColor: "#f8f9fa" }}
+              sx={{
+                transition: "transform 0.2s, box-shadow 0.2s", // Smooth transition
+                "&:hover": {
+                  transform: "translateY(-5px)", // Slight lift effect
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)", // Deeper shadow
+                  cursor: "pointer", // Optional: Indicates interactivity
+                },
+              }}
+            >
+              <CardContent>
+                <Typography
+                  variant="h6"
+                  style={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    marginBottom: "10px",
+                    color: "rgb(95 10 7)",
+                  }}
+                >
+                  {t("Payment Details")}
+                </Typography>
+                <Stack spacing={0.5}>
+                  <DataRow
+                    label={t("Payment Type")}
+                    value={rowData.payment_type}
+                  />
+                  <DataRow
+                    label={t("Submitted Status")}
+                    value={rowData.status}
+                  />
+                  <DataRow
+                    label={t("Amount Submitted")}
+                    value={`₹${Number(rowData.payment_amount).toFixed(2)}`}
+                  />
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} md={3.5}>
             <Card variant="outlined" sx={{ height: "450px" }}>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  {t("Payment Information")}
+                <Typography
+                  variant="h6"
+                  style={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {t("Payment Proof Image")}
                 </Typography>
 
                 <Grid container spacing={3}>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} md={12}>
                     <Box
                       sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
                         alignItems: "center",
                         mt: 2,
                         mb: 1,
+                        textAlign: "center",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
-                    >
-                      <Typography variant="subtitle1">
-                        {t("Payment Proof Image")}
-                      </Typography>
-                      <Button
-                        variant="text"
-                        size="small"
-                        onClick={() =>
-                          rowData.payment_proof && setIsPreviewOpen(true)
-                        }
-                        disabled={!rowData.payment_proof}
-                        startIcon={<ZoomInIcon />}
-                      >
-                        {t("View Full Proof")}
-                      </Button>
-                    </Box>
-                                       {" "}
+                    ></Box>
                     {rowData.payment_proof ? (
                       <CardMedia
                         component="img"
                         sx={{
                           maxHeight: 300,
-                          maxWidth: "90%",
-                          objectFit: "contain",
+                          maxWidth: "100%",
+                          objectFit: "Fill",
                           border: "1px solid #ccc",
                           borderRadius: "4px",
                           cursor: "pointer",
@@ -292,30 +384,25 @@ const PaymentApprovalCreate = () => {
                       </Box>
                     )}
                   </Grid>
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      label={t("Payment Amount (For Approval)")}
-                      name="payment_amount"
-                      type="text"
-                      value={formData.payment_amount}
-                      onChange={handleInputChange}
-                      fullWidth
-                      required
-                      margin="normal"
-                      helperText={t("Enter the final amount to be approved")}
-                    />
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      <strong>{t("Payment Type")}:</strong>{" "}
-                      {rowData.payment_type}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>{t("Submitted Status")}:</strong> {rowData.status}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>{t("Amount Submitted by Customer")}:</strong> ₹
-                      {Number(rowData.payment_amount).toFixed(2)}
-                    </Typography>
-                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={3.5}>
+            <Card variant="outlined" style={{ backgroundColor: "#f8f9fa" }}>
+              <CardContent>
+                <Grid item xs={12} md={12}>
+                  <TextField
+                    label={t("Payment Amount (For Approval)")}
+                    name="payment_amount"
+                    type="text"
+                    value={formData.payment_amount}
+                    onChange={handleInputChange}
+                    fullWidth
+                    required
+                    margin="normal"
+                    helperText={t("Enter the final amount to be approved")}
+                  />
                 </Grid>
               </CardContent>
             </Card>
@@ -331,15 +418,15 @@ const PaymentApprovalCreate = () => {
             gap: 2,
           }}
         >
-          <Button variant="outlined" onClick={handleCancel}>
+          <Button className="cancel" onClick={handleCancel}>
             {t("Cancel")}
           </Button>
           <Button
-            variant="contained"
+            className="create-btn"
             onClick={handleUpdate}
             disabled={updateLoading || !formData.payment_amount}
           >
-            {t("Update & Approve")}
+            {t("Approve")}
           </Button>
         </Box>
       </Container>
@@ -348,7 +435,7 @@ const PaymentApprovalCreate = () => {
       <Dialog
         open={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
-        maxWidth="md"
+        maxWidth="sm"
         fullWidth
       >
         <DialogTitle
@@ -367,11 +454,19 @@ const PaymentApprovalCreate = () => {
           <img
             src={rowData.payment_proof}
             alt="Proof Enlarged"
-            style={{ maxWidth: "100%", height: "auto", borderRadius: "4px" }}
+            style={{
+              maxWidth: "50%",
+              maxHeight: "50%",
+              minWidth: "50%",
+              minheight: "50%",
+              borderRadius: "4px",
+            }}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsPreviewOpen(false)}>{t("Close")}</Button>
+          <Button className="cancel" onClick={() => setIsPreviewOpen(false)}>
+            {t("Close")}
+          </Button>
         </DialogActions>
       </Dialog>
       <ToastContainer />
