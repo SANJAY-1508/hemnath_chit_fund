@@ -4,7 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import API_DOMAIN from "../../config/config";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import { useLanguage } from "../../components/LanguageContext";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Box,
   Button,
@@ -26,6 +27,7 @@ import ZoomInIcon from "@mui/icons-material/ZoomIn";
 
 const PAYMENT_UPDATE_API = `${API_DOMAIN}/payment_details.php`;
 
+const CHIT_UPDATE_API = `${API_DOMAIN}/chit.php`;
 const PaymentApprovalCreate = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,7 +43,8 @@ const PaymentApprovalCreate = () => {
   const [dueInfo, setDueInfo] = useState({});
   const [updateLoading, setUpdateLoading] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-
+  const [dueId, setDueId] = useState(null); // State to store the extracted Due ID
+  const [chitId, setChitId] = useState(null);
   const handleCancel = () => navigate(-1);
 
   const handleInputChange = (e) => {
@@ -50,15 +53,49 @@ const PaymentApprovalCreate = () => {
 
   useEffect(() => {
     if (isEditing) {
-      setCustomerInfo(JSON.parse(rowData.customer_details));
-      setDueInfo(JSON.parse(rowData.due_details));
+      try {
+        const parsedCustomerInfo = JSON.parse(rowData.customer_details);
+        const parsedDueInfo = JSON.parse(rowData.due_details);
+
+        setCustomerInfo(parsedCustomerInfo);
+        setDueInfo(parsedDueInfo);
+
+        // Extract the ID (due_id) and chit_id from the parsed due_details
+        if (parsedDueInfo.id) {
+          setDueId(parsedDueInfo.id);
+        }
+        if (parsedDueInfo.chit_id) {
+          setChitId(parsedDueInfo.chit_id);
+        }
+      } catch (e) {
+        console.error("Error parsing nested JSON data:", e);
+      }
     }
   }, [isEditing, rowData]);
 
   const handleUpdate = async () => {
-    if (updateLoading || !formData.payment_amount) return;
+    if (
+      updateLoading ||
+      !formData.payment_amount ||
+      Number(formData.payment_amount) <= 0
+    ) {
+      alert(t("Please enter a valid payment amount for approval."));
+      return;
+    }
+
+    if (!dueId || !chitId) {
+      alert(
+        t(
+          "Error: Could not retrieve Due ID or Chit ID. Cannot proceed with approval."
+        )
+      );
+      console.error("Missing Due ID or Chit ID:", { dueId, chitId });
+      return;
+    }
+
     setUpdateLoading(true);
 
+    let paymentUpdateSuccess = false;
     try {
       const response = await fetch(PAYMENT_UPDATE_API, {
         method: "POST",
@@ -66,20 +103,78 @@ const PaymentApprovalCreate = () => {
         body: JSON.stringify({
           action: "update payment",
           edit_payment_id: formData.payment_details_id,
+          payment_amount: formData.payment_amount,
+          new_status: "Approved", 
         }),
       });
 
       const responseData = await response.json();
-      setUpdateLoading(false);
 
       if (responseData.head.code === 200) {
-        alert(t("Payment details updated successfully!"));
-        handleCancel();
+        toast.success("Successfully Approved!", {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        paymentUpdateSuccess = true;
+      } else {
+        alert(
+          `${t("Payment Details Update failed")}: ${responseData.head.msg}`
+        );
       }
     } catch (error) {
-      setUpdateLoading(false);
-      console.error("Error:", error.message);
+      console.error("Error updating payment details:", error.message);
+      alert(t("An error occurred during payment details update."));
     }
+
+   
+    if (paymentUpdateSuccess) {
+      try {
+        const chitResponse = await fetch(CHIT_UPDATE_API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "pay_due",
+            due_id: dueId,
+            amount: formData.payment_amount, 
+          }),
+        });
+
+        const chitResponseData = await chitResponse.json();
+
+        if (chitResponseData.head.code === 200) {
+          toast.success("Successfully Approved!", {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+          handleCancel();
+        } else {
+          alert(
+            `${t("Due Status Update failed")}: ${chitResponseData.head.msg}`
+          );
+        }
+      } catch (error) {
+        console.error("Error updating Chit/Due details:", error.message);
+        alert(
+          t(
+            "An error occurred during Chit/Due update. Please check the due status manually."
+          )
+        );
+      }
+    }
+
+    setUpdateLoading(false);
   };
 
   return (
@@ -201,7 +296,7 @@ const PaymentApprovalCreate = () => {
                     <TextField
                       label={t("Payment Amount (For Approval)")}
                       name="payment_amount"
-                      type="number"
+                      type="text"
                       value={formData.payment_amount}
                       onChange={handleInputChange}
                       fullWidth
@@ -279,6 +374,7 @@ const PaymentApprovalCreate = () => {
           <Button onClick={() => setIsPreviewOpen(false)}>{t("Close")}</Button>
         </DialogActions>
       </Dialog>
+      <ToastContainer />
     </div>
   );
 };
