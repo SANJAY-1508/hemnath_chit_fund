@@ -112,17 +112,6 @@ const Customer = () => {
                   <FaEye />
                 </IconButton>
               </Tooltip>
-              {/* Call the new navigation handler */}
-              {/* <span
-                onClick={() => handleViewDetailsNavigate(row.original)}
-                style={{
-                  color: "#0d6efd",
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                }}
-              >
-                {t("View Details")}
-              </span> */}
             </Box>
           );
         },
