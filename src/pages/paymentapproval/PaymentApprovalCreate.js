@@ -32,8 +32,6 @@ const PaymentApprovalCreate = () => {
   const { t } = useLanguage();
   const { rowData } = location.state || {};
   const isEditing = rowData && rowData.payment_details_id;
-
-  // Initialize payment_amount to empty to prevent automatic fix
   const [formData, setFormData] = useState({
     payment_amount: "",
     payment_details_id: isEditing ? rowData.payment_details_id : "",
@@ -42,8 +40,6 @@ const PaymentApprovalCreate = () => {
   const [customerInfo, setCustomerInfo] = useState({});
   const [dueInfo, setDueInfo] = useState({});
   const [updateLoading, setUpdateLoading] = useState(false);
-
-  // State for image preview only
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const handleCancel = () => navigate(-1);
@@ -99,15 +95,15 @@ const PaymentApprovalCreate = () => {
         </Row>
 
         <Grid container spacing={3}>
-          {/* Top Info Cards */}
           <Grid item xs={12} md={6}>
             <Card variant="outlined">
               <CardContent>
                 <Typography variant="h6">
                   <strong>{t("Customer Details")}</strong>
                 </Typography>
-                 <Typography variant="body1">
-                  <strong>{t("Customer No")}:</strong> {customerInfo.customer_no}
+                <Typography variant="body1">
+                  <strong>{t("Customer No")}:</strong>{" "}
+                  {customerInfo.customer_no}
                 </Typography>
                 <Typography>
                   <strong>{t("Name")}:</strong> {customerInfo.name}
@@ -136,8 +132,6 @@ const PaymentApprovalCreate = () => {
               </CardContent>
             </Card>
           </Grid>
-
-          {/* Payment Information Card */}
           <Grid item xs={12}>
             <Card variant="outlined" sx={{ height: "450px" }}>
               <CardContent>
@@ -146,9 +140,7 @@ const PaymentApprovalCreate = () => {
                 </Typography>
 
                 <Grid container spacing={3}>
-                  {/* Payment Proof (Image) - MOVED TO LEFT (order: 1) */}
                   <Grid item xs={12} md={6}>
-                    {/* NEW: Title and View Proof Button container */}
                     <Box
                       sx={{
                         display: "flex",
@@ -164,7 +156,6 @@ const PaymentApprovalCreate = () => {
                       <Button
                         variant="text"
                         size="small"
-                        // NEW: onClick handler to open the preview modal
                         onClick={() =>
                           rowData.payment_proof && setIsPreviewOpen(true)
                         }
@@ -184,11 +175,10 @@ const PaymentApprovalCreate = () => {
                           objectFit: "contain",
                           border: "1px solid #ccc",
                           borderRadius: "4px",
-                          cursor: "pointer", // Visual hint that it's clickable
+                          cursor: "pointer",
                         }}
                         image={rowData.payment_proof}
                         alt={t("Payment Proof")}
-                        // NEW: Direct click handler on the image
                         onClick={() => setIsPreviewOpen(true)}
                       />
                     ) : (
@@ -203,14 +193,10 @@ const PaymentApprovalCreate = () => {
                           justifyContent: "center",
                         }}
                       >
-                     {t("No proof image available.")}
-                    
+                        {t("No proof image available.")}
                       </Box>
                     )}
-                  
                   </Grid>
-
-                  {/* Payment Amount Input - MOVED TO RIGHT (order: 2) */}
                   <Grid item xs={12} md={6}>
                     <TextField
                       label={t("Payment Amount (For Approval)")}
@@ -229,6 +215,10 @@ const PaymentApprovalCreate = () => {
                     </Typography>
                     <Typography variant="body2">
                       <strong>{t("Submitted Status")}:</strong> {rowData.status}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>{t("Amount Submitted by Customer")}:</strong> ₹
+                      {Number(rowData.payment_amount).toFixed(2)}
                     </Typography>
                   </Grid>
                 </Grid>
