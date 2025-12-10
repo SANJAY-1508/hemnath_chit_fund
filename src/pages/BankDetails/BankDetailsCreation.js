@@ -255,7 +255,7 @@ const BankDetailsCreation = () => {
               {/* UPI ID Input Form (Takes 3 columns) */}
               <Col lg="3" md="4" xs="12" className="py-3">
                 <TextInputForm
-                  labelname={t("UPI ID ")}
+                  labelname={t("UPI Number")}
                   name="upi_id"
                   value={formData.upi_id}
                   onChange={(e) => handleChange(e, "upi_id")}

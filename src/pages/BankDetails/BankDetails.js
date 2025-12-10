@@ -68,7 +68,7 @@ const BankDetails = () => {
 
       {
         accessorKey: "upi_id",
-        header: t("UPI Id"),
+        header: t("UPI Number"),
         size: 70,
       },
       {
