@@ -6,8 +6,8 @@ import LoadingOverlay from "../../components/LoadingOverlay";
 import "jspdf-autotable";
 import { useLanguage } from "../../components/LanguageContext";
 import { MaterialReactTable } from "material-react-table";
-import { Box} from "@mui/material";
-
+import { Box,Tooltip, IconButton } from "@mui/material";
+import { FaEye } from "react-icons/fa";
 
 const Customer = () => {
   const navigate = useNavigate();
@@ -17,11 +17,13 @@ const Customer = () => {
   const [loading, setLoading] = useState(false);
   const user = JSON.parse(localStorage.getItem("user")) || {};
 
-  
   const handleViewDetailsNavigate = (rowData) => {
-    navigate(`/console/master/paymentapproval/payment-details/${rowData.customer_id}`, {
-      state: { customerData: rowData },
-    });
+    navigate(
+      `/console/master/paymentapproval/payment-details/${rowData.customer_id}`,
+      {
+        state: { customerData: rowData },
+      }
+    );
   };
 
   // 2. Data Fetching Logic (Unchanged)
@@ -102,8 +104,16 @@ const Customer = () => {
                 justifyContent: "flex-start",
               }}
             >
+              <Tooltip title={t("View")}>
+                <IconButton
+                  onClick={() => handleViewDetailsNavigate(row.original)}
+                  sx={{ color: "#0d6efd", padding: 0 }}
+                >
+                  <FaEye />
+                </IconButton>
+              </Tooltip>
               {/* Call the new navigation handler */}
-              <span
+              {/* <span
                 onClick={() => handleViewDetailsNavigate(row.original)}
                 style={{
                   color: "#0d6efd",
@@ -112,7 +122,7 @@ const Customer = () => {
                 }}
               >
                 {t("View Details")}
-              </span>
+              </span> */}
             </Box>
           );
         },

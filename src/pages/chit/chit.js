@@ -8,8 +8,6 @@ import { useLanguage } from "../../components/LanguageContext";
 import { ToastContainer, toast } from "react-toastify";
 import { MaterialReactTable } from "material-react-table";
 import { Box, Tooltip, IconButton } from "@mui/material";
-import { LiaEditSolid } from "react-icons/lia";
-import { FiX } from "react-icons/fi";
 import { FaEye } from "react-icons/fa";
 
 const Chit = () => {

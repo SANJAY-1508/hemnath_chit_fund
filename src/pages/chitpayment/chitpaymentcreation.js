@@ -534,7 +534,11 @@ const Chitpaymentcreation = () => {
                                 <span className="badge bg-success">
                                   {record.status || t("N/A")}
                                 </span>
-                              ) : record.status === "partial" ? (
+                              ) :record.status ==="Waiting Approval" ? (
+                                <span className="badge bg-info">
+                                  {record.status || t("N/A")}s
+                                </span>
+                              ) : record.status === "partial" ? (
                                 // Check 2: Partial Pay (Warning Badge)
                                 <span
                                   className="badge bg-warning"
