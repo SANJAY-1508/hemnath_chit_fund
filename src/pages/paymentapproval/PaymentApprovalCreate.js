@@ -18,9 +18,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-
-const PAYMENT_DETAIL_API = `${API_DOMAIN}/payment_details.php`; 
-const PAYMENT_UPDATE_API = `${API_DOMAIN}/update_payment.php`; 
+const PAYMENT_UPDATE_API = `${API_DOMAIN}/payment_details.php`; 
 
 const PaymentApprovalCreate = () => {
   const navigate = useNavigate();
@@ -80,7 +78,8 @@ const PaymentApprovalCreate = () => {
     });
   };
 
-  const handleUpdate = async () => {
+  
+const handleUpdate = async () => {
     if (updateLoading) return;
     setUpdateLoading(true);
 
@@ -90,9 +89,9 @@ const PaymentApprovalCreate = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          payment_details_id: formData.payment_details_id,
-          new_payment_amount: formData.payment_amount,
+        body: JSON.stringify({        
+          "action": "update payment", 
+          "edit_payment_id": formData.payment_details_id, 
         }),
       });
 
@@ -110,7 +109,8 @@ const PaymentApprovalCreate = () => {
       console.error("Error updating payment details:", error.message);
       alert(t("An error occurred during update."));
     }
-  };
+};
+// ...
 
   // --- Render ---
 

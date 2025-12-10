@@ -18,8 +18,8 @@ const PaymentDetailsView = () => {
   const [paymentDetails, setPaymentDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const customerData = location.state?.customerData || {};
-  const customerName = customerData.customer_name || 'N/A';
-  const customerNo = customerData.customer_no || customerId;
+  // const customerName = customerData.customer_name || 'N/A';
+  // const customerNo = customerData.customer_no || customerId;
 
   
   const handleBack = () => {
