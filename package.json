@@ -2,6 +2,8 @@
   "name": "zenchitbilling",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost/",
+  "main": " index.js",
   "description": "A billing application for Zentexus.",
   "author": "Zentexus Technologies",
   "homepage": "https://diwalichit.zentexus.in/zenchitbilling",
