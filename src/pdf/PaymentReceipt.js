@@ -1,5 +1,7 @@
 import jsPDF from "jspdf";
-import "jspdf-autotable"; 
+import "jspdf-autotable"; // Import the plugin
+
+// Helper function that contains the core PDF generation logic
 const generatePDFContent = (doc, paymentData) => {
   const {
     customerInfo,
@@ -10,10 +12,18 @@ const generatePDFContent = (doc, paymentData) => {
   } = paymentData;
 
   let y = 15;
+  
+  // Page Width: 148mm
+  // New Left Margin: 10mm
+  // New Right Margin: 20mm
+  // Content Area Width: 148 - 10 - 20 = 118mm
+  // Content Center X: 10 + (118 / 2) = 69mm (Original was 74mm)
   const contentCenterX = 69; 
 
+  // --- 1. Company Header ---
   doc.setFontSize(22);
   doc.setTextColor(95, 10, 7);
+  // Adjusted X coordinate for the new center (69)
   doc.text(companyName, contentCenterX, y, null, null, "center"); 
   y += 8;
 
@@ -24,6 +34,7 @@ const generatePDFContent = (doc, paymentData) => {
 
   doc.setLineWidth(0.5);
   doc.setDrawColor(150, 150, 150);
+  // Line adjusted: Start at new left margin (10), End at (148 - new right margin 20 = 128)
   doc.line(10, y, 128, y); 
   y += 4; 
 
@@ -45,10 +56,12 @@ const generatePDFContent = (doc, paymentData) => {
   doc.autoTable({
     startY: y,
     theme: "plain",
+    // Adjusted margins to shift content left
     margin: { left: 10, right: 20 }, 
     columnStyles: {
-      0: { cellWidth: 59, fontStyle: "normal" }, 
-      1: { cellWidth: 59, fontStyle: "normal" }, 
+      // Ensure columns fill the new width (118mm)
+      0: { cellWidth: 59, fontStyle: "normal" }, // Customer Details
+      1: { cellWidth: 59, fontStyle: "normal" }, // Transaction Details
     },
     styles: {
       fontSize: 9, 
@@ -94,34 +107,36 @@ const generatePDFContent = (doc, paymentData) => {
     theme: "striped",
     styles: { cellPadding: 2, fontSize: 10, valign: "middle", halign: "left" },
     headStyles: { fillColor: [95, 10, 7], textColor: 255, fontStyle: "bold" },
+    // Adjusted margins to shift content left
     margin: { left: 10, right: 20 }, 
     columnStyles: {
       // Adjust column widths for the new total width (118mm)
-      0: { cellWidth: 14, halign: 'left' },
-      1: { cellWidth: 50, halign: 'left' },
-      2: { cellWidth: 30, halign: 'center' }, 
-      3: { cellWidth: 30, halign: 'center' }, 
+      0: { cellWidth: 10, halign: 'left' },
+      1: { cellWidth: 48, halign: 'left' }, // Reduced from 50
+      2: { cellWidth: 35, halign: 'center' }, // Reduced from 35, set to right for currency
+      3: { cellWidth: 35, halign: 'center' }, // Reduced from 35, set to right for currency
     }
   }); 
 
   y = doc.lastAutoTable.finalY; // --- 4. Total Amount Footer ---
 
  
+  
 };
 
 // ----------------------------------------------------------------------
 // EXPORTED FUNCTION 1: Used for Approval Screen (Opens in new tab)
 // ----------------------------------------------------------------------
 export const exportPaymentToPDF_View = (paymentData) => {
+  // Custom size: [width: 148mm (A5), height: 160mm (Current)]
   const doc = new jsPDF({ format: [148, 148] });
   generatePDFContent(doc, paymentData);
   doc.output("dataurlnewwindow");
 };
 
-// ----------------------------------------------------------------------
-// EXPORTED FUNCTION 2: Used for Table View (Downloads the file)
-// ----------------------------------------------------------------------
+
 export const exportPaymentToPDF_Download = (paymentData) => {
+  // Custom size: [width: 148mm (A5), height: 160mm (Current)]
   const doc = new jsPDF({ format: [148, 148] });
   generatePDFContent(doc, paymentData);
   doc.save(`PaymentReceipt_${paymentData.payment_details_id}.pdf`);
