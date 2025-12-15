@@ -266,9 +266,7 @@ const CollectionReport = () => {
               </div>
             </Col>
 
-<Col md="4" className="py-2 d-flex align-items-end">
-          
-            </Col>
+            <Col md="4" className="py-2 d-flex align-items-end"></Col>
             {/* Export Buttons */}
             <Col
               md="2"
