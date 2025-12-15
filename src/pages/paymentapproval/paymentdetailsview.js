@@ -12,11 +12,13 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { exportPaymentToPDF_Download } from "../../pdf/PaymentReceipt";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import { useCompanyDetails } from "./companydetails";
 
 const PaymentDetailsView = () => {
   const { customerId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const companyName = useCompanyDetails();
   const { t } = useLanguage();
   const [paymentDetails, setPaymentDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,8 +53,9 @@ const handleDownloadPDF = (rowData) => {
             payment_amount: rowData.payment_amount,
             customerInfo: customerInfo,
             dueInfo: dueInfo,
-            companyName: "SUNWORD BRAND",
+            companyName: companyName,
         };
+        console.log("PDF Data:", pdfData);
         exportPaymentToPDF_Download(pdfData);
     } catch (e) {
         console.error("Error parsing JSON for PDF download:", e);

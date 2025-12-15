@@ -25,6 +25,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
 import { exportPaymentToPDF_View } from "../../pdf/PaymentReceipt";
+import { useCompanyDetails } from "./companydetails";
 
 const PAYMENT_UPDATE_API = `${API_DOMAIN}/payment_details.php`;
 
@@ -40,7 +41,7 @@ const PaymentApprovalCreate = () => {
     payment_amount: "",
     payment_details_id: isEditing ? rowData.payment_details_id : "",
   });
-
+const companyName = useCompanyDetails();
   const [customerInfo, setCustomerInfo] = useState({});
   const [dueInfo, setDueInfo] = useState({});
   const [updateLoading, setUpdateLoading] = useState(false);
@@ -57,7 +58,7 @@ const PaymentApprovalCreate = () => {
       payment_type: rowData.payment_type,
       customerInfo: customerInfo,
       dueInfo: dueInfo,
-      companyName: "SUNWORD BRAND",
+      companyName: companyName,
     };
 
     // Call the external PDF function, which handles the download
