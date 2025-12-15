@@ -24,7 +24,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
-import ZoomInIcon from "@mui/icons-material/ZoomIn";
+import { exportPaymentToPDF } from "../../pdf/PaymentReceipt";
 
 const PAYMENT_UPDATE_API = `${API_DOMAIN}/payment_details.php`;
 
@@ -48,6 +48,21 @@ const PaymentApprovalCreate = () => {
   const [dueId, setDueId] = useState(null); // State to store the extracted Due ID
   const [chitId, setChitId] = useState(null);
   const handleCancel = () => navigate(-1);
+
+  const handleGeneratePDF = () => {
+    // Collect all necessary data for the PDF receipt
+    const pdfData = {
+      payment_details_id: rowData.payment_details_id,
+      payment_amount: formData.payment_amount,
+      payment_type: rowData.payment_type,
+      customerInfo: customerInfo,
+      dueInfo: dueInfo,
+      companyName: "SUNWORD BRAND",
+    };
+
+    // Call the external PDF function, which handles the download
+    exportPaymentToPDF(pdfData);
+  };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -159,7 +174,10 @@ const PaymentApprovalCreate = () => {
             progress: undefined,
             theme: "colored",
           });
-          handleCancel();
+          handleGeneratePDF();
+          setTimeout(() => {
+            handleCancel();
+          }, 600);
         } else {
           alert(
             `${t("Due Status Update failed")}: ${chitResponseData.head.msg}`
@@ -167,11 +185,11 @@ const PaymentApprovalCreate = () => {
         }
       } catch (error) {
         console.error("Error updating Chit/Due details:", error.message);
-        alert(
-          t(
-            "An error occurred during Chit/Due update. Please check the due status manually."
-          )
-        );
+        // alert(
+        //   t(
+        //     "An error occurred during Chit/Due update. Please check the due status manually."
+        //   )
+        // );
       }
     }
 
@@ -389,30 +407,30 @@ const PaymentApprovalCreate = () => {
               </CardContent>
             </Card>
           </Grid>
-        {!isReadOnly && ( // <-- NEW CONDITIONAL WRAPPER
+          {!isReadOnly && ( // <-- NEW CONDITIONAL WRAPPER
             <Grid item xs={12} md={3.5}>
-                <Card variant="outlined" style={{ backgroundColor: "#f8f9fa" }}>
-                    <CardContent>
-                        <Grid item xs={12} md={12}>
-                            <TextField
-                                label={t("Payment Amount (For Approval)")}
-                                name="payment_amount"
-                                type="text"
-                                value={formData.payment_amount}
-                                onChange={handleInputChange}
-                                fullWidth
-                                required
-                                disabled={isReadOnly} // Although hidden, keeping 'disabled' doesn't hurt.
-                                margin="normal"
-                                helperText={t("Enter the final amount to be approved")}
-                            />
-                        </Grid>
-                    </CardContent>
-                </Card>
+              <Card variant="outlined" style={{ backgroundColor: "#f8f9fa" }}>
+                <CardContent>
+                  <Grid item xs={12} md={12}>
+                    <TextField
+                      label={t("Payment Amount (For Approval)")}
+                      name="payment_amount"
+                      type="text"
+                      value={formData.payment_amount}
+                      onChange={handleInputChange}
+                      fullWidth
+                      required
+                      disabled={isReadOnly} // Although hidden, keeping 'disabled' doesn't hurt.
+                      margin="normal"
+                      helperText={t("Enter the final amount to be approved")}
+                    />
+                  </Grid>
+                </CardContent>
+              </Card>
             </Grid>
-          )} 
+          )}
         </Grid>
-      
+
         {!isReadOnly && (
           <Box
             sx={{

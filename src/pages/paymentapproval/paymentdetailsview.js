@@ -38,12 +38,6 @@ const PaymentDetailsView = () => {
         },
     });
 };
-  const navigateToEdit = (rowData) => {
-    navigate("/console/master/paymentapproval/create", {
-      state: { type: "edit", rowData: rowData },
-    });
-  };
-
   // Data Fetching Logic for Payment Details
   const fetchPaymentDetails = async () => {
     setLoading(true);
