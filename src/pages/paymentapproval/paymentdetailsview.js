@@ -9,6 +9,7 @@ import { MaterialReactTable } from "material-react-table";
 import { Box, Tooltip, IconButton, Typography } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const PaymentDetailsView = () => {
   const { customerId } = useParams();
@@ -26,7 +27,17 @@ const PaymentDetailsView = () => {
     navigate(-1); 
   };
 
-  
+  const navigateToApprovalScreen = (rowData) => {
+    // Determine the type of action based on the status
+    const type = rowData.status === "Approved" ? "view" : "edit";
+
+    navigate("/console/master/paymentapproval/create", {
+        state: { 
+            type: type, 
+            rowData: rowData 
+        },
+    });
+};
   const navigateToEdit = (rowData) => {
     navigate("/console/master/paymentapproval/create", {
       state: { type: "edit", rowData: rowData },
@@ -115,23 +126,32 @@ const PaymentDetailsView = () => {
         size: 50,
       },
       {
-        id: "edit_action",
-        header: t("Edit"),
-        size: 30,
-        enableColumnFilter: false,
-        enableSorting: false,
-        Cell: ({ row }) => (
-          <Tooltip title={t("Edit")}>
-            <IconButton
-              aria-label="edit payment detail"
-              onClick={() => navigateToEdit(row.original)}
-              sx={{ color: "#0d6efd", padding: 0 }}
-            >
-              <LiaEditSolid style={{ color: "rgb(22 59 140)" }} />
-            </IconButton>
-          </Tooltip>
-        ),
-      },
+    id: "action", // Changed header to 'Action' or 'Details'
+    header: t("Action"),
+    size: 50, // Increase size slightly for clarity
+    enableColumnFilter: false,
+    enableSorting: false,
+    Cell: ({ row }) => {
+        const rowData = row.original;
+        const isApproved = rowData.status === "Approved";
+        
+        // Use VisibilityIcon for Approved (Read-Only)
+        const IconComponent = isApproved ? VisibilityIcon : LiaEditSolid;
+        const tooltipText = isApproved ? t("View Details") : t("Edit Payment");
+
+        return (
+            <Tooltip title={tooltipText}>
+                <IconButton
+                    aria-label={isApproved ? "view payment detail" : "edit payment detail"}
+                    onClick={() => navigateToApprovalScreen(rowData)}
+                    sx={{ color: isApproved ? "rgb(25, 118, 210)" : "rgb(22, 59, 140)", padding: 0 }}
+                >
+                    <IconComponent />
+                </IconButton>
+            </Tooltip>
+        );
+    },
+},
     ],
     [t]
   );

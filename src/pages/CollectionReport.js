@@ -142,6 +142,17 @@ const CollectionReport = () => {
     });
   };
 
+  const handleClearFilters = () => {
+    setCustomerCode("");
+    setFromDate("");
+    setToDate("");
+    setChitTypeFilter("");
+    setPaymentStatusFilter("");
+    setCollectionData([]); // Clear previous report data
+    setError(null); // Clear any previous error messages
+    // Note: We don't call fetchCollectionReport here, as the user must click 'Apply' to fetch new (empty) data.
+  };
+
   // 5. Initial setup
   useEffect(() => {
     fetchCustomers();
@@ -230,19 +241,40 @@ const CollectionReport = () => {
                 </Form.Select>
               </Form.Group>
             </Col>
-            {/* Apply Filters Button */}
-            <Col md="2" className="py-2 d-flex align-items-end">
-              <ClickButton
-                label="Apply Filters"
-                disabled={loading}
-                onClick={handleApplyFilters}
-              >
-                {loading ? "Applying..." : "Apply Filters"}
-              </ClickButton>
+          </Row>
+          <Row>
+            <Col md="4" className="py-2 d-flex align-items-end">
+              <div className="d-flex w-100 gap-2">
+                <ClickButton
+                  label="Undo Filters"
+                  disabled={loading}
+                  onClick={handleClearFilters}
+                  className="w-50"
+                >
+                  Clear Filters
+                </ClickButton>
+
+                {/* Apply Filters Button */}
+                <ClickButton
+                  label="Apply Filters"
+                  disabled={loading}
+                  onClick={handleApplyFilters}
+                  className="w-50"
+                >
+                  {loading ? "Applying..." : "Apply Filters"}
+                </ClickButton>
+              </div>
+            </Col>
+
+<Col md="4" className="py-2 d-flex align-items-end">
+          
             </Col>
             {/* Export Buttons */}
-            <Col md="2" className="py-2 d-flex align-items-end">
-              <div className="d-flex w-100 gap-1">
+            <Col
+              md="2"
+              className="py-2 d-flex align-items-end justify-content-end "
+            >
+              <div className="d-flex w-100 gap-1 align-items-end">
                 <ClickButton
                   label="PDF"
                   disabled={loading}

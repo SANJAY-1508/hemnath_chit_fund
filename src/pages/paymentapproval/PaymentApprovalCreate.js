@@ -33,7 +33,8 @@ const PaymentApprovalCreate = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useLanguage();
-  const { rowData } = location.state || {};
+  const { rowData, type } = location.state || {};
+  const isReadOnly = type === "view";
   const isEditing = rowData && rowData.payment_details_id;
   const [formData, setFormData] = useState({
     payment_amount: "",
@@ -72,7 +73,7 @@ const PaymentApprovalCreate = () => {
         console.error("Error parsing nested JSON data:", e);
       }
     }
-  }, [isEditing, rowData]);
+  }, [isEditing, rowData, isReadOnly]);
 
   const handleUpdate = async () => {
     if (
@@ -388,47 +389,52 @@ const PaymentApprovalCreate = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={3.5}>
-            <Card variant="outlined" style={{ backgroundColor: "#f8f9fa" }}>
-              <CardContent>
-                <Grid item xs={12} md={12}>
-                  <TextField
-                    label={t("Payment Amount (For Approval)")}
-                    name="payment_amount"
-                    type="text"
-                    value={formData.payment_amount}
-                    onChange={handleInputChange}
-                    fullWidth
-                    required
-                    margin="normal"
-                    helperText={t("Enter the final amount to be approved")}
-                  />
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
+        {!isReadOnly && ( // <-- NEW CONDITIONAL WRAPPER
+            <Grid item xs={12} md={3.5}>
+                <Card variant="outlined" style={{ backgroundColor: "#f8f9fa" }}>
+                    <CardContent>
+                        <Grid item xs={12} md={12}>
+                            <TextField
+                                label={t("Payment Amount (For Approval)")}
+                                name="payment_amount"
+                                type="text"
+                                value={formData.payment_amount}
+                                onChange={handleInputChange}
+                                fullWidth
+                                required
+                                disabled={isReadOnly} // Although hidden, keeping 'disabled' doesn't hurt.
+                                margin="normal"
+                                helperText={t("Enter the final amount to be approved")}
+                            />
+                        </Grid>
+                    </CardContent>
+                </Card>
+            </Grid>
+          )} 
         </Grid>
-
-        <Box
-          sx={{
-            mt: 3,
-            mb: 5,
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: 2,
-          }}
-        >
-          <Button className="cancel" onClick={handleCancel}>
-            {t("Cancel")}
-          </Button>
-          <Button
-            className="create-btn"
-            onClick={handleUpdate}
-            disabled={updateLoading || !formData.payment_amount}
+      
+        {!isReadOnly && (
+          <Box
+            sx={{
+              mt: 3,
+              mb: 5,
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 2,
+            }}
           >
-            {t("Approve")}
-          </Button>
-        </Box>
+            <Button className="cancel" onClick={handleCancel}>
+              {t("Cancel")}
+            </Button>
+            <Button
+              className="create-btn"
+              onClick={handleUpdate}
+              disabled={updateLoading || !formData.payment_amount}
+            >
+              {t("Approve")}
+            </Button>
+          </Box>
+        )}
       </Container>
 
       {/* Proof Image Preview Modal */}
