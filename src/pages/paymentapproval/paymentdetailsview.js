@@ -10,6 +10,8 @@ import { Box, Tooltip, IconButton, Typography } from "@mui/material";
 import { LiaEditSolid } from "react-icons/lia";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { exportPaymentToPDF_Download } from "../../pdf/PaymentReceipt";
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 const PaymentDetailsView = () => {
   const { customerId } = useParams();
@@ -37,6 +39,26 @@ const PaymentDetailsView = () => {
             rowData: rowData 
         },
     });
+};
+
+const handleDownloadPDF = (rowData) => {
+    try {
+        const customerInfo = JSON.parse(rowData.customer_details);
+        const dueInfo = JSON.parse(rowData.due_details);
+
+        const pdfData = {
+            payment_details_id: rowData.payment_details_id,
+            payment_amount: rowData.payment_amount,
+            customerInfo: customerInfo,
+            dueInfo: dueInfo,
+            companyName: "SUNWORD BRAND",
+        };
+        exportPaymentToPDF_Download(pdfData);
+    } catch (e) {
+        console.error("Error parsing JSON for PDF download:", e);
+        // Optionally show a user alert
+        alert("Error generating PDF. Data might be corrupted.");
+    }
 };
   // Data Fetching Logic for Payment Details
   const fetchPaymentDetails = async () => {
@@ -119,33 +141,54 @@ const PaymentDetailsView = () => {
         header: t("Status"),
         size: 50,
       },
-      {
-    id: "action", // Changed header to 'Action' or 'Details'
+      // ... (in paymentDetailsColumns useMemo)
+{
+    id: "action", 
     header: t("Action"),
-    size: 50, // Increase size slightly for clarity
+    size: 50, 
     enableColumnFilter: false,
     enableSorting: false,
     Cell: ({ row }) => {
         const rowData = row.original;
         const isApproved = rowData.status === "Approved";
         
-        // Use VisibilityIcon for Approved (Read-Only)
-        const IconComponent = isApproved ? VisibilityIcon : LiaEditSolid;
-        const tooltipText = isApproved ? t("View Details") : t("Edit Payment");
+        // Use VisibilityIcon for Approved (Read-Only), LiaEditSolid otherwise
+        const ActionIcon = isApproved ? VisibilityIcon : LiaEditSolid;
+        const actionTooltip = isApproved ? t("View Details") : t("Edit Payment");
 
         return (
-            <Tooltip title={tooltipText}>
-                <IconButton
-                    aria-label={isApproved ? "view payment detail" : "edit payment detail"}
-                    onClick={() => navigateToApprovalScreen(rowData)}
-                    sx={{ color: isApproved ? "rgb(25, 118, 210)" : "rgb(22, 59, 140)", padding: 0 }}
-                >
-                    <IconComponent />
-                </IconButton>
-            </Tooltip>
+            <Box sx={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                {/* 1. View/Edit Icon */}
+                <Tooltip title={actionTooltip}>
+                    <IconButton
+                        aria-label={isApproved ? "view payment detail" : "edit payment detail"}
+                        onClick={() => navigateToApprovalScreen(rowData)}
+                        sx={{ color: isApproved ? "rgb(25, 118, 210)" : "rgb(22, 59, 140)", padding: 0 }}
+                    >
+                        <ActionIcon />
+                    </IconButton>
+                </Tooltip>
+
+                {/* 2. PDF Download Icon (Only for Approved status) */}
+                {isApproved && (
+                    <Tooltip title={t("Download Receipt PDF")}>
+                        <IconButton
+                            aria-label="download receipt pdf"
+                            onClick={(e) => {
+                                e.stopPropagation(); // Prevent row click event if any
+                                handleDownloadPDF(rowData);
+                            }}
+                            sx={{ color: 'red', padding: 0 }}
+                        >
+                            <PictureAsPdfIcon />
+                        </IconButton>
+                    </Tooltip>
+                )}
+            </Box>
         );
     },
 },
+// ... (rest of the code)
     ],
     [t]
   );

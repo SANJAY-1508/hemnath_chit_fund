@@ -24,7 +24,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
-import { exportPaymentToPDF } from "../../pdf/PaymentReceipt";
+import { exportPaymentToPDF_View } from "../../pdf/PaymentReceipt";
 
 const PAYMENT_UPDATE_API = `${API_DOMAIN}/payment_details.php`;
 
@@ -61,7 +61,7 @@ const PaymentApprovalCreate = () => {
     };
 
     // Call the external PDF function, which handles the download
-    exportPaymentToPDF(pdfData);
+    exportPaymentToPDF_View(pdfData);
   };
 
   const handleInputChange = (e) => {

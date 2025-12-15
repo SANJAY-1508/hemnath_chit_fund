@@ -1,11 +1,8 @@
 import jsPDF from "jspdf";
 import "jspdf-autotable"; // Import the plugin
 
-/**
- * Generates and displays a PDF receipt in a new window for an approved payment transaction.
- * * @param {object} paymentData - Data containing all details for the receipt.
- */
-export const exportPaymentToPDF = (paymentData) => {
+// Helper function that contains the core PDF generation logic
+const generatePDFContent = (doc, paymentData) => {
   const {
     customerInfo,
     dueInfo,
@@ -14,10 +11,9 @@ export const exportPaymentToPDF = (paymentData) => {
     companyName = "SUNWORD BRAND",
   } = paymentData;
 
-  console.log("Payment Data:", paymentData);
-  const doc = new jsPDF();
-  let y = 15; // Starting Y position // --- 1. Company Header ---
+  let y = 15;
 
+  // --- 1. Company Header ---
   doc.setFontSize(22);
   doc.setTextColor(95, 10, 7);
   doc.text(companyName, 105, y, null, null, "center");
@@ -35,9 +31,8 @@ export const exportPaymentToPDF = (paymentData) => {
 
   doc.setFontSize(11);
   doc.setTextColor(50, 50, 50);
-  console.log("Customer Info:", customerInfo);
 
-
+  // Use a single table with two columns for the metadata section
   doc.autoTable({
     startY: y,
     theme: "plain",
@@ -68,19 +63,18 @@ Payment Date   : ${new Date().toLocaleDateString("en-GB")}`,
   y += 3;
 
   const tableHeaders = [["#", "Description", "Due Amount", "Paid Amount"]];
+
   const formattedDueAmount = `${Number(dueInfo.due_amount || 0).toFixed(2)}`;
-  const formattedPaidAmount = `${Number(payment_amount || 0).toFixed(2)}`;
-  console.log("Payment Amount:", payment_amount);
-  console.log("Due Amount:", dueInfo.due_amount);
+  const formattedPaidAmount = `${Number(payment_amount || 0).toFixed(2)}`;
 
   const tableBody = [
-    [
-      "1",
-      `Payment for Due #${dueInfo.due_number || "N/A"}`,
-      formattedDueAmount, // Use the pre-formatted string
-      formattedPaidAmount, // Use the pre-formatted string
-    ],
-  ];
+    [
+      "1",
+      `Payment for Due #${dueInfo.due_number || "N/A"}`,
+      formattedDueAmount,
+      formattedPaidAmount,
+    ],
+  ]; // Main Content Table
 
   doc.autoTable({
     startY: y,
@@ -92,8 +86,11 @@ Payment Date   : ${new Date().toLocaleDateString("en-GB")}`,
     margin: { left: 20, right: 20 },
   }); // Update y to be below the main table for the total amount
 
-  y = doc.lastAutoTable.finalY; // --- Footer Message ---
+  y = doc.lastAutoTable.finalY; // --- 4. Total Amount Footer ---
 
+ 
+
+  // --- Footer Message ---
   doc.setFontSize(10);
   doc.setTextColor(150, 150, 150);
   doc.text(
@@ -104,5 +101,22 @@ Payment Date   : ${new Date().toLocaleDateString("en-GB")}`,
     null,
     "center"
   );
+};
+
+// ----------------------------------------------------------------------
+// EXPORTED FUNCTION 1: Used for Approval Screen (Opens in new tab)
+// ----------------------------------------------------------------------
+export const exportPaymentToPDF_View = (paymentData) => {
+  const doc = new jsPDF();
+  generatePDFContent(doc, paymentData);
   doc.output("dataurlnewwindow");
+};
+
+// ----------------------------------------------------------------------
+// EXPORTED FUNCTION 2: Used for Table View (Downloads the file)
+// ----------------------------------------------------------------------
+export const exportPaymentToPDF_Download = (paymentData) => {
+  const doc = new jsPDF();
+  generatePDFContent(doc, paymentData);
+  doc.save(`PaymentReceipt_${paymentData.payment_details_id}.pdf`);
 };
